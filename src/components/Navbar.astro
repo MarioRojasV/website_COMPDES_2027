@@ -1,0 +1,43 @@
+---
+export interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const links = [
+  { href: '/', label: 'Inicio' },
+  { href: '/inscripcion-participacion', label: 'Inscripción y participación' },
+  { href: '/pre-inscripcion', label: 'Pre-inscripción' },
+  { href: '/areas-interes', label: 'Áreas de interés' },
+  { href: '/cronograma', label: 'Cronograma' },
+  { href: '/hospedaje', label: 'Hospedaje' },
+  { href: '/turismo', label: 'Turismo' },
+  { href: '/organizacion', label: 'Organización' },
+  { href: '/patrocinadores', label: 'Patrocinadores' },
+];
+---
+
+<nav class="border-b border-gray-200 bg-gray-100">
+  <div class="mx-auto max-w-6xl px-4">
+    <ul class="flex flex-wrap gap-x-6 gap-y-2 py-4">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={[
+                'text-sm transition-colors',
+                currentPath === link.href
+                  ? 'font-bold text-gray-900'
+                  : 'text-gray-600 hover:text-gray-900',
+              ]}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
