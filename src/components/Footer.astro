@@ -1,9 +1,61 @@
 ---
-
+const links = [
+  { href: '/', label: 'Inicio' },
+  { href: '/inscripcion-participacion', label: 'Inscripción' },
+  { href: '/pre-inscripcion', label: 'Pre-inscripción' },
+  { href: '/areas-interes', label: 'Áreas de interés' },
+  { href: '/cronograma', label: 'Cronograma' },
+  { href: '/hospedaje', label: 'Hospedaje' },
+  { href: '/turismo', label: 'Turismo' },
+  { href: '/organizacion', label: 'Organización' },
+  { href: '/patrocinadores', label: 'Patrocinadores' },
+];
 ---
 
-<footer class="mt-auto border-t border-gray-200 bg-gray-100 py-6">
-  <div class="mx-auto max-w-6xl px-4 text-center text-sm text-gray-500">
-    <p>&copy; 2027 COMPDES — Todos los derechos reservados</p>
+<footer class="mt-auto border-t-4 border-compdes-yellow bg-compdes-blue text-compdes-cream">
+  <div class="mx-auto max-w-6xl px-6 py-10">
+    <div class="grid gap-10 md:grid-cols-3">
+      <div>
+        <p class="font-display text-lg font-bold">
+          <span class="text-compdes-yellow">&gt;_</span>
+          COMPDES_<span class="text-compdes-yellow">2027</span>
+        </p>
+        <p class="mt-3 text-sm leading-relaxed text-compdes-cream/70">
+          Congreso académico y científico de informática que reúne a investigadores, docentes y
+          estudiantes.
+        </p>
+      </div>
+
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.25em] text-compdes-yellow">[ navegación ]</p>
+        <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-compdes-cream/80">
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href} class="transition-colors hover:text-compdes-yellow">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.25em] text-compdes-yellow">[ contacto ]</p>
+        <ul class="mt-4 space-y-2 text-sm text-compdes-cream/80">
+          <li>compdes2027@example.com</li>
+          <li>+51 999 999 999</li>
+          <li>@compdes2027 · fb / x / ig</li>
+        </ul>
+      </div>
+    </div>
+
+    <div
+      class="mt-10 flex flex-col justify-between gap-2 border-t border-dashed border-compdes-cream/30 pt-5 text-xs text-compdes-cream/60 sm:flex-row"
+    >
+      <p>&copy; 2027 COMPDES — Todos los derechos reservados</p>
+      <p>// fin de transmisión<span class="blink">_</span></p>
+    </div>
   </div>
 </footer>

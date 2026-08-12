@@ -18,26 +18,80 @@ const links = [
 ];
 ---
 
-<nav class="border-b border-gray-200 bg-gray-100">
-  <div class="mx-auto max-w-6xl px-4">
-    <ul class="flex flex-wrap gap-x-6 gap-y-2 py-4">
-      {
-        links.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              class:list={[
-                'text-sm transition-colors',
-                currentPath === link.href
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900',
-              ]}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+<nav class="sticky top-0 z-50 border-b-2 border-compdes-yellow bg-compdes-blue text-compdes-cream">
+  <div class="border-b border-compdes-cream/20 bg-compdes-blue-900">
+    <div
+      class="mx-auto flex max-w-6xl items-center justify-between px-6 py-1 text-[11px] uppercase tracking-[0.25em] text-compdes-cream/70"
+    >
+      <span>compdes_2027 // sistema en línea</span>
+      <span class="hidden items-center gap-2 sm:flex">
+        <i class="status-led"></i>
+        sync&nbsp;ok
+      </span>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="flex items-center justify-between gap-6 py-4">
+      <a href="/" class="flex items-center gap-2 font-display text-lg font-bold">
+        <span class="text-compdes-yellow">&gt;_</span>
+        COMPDES_<span class="text-compdes-yellow">2027</span>
+      </a>
+
+      <button
+        id="menu-btn"
+        type="button"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        class="rounded border border-compdes-cream/40 px-3 py-1.5 text-lg text-compdes-yellow md:hidden"
+      >
+        [≡]
+      </button>
+
+      <ul
+        id="menu"
+        class="hidden flex-col gap-y-2 pb-4 md:flex md:flex-row md:flex-wrap md:items-center md:gap-x-5 md:pb-0"
+      >
+        {
+          links.map((link, i) => (
+            <li>
+              <a
+                href={link.href}
+                aria-current={currentPath === link.href ? 'page' : undefined}
+                class:list={[
+                  'inline-flex items-baseline gap-1.5 text-xs leading-relaxed transition-colors',
+                  currentPath === link.href
+                    ? 'text-compdes-yellow'
+                    : 'text-compdes-cream/80 hover:text-compdes-yellow',
+                ]}
+              >
+                <span class="text-[10px] text-compdes-yellow/80">
+                  {String(i + 1).padStart(2, '0')}.
+                </span>
+                <span
+                  class:list={[
+                    currentPath === link.href
+                      ? 'border-b border-compdes-yellow pb-0.5'
+                      : 'border-b border-transparent pb-0.5',
+                  ]}
+                >
+                  {link.label}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </nav>
+
+<script>
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('menu');
+
+  btn?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden');
+    btn?.setAttribute('aria-expanded', String(!open));
+  });
+</script>
