@@ -1,0 +1,100 @@
+---
+import { languages, useTranslations, localizedUrl } from './ui';
+
+export interface Props {
+  lang: 'es' | 'en';
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const targetLang: 'es' | 'en' = lang === 'es' ? 'en' : 'es';
+const targetUrl = localizedUrl(Astro.url.pathname, targetLang);
+const label = languages[targetLang];
+---
+
+<a
+  class="lang-toggle"
+  href={targetUrl}
+  data-lang-toggle
+  aria-label={t('common.langToggle')}
+  hreflang={targetLang}
+>
+  {label}
+</a>
+
+<script>
+  import { ui, localizedUrl } from './ui';
+
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLAnchorElement>('[data-lang-toggle]');
+  const dicts = ui as Record<string, Record<string, string>>;
+
+  function currentLang(): 'es' | 'en' {
+    return root.lang === 'en' ? 'en' : 'es';
+  }
+
+  /** Swap every [data-i18n] element, the <title>, the meta description and <html lang>. */
+  function applyLang(lang: 'es' | 'en') {
+    const dict = dicts[lang];
+    root.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
+      const key = el.dataset.i18n;
+      if (key && dict[key]) el.innerHTML = dict[key];
+    });
+
+    const titleKey = root.dataset.i18nTitle;
+    if (titleKey && dict[titleKey]) document.title = dict[titleKey];
+
+    const descKey = root.dataset.i18nDesc;
+    if (descKey && dict[descKey]) {
+      document.querySelector('meta[name="description"]')?.setAttribute('content', dict[descKey]);
+    }
+
+    root.lang = lang;
+    localStorage.setItem('compdes-lang', lang);
+
+    if (toggle) {
+      const back: 'es' | 'en' = lang === 'es' ? 'en' : 'es';
+      toggle.href = localizedUrl(location.pathname, back);
+      toggle.textContent = back === 'es' ? 'Español' : 'English';
+    }
+  }
+
+  toggle?.addEventListener('click', (event) => {
+    event.preventDefault();
+    const from = currentLang();
+    const to: 'es' | 'en' = from === 'es' ? 'en' : 'es';
+    applyLang(to);
+    history.pushState(null, '', localizedUrl(location.pathname, to));
+  });
+
+  // Keep the toggle in sync when the user navigates with the browser back/forward.
+  window.addEventListener('popstate', () => {
+    const urlLang: 'es' | 'en' = location.pathname.startsWith('/en') ? 'en' : 'es';
+    if (urlLang !== currentLang()) applyLang(urlLang);
+  });
+</script>
+
+<style>
+  .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    padding: 0.4rem 0.75rem;
+    border: 1.5px solid var(--nav-line);
+    border-radius: var(--radius-pill);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--nav-text);
+    text-decoration: none;
+    transition:
+      border-color var(--duration-fast) var(--ease-out-quart),
+      color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .lang-toggle:hover {
+    border-color: var(--nav-accent);
+    color: var(--nav-text);
+  }
+</style>

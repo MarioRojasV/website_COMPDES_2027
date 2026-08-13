@@ -1,0 +1,27 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { useTranslations } from '../../i18n/ui';
+import type { UiKey } from '../../i18n/ui';
+
+export interface Props {
+  titleKey: UiKey;
+}
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+const { titleKey } = Astro.props;
+---
+
+<section class="section">
+  <div class="page-container">
+    <SectionHeading titleKey={titleKey} level="h1" />
+    <p class="coming-soon" data-i18n="common.comingSoon">{t('common.comingSoon')}</p>
+  </div>
+</section>
+
+<style>
+  .coming-soon {
+    margin-top: 1.5rem;
+    color: var(--ink-muted);
+  }
+</style>

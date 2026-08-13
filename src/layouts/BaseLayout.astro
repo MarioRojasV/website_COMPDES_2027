@@ -1,31 +1,70 @@
 ---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/inter';
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { defaultLang, ui, useTranslations, localizedUrl } from '../i18n/ui';
 
 export interface Props {
-  title: string;
+  /** Translation key for the <title> tag (must exist in both dictionaries). */
+  titleKey: keyof typeof ui[typeof defaultLang];
+  /** Translation key for the meta description. */
+  descriptionKey?: keyof typeof ui[typeof defaultLang];
 }
 
-const { title } = Astro.props;
-const currentPath = Astro.url.pathname;
+const { titleKey, descriptionKey = 'meta.desc.home' } = Astro.props;
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+const title = t(titleKey);
+const description = t(descriptionKey);
+const SITE_TITLE = 'COMPDES 2027';
+
+const canonicalPath = Astro.url.pathname;
+const canonicalURL = new URL(canonicalPath, Astro.site ?? 'https://compdes.example.com');
+const alternateLang: 'es' | 'en' = lang === 'es' ? 'en' : 'es';
+const alternateURL = new URL(localizedUrl(canonicalPath, alternateLang), Astro.site);
 ---
 
 <!doctype html>
-<html lang="es">
+<html
+  lang={lang}
+  data-i18n-title={titleKey}
+  data-i18n-desc={descriptionKey}
+>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fdf8ef" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
+    <link rel="alternate" hreflang={alternateLang} href={alternateURL} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_CR' : 'en_US'} />
+    <meta property="og:url" content={canonicalURL} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
     <title>{title}</title>
   </head>
-  <body class="flex min-h-screen flex-col bg-white text-gray-800">
-    <Navbar currentPath={currentPath} />
-    <main class="flex-1">
+  <body class="flex min-h-screen flex-col bg-bg text-ink">
+    <a class="skip-link" href="#main" data-i18n="common.skipLink">{t('common.skipLink')}</a>
+    <Navbar currentPath={canonicalPath} lang={lang} transparent={canonicalPath === '/'} />
+    <main id="main" class="flex-1">
       <slot />
     </main>
-    <Footer />
+    <Footer lang={lang} />
   </body>
 </html>

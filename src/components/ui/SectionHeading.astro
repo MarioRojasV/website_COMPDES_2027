@@ -1,0 +1,64 @@
+---
+import { useTranslations } from '../../i18n/ui';
+import type { UiKey } from '../../i18n/ui';
+
+export interface Props {
+  eyebrowKey?: UiKey;
+  titleKey: UiKey;
+  introKey?: UiKey;
+  align?: 'left' | 'center';
+  level?: 'h1' | 'h2';
+}
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+const { eyebrowKey, titleKey, introKey, align = 'left', level = 'h2' } = Astro.props;
+const Heading = level;
+---
+
+<div class:list={['section-heading', { 'section-heading--center': align === 'center' }]}>
+  {eyebrowKey && (
+    <p class="section-heading__eyebrow" data-i18n={eyebrowKey}>
+      {t(eyebrowKey)}
+    </p>
+  )}
+  <Heading class="section-heading__title" data-i18n={titleKey}>
+    {t(titleKey)}
+  </Heading>
+  {introKey && (
+    <p class="section-heading__intro" data-i18n={introKey} set:html={t(introKey)} />
+  )}
+</div>
+
+<style>
+  .section-heading {
+    max-width: 46rem;
+  }
+
+  .section-heading--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .section-heading__eyebrow {
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .section-heading__title {
+    font-size: clamp(1.9rem, 4vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1.12;
+    color: var(--ink);
+  }
+
+  .section-heading__intro {
+    margin-top: 1rem;
+    font-size: 1.05rem;
+    color: var(--ink-muted);
+  }
+</style>

@@ -1,43 +1,346 @@
 ---
+import LangToggle from '../i18n/LangToggle.astro';
+import { useTranslations, localizedUrl } from '../i18n/ui';
+
 export interface Props {
   currentPath: string;
+  lang: 'es' | 'en';
+  transparent?: boolean;
 }
 
-const { currentPath } = Astro.props;
+const { currentPath, lang, transparent = false } = Astro.props;
+const t = useTranslations(lang);
 
-const links = [
-  { href: '/', label: 'Inicio' },
-  { href: '/inscripcion-participacion', label: 'Inscripción y participación' },
-  { href: '/pre-inscripcion', label: 'Pre-inscripción' },
-  { href: '/areas-interes', label: 'Áreas de interés' },
-  { href: '/cronograma', label: 'Cronograma' },
-  { href: '/hospedaje', label: 'Hospedaje' },
-  { href: '/turismo', label: 'Turismo' },
-  { href: '/organizacion', label: 'Organización' },
-  { href: '/patrocinadores', label: 'Patrocinadores' },
+const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
+  { href: '/', key: 'nav.home' },
+  { href: '/inscripcion-participacion', key: 'nav.inscripcion' },
+  { href: '/pre-inscripcion', key: 'nav.preinscripcion' },
+  { href: '/areas-interes', key: 'nav.areas' },
+  { href: '/cronograma', key: 'nav.cronograma' },
+  { href: '/hospedaje', key: 'nav.hospedaje' },
+  { href: '/turismo', key: 'nav.turismo' },
+  { href: '/organizacion', key: 'nav.organizacion' },
+  { href: '/patrocinadores', key: 'nav.patrocinadores' },
 ];
 ---
 
-<nav class="border-b border-gray-200 bg-gray-100">
-  <div class="mx-auto max-w-6xl px-4">
-    <ul class="flex flex-wrap gap-x-6 gap-y-2 py-4">
+<nav
+  class:list={['site-nav', { 'site-nav--transparent': transparent }]}
+  aria-label={t('common.navAria')}
+>
+  <div class="site-nav__inner page-container">
+    <a class="site-nav__brand" href={localizedUrl('/', lang)}>
+      COMPDES <span class="site-nav__brand-year">2027</span>
+    </a>
+
+    <ul class="site-nav__links" id="primary-nav">
       {
         links.map((link) => (
           <li>
             <a
-              href={link.href}
-              class:list={[
-                'text-sm transition-colors',
-                currentPath === link.href
-                  ? 'font-bold text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900',
-              ]}
+              href={localizedUrl(link.href, lang)}
+              class:list={['site-nav__link', { 'is-active': currentPath === link.href }]}
+              data-i18n={link.key}
             >
-              {link.label}
+              {t(link.key)}
             </a>
           </li>
         ))
       }
     </ul>
+
+    <div class="site-nav__actions">
+      <LangToggle lang={lang} />
+      <button
+        class="site-nav__toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="primary-nav"
+        aria-label={t('common.openMenu')}
+      >
+        <span class="site-nav__toggle-bar" aria-hidden="true"></span>
+      </button>
+    </div>
   </div>
 </nav>
+
+<script>
+  const nav = document.querySelector('.site-nav');
+  const toggle = document.querySelector('.site-nav__toggle');
+  const links = nav.querySelectorAll('.site-nav__link');
+  const desktop = window.matchMedia('(min-width: 900px)');
+
+  function openMenu() {
+    nav.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Cerrar menú');
+    document.body.classList.add('no-scroll');
+    links[0]?.focus();
+  }
+
+  function closeMenu({ refocus = false } = {}) {
+    nav.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Abrir menú');
+    document.body.classList.remove('no-scroll');
+    if (refocus) toggle.focus();
+  }
+
+  toggle.addEventListener('click', () => {
+    nav.classList.contains('is-open') ? closeMenu() : openMenu();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMenu({ refocus: true });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!nav.contains(event.target)) closeMenu();
+  });
+
+  links.forEach((link) => link.addEventListener('click', () => closeMenu()));
+
+  desktop.addEventListener('change', (event) => {
+    if (event.matches) closeMenu();
+  });
+
+  // Transparent (home) navbar: switch to solid background once the hero is
+  // scrolled past, so the links stay readable over light content.
+  if (nav.classList.contains('site-nav--transparent')) {
+    const onScroll = () => {
+      nav.classList.toggle('is-scrolled', window.scrollY > 60);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .site-nav {
+    --nav-text: var(--ink);
+    --nav-text-muted: var(--ink-muted);
+    --nav-brand: var(--ink);
+    --nav-brand-accent: var(--accent);
+    --nav-accent: var(--accent);
+    --nav-bg: var(--bg);
+    --nav-line: var(--line);
+
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    border-bottom: 1px solid var(--nav-line);
+    background: var(--nav-bg);
+    background: color-mix(in srgb, var(--nav-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Homepage: transparent over the hero illustration */
+  .site-nav--transparent {
+    position: absolute;
+    inset: 0 0 auto 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom-color: transparent;
+    --nav-text: var(--color-cream-50);
+    --nav-text-muted: var(--color-cream-100);
+    --nav-brand: var(--color-cream-50);
+    --nav-brand-accent: var(--color-ochre-200);
+    --nav-accent: var(--color-ochre-200);
+  }
+
+  /* Solid mode: scrolled past the hero, or while the mobile menu is open */
+  .site-nav--transparent.is-scrolled,
+  .site-nav.is-open {
+    background: var(--nav-bg);
+    background: color-mix(in srgb, var(--nav-bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: var(--nav-line);
+    --nav-text: var(--ink);
+    --nav-text-muted: var(--ink-muted);
+    --nav-brand: var(--ink);
+    --nav-brand-accent: var(--accent);
+    --nav-accent: var(--accent);
+  }
+
+  .site-nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.5rem;
+  }
+
+  .site-nav__brand {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--nav-brand);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .site-nav__brand:hover {
+    color: var(--nav-brand);
+  }
+
+  .site-nav__brand-year {
+    color: var(--nav-brand-accent);
+  }
+
+  .site-nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .site-nav__links {
+    display: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--nav-text);
+    cursor: pointer;
+  }
+
+  .site-nav__toggle::before,
+  .site-nav__toggle::after,
+  .site-nav__toggle-bar {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 1.4rem;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      transform var(--duration-base) var(--ease-out-quart),
+      top var(--duration-base) var(--ease-out-quart),
+      opacity var(--duration-base) var(--ease-out-quart);
+  }
+
+  .site-nav__toggle::before {
+    top: calc(50% - 0.42rem);
+    transform: translateX(-50%);
+  }
+
+  .site-nav__toggle::after {
+    top: calc(50% + 0.42rem);
+    transform: translateX(-50%);
+  }
+
+  .site-nav__toggle-bar {
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .site-nav.is-open .site-nav__toggle::before {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .site-nav.is-open .site-nav__toggle::after {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .site-nav.is-open .site-nav__toggle-bar {
+    opacity: 0;
+  }
+
+  /* Desktop */
+  @media (min-width: 900px) {
+    .site-nav__links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: clamp(0.9rem, 1.4vw, 1.6rem);
+    }
+
+    .site-nav__link {
+      display: inline-block;
+      padding-block: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--nav-text);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition:
+        color var(--duration-fast) var(--ease-out-quart),
+        border-color var(--duration-fast) var(--ease-out-quart);
+    }
+
+    .site-nav__link:hover {
+      color: var(--nav-text);
+      border-bottom-color: var(--nav-accent);
+    }
+
+    .site-nav__link.is-active {
+      font-weight: 600;
+      border-bottom-color: var(--nav-accent);
+    }
+  }
+
+  /* Mobile menu panel */
+  @media (max-width: 899px) {
+    .site-nav__links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      padding: 0.5rem 0 1rem;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-line);
+      box-shadow: var(--shadow-pop);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition:
+        opacity var(--duration-base) var(--ease-out-quart),
+        transform var(--duration-base) var(--ease-out-quart),
+        visibility var(--duration-base);
+    }
+
+    .site-nav.is-open .site-nav__links {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .site-nav__link {
+      display: block;
+      padding: 0.85rem var(--gutter);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--nav-text);
+      text-decoration: none;
+    }
+
+    .site-nav__link:hover {
+      color: var(--nav-text);
+      background: var(--bg-alt);
+    }
+
+    .site-nav__link.is-active {
+      font-weight: 600;
+      color: var(--accent);
+    }
+  }
+</style>

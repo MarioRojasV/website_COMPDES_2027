@@ -1,0 +1,313 @@
+---
+import sky from '../../assets/images/hero/sky.webp';
+import volcano from '../../assets/images/hero/volcano.webp';
+import building from '../../assets/images/hero/building.webp';
+import foreground from '../../assets/images/hero/foreground.webp';
+import { useTranslations, localizedUrl } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+
+const LAYER_WIDTH = 1536;
+const LAYER_HEIGHT = 1024;
+---
+
+<!--
+  Layered hero composition
+  ------------------------
+  Coordinate system: all four transparent layers share the same logical canvas
+  (1536x1024, 3:2). They are stacked 1:1 at the same origin, so the original
+  composition is never cropped or individually repositioned. The sky is the
+  only exception: it is a full-bleed gradient (cover), so cropping is invisible.
+
+  Stacking order (back -> front):
+    z-0  sky        (background gradient, object-fit cover)
+    z-0  volcano    (silhouette behind the CTEC building)
+    z-0  building   (grass + CTEC building)
+    z-0  foreground (deer, rocks, flowers)
+
+  Desktop: scene fills the hero (100svh); the 3:2 stack is centered so nothing
+  is cut on wide screens. Mobile: full-width 3:2 scene, content flows below.
+-->
+<section class="hero" aria-label="Portada del congreso">
+  <div class="hero-scene">
+    <img
+      class="hero-sky"
+      src={sky.src}
+      alt=""
+      width={1677}
+      height={938}
+      fetchpriority="high"
+      decoding="async"
+    />
+
+    <div class="hero-layers">
+      <img
+        class="hero-layer"
+        src={volcano.src}
+        alt=""
+        width={LAYER_WIDTH}
+        height={LAYER_HEIGHT}
+        fetchpriority="high"
+        decoding="async"
+      />
+      <img
+        class="hero-layer"
+        src={building.src}
+        alt=""
+        width={LAYER_WIDTH}
+        height={LAYER_HEIGHT}
+        decoding="async"
+      />
+      <img
+        class="hero-layer"
+        src={foreground.src}
+        alt=""
+        width={LAYER_WIDTH}
+        height={LAYER_HEIGHT}
+        decoding="async"
+      />
+    </div>
+  </div>
+
+  <div class="hero-content page-container">
+    <p class="hero-eyebrow" data-i18n="hero.eyebrow">{t('hero.eyebrow')}</p>
+    <h1 class="hero-title" data-i18n="hero.title">{t('hero.title')}</h1>
+    <p class="hero-lede" data-i18n="hero.lede">{t('hero.lede')}</p>
+    <div class="hero-actions">
+      <a class="btn btn--primary" href={localizedUrl('/cronograma', lang)} data-i18n="hero.cta.cronograma">
+        {t('hero.cta.cronograma')}
+      </a>
+      <a class="btn btn--ghost" href={localizedUrl('/inscripcion-participacion', lang)} data-i18n="hero.cta.inscripcion">
+        {t('hero.cta.inscripcion')}
+      </a>
+    </div>
+  </div>
+
+  <a class="hero-scroll" href="#que-es">
+    <span class="sr-only" data-i18n="hero.scrollAria">{t('hero.scrollAria')}</span>
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  /* Scene — the shared 3:2 canvas */
+  .hero-scene {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background-color: var(--color-sky-300);
+  }
+
+  .hero-sky {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-layers {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Content */
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .hero-eyebrow {
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 7vw, 4.75rem);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .hero-lede {
+    margin-top: 1.25rem;
+    max-width: 38ch;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--ink-muted);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+
+  /* Scroll cue — desktop only */
+  .hero-scroll {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      min-height: 100svh;
+      display: flex;
+      align-items: end;
+    }
+
+    /* Scene fills the hero; the 3:2 stack is kept centered and uncropped. */
+    .hero-scene {
+      position: absolute;
+      inset: 0;
+      aspect-ratio: auto;
+    }
+
+    .hero-layers {
+      margin-inline: auto;
+      width: min(100%, calc(100svh * 1.5));
+      aspect-ratio: 3 / 2;
+    }
+
+    /* Cinematic scrim over the bottom for text readability */
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 62%;
+      background: linear-gradient(
+        to top,
+        rgb(26 22 16 / 0.62) 0%,
+        rgb(26 22 16 / 0.28) 45%,
+        rgb(26 22 16 / 0) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      padding-block: clamp(3rem, 11vh, 6.5rem);
+    }
+
+    .hero-eyebrow {
+      color: var(--color-ochre-200);
+    }
+
+    .hero-title {
+      color: var(--color-cream-50);
+    }
+
+    .hero-lede {
+      color: var(--color-cream-100);
+      opacity: 0.92;
+    }
+
+    .hero .btn--ghost {
+      color: var(--color-cream-50);
+      border-color: rgb(253 248 239 / 0.5);
+    }
+
+    .hero .btn--ghost:hover {
+      border-color: var(--color-cream-50);
+      color: var(--color-cream-50);
+    }
+
+    .hero-scroll {
+      display: inline-flex;
+      position: absolute;
+      left: 50%;
+      bottom: 1.5rem;
+      transform: translateX(-50%);
+      z-index: 2;
+      color: var(--color-cream-50);
+      opacity: 0.75;
+      transition: opacity var(--duration-base) var(--ease-out-quart);
+    }
+
+    .hero-scroll:hover {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const hero = document.querySelector<HTMLElement>('.hero');
+  if (hero) {
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    // Parallax depth — only when motion is allowed and the scene is full-bleed.
+    // Speeds are per-layer (fraction of the scene height travelled while the
+    // hero scrolls away): volcano slowest, building mid, foreground fastest.
+    const mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference) and (min-width: 900px)', () => {
+      const scene = hero.querySelector<HTMLElement>('.hero-scene');
+      const content = hero.querySelector<HTMLElement>('.hero-content');
+      const layers = gsap.utils.toArray<HTMLElement>('.hero-layer');
+
+      const scrub = {
+        trigger: hero,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      };
+
+      const speeds = [0.15, 0.3, 0.55];
+      layers.forEach((layer, i) => {
+        gsap.to(layer, { yPercent: -speeds[i] * 100, ease: 'none', scrollTrigger: scrub });
+      });
+
+      gsap.fromTo(
+        scene,
+        { scale: 1 },
+        { scale: 1.08, transformOrigin: '50% 50%', ease: 'none', scrollTrigger: scrub },
+      );
+
+      gsap.to(content, {
+        yPercent: -30,
+        opacity: 0.4,
+        ease: 'none',
+        scrollTrigger: scrub,
+      });
+
+      ScrollTrigger.refresh();
+      return () => {
+        layers.forEach((layer) => gsap.set(layer, { clearProps: 'transform' }));
+      };
+    });
+  }
+</script>

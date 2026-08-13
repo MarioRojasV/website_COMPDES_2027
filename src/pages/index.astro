@@ -1,63 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Home from '../components/home/Home.astro';
 ---
 
-<BaseLayout title="COMPDES 2027 — Inicio">
-  <section class="py-16">
-    <div class="mx-auto max-w-4xl px-4">
-      <h1 class="mb-4 text-3xl font-bold">COMPDES 2027</h1>
-      <p class="text-lg text-gray-600">
-        Bienvenido al Congreso COMPDES 2027. Este sitio web contiene información sobre el
-        congreso, su programación, áreas de interés, inscripciones y más.
-      </p>
-    </div>
-  </section>
-
-  <section class="bg-gray-50 py-16">
-    <div class="mx-auto max-w-4xl px-4">
-      <h2 class="mb-4 text-2xl font-semibold">¿Qué es COMPDES?</h2>
-      <p class="mb-4 text-gray-700">
-        COMPDES es un congreso académico y científico que reúne a investigadores, docentes y
-        estudiantes para compartir conocimientos y avances en diversas áreas del conocimiento.
-      </p>
-      <p class="text-gray-700">
-        El evento incluye conferencias magistrales, presentaciones de trabajos de investigación,
-        talleres y espacios de networking. Está dirigido a la comunidad académica y profesional
-        interesada en la difusión de la ciencia y la tecnología.
-      </p>
-    </div>
-  </section>
-
-  <section class="py-16">
-    <div class="mx-auto max-w-4xl px-4">
-      <h2 class="mb-4 text-2xl font-semibold">Información</h2>
-      <p class="text-gray-700">
-        Aquí encontrará información general sobre el congreso, incluyendo fechas importantes,
-        requisitos de participación y lineamientos para la presentación de trabajos. Esta sección
-        será actualizada próximamente con detalles adicionales.
-      </p>
-    </div>
-  </section>
-
-  <section class="bg-gray-50 py-16">
-    <div class="mx-auto max-w-4xl px-4">
-      <h2 class="mb-4 text-2xl font-semibold">Contacto</h2>
-      <div class="space-y-2 text-gray-700">
-        <p><strong>Correo electrónico:</strong> compdes2027@example.com</p>
-        <p><strong>Teléfono:</strong> +51 999 999 999</p>
-        <p>
-          <strong>Redes sociales:</strong> @compdes2027 en Facebook, X (Twitter) e Instagram
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="py-16">
-    <div class="mx-auto max-w-4xl px-4">
-      <h2 class="mb-4 text-2xl font-semibold">Sede</h2>
-      <p class="text-gray-700">
-        La información de la sede del congreso estará disponible próximamente.
-      </p>
-    </div>
-  </section>
+<BaseLayout titleKey="page.title.home" descriptionKey="meta.desc.home">
+  <Home />
 </BaseLayout>

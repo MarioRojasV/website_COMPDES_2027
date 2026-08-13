@@ -1,0 +1,99 @@
+---
+import Hero from './Hero.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+---
+
+<Hero />
+
+<section id="que-es" class="section bg-bg">
+  <div class="page-container">
+    <SectionHeading
+      eyebrowKey="home.about.eyebrow"
+      titleKey="home.about.title"
+      introKey="home.about.intro"
+    />
+  </div>
+</section>
+
+<section class="section bg-bg-alt">
+  <div class="page-container">
+    <SectionHeading
+      eyebrowKey="home.info.eyebrow"
+      titleKey="home.info.title"
+      introKey="home.info.intro"
+      align="center"
+    />
+  </div>
+</section>
+
+<section class="section bg-bg">
+  <div class="page-container">
+    <SectionHeading
+      eyebrowKey="home.contact.eyebrow"
+      titleKey="home.contact.title"
+      align="center"
+    />
+    <dl class="contact-grid">
+      <div>
+        <dt data-i18n="home.contact.email">{t('home.contact.email')}</dt>
+        <dd data-i18n="home.contact.emailValue">{t('home.contact.emailValue')}</dd>
+      </div>
+      <div>
+        <dt data-i18n="home.contact.phone">{t('home.contact.phone')}</dt>
+        <dd data-i18n="home.contact.phoneValue">{t('home.contact.phoneValue')}</dd>
+      </div>
+      <div>
+        <dt data-i18n="home.contact.social">{t('home.contact.social')}</dt>
+        <dd data-i18n="home.contact.socialValue">{t('home.contact.socialValue')}</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="section bg-bg-alt">
+  <div class="page-container">
+    <SectionHeading
+      eyebrowKey="home.venue.eyebrow"
+      titleKey="home.venue.title"
+      introKey="home.venue.intro"
+      align="center"
+    />
+  </div>
+</section>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.5rem;
+    max-width: 64rem;
+    margin: 3rem auto 0;
+  }
+
+  .contact-grid > div {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .contact-grid dt {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.35rem;
+  }
+
+  .contact-grid dd {
+    margin: 0;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+</style>

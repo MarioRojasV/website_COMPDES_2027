@@ -1,9 +1,44 @@
 ---
+import { useTranslations } from '../i18n/ui';
 
+export interface Props {
+  lang: 'es' | 'en';
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
-<footer class="mt-auto border-t border-gray-200 bg-gray-100 py-6">
-  <div class="mx-auto max-w-6xl px-4 text-center text-sm text-gray-500">
-    <p>&copy; 2027 COMPDES — Todos los derechos reservados</p>
+<footer class="site-footer">
+  <div class="site-footer__inner page-container">
+    <p class="site-footer__tagline" data-i18n="footer.tagline">{t('footer.tagline')}</p>
+    <p class="site-footer__copyright" data-i18n="footer.copyright">{t('footer.copyright')}</p>
   </div>
 </footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--line);
+    background: var(--bg-alt);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding-block: 2.5rem;
+    text-align: center;
+  }
+
+  .site-footer__tagline {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+  }
+
+  .site-footer__copyright {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+</style>
