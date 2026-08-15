@@ -25,322 +25,92 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
 ---
 
 <nav
-  class:list={['site-nav', { 'site-nav--transparent': transparent }]}
+  class="sticky top-0 z-50 border-b-2 border-compdes-yellow bg-compdes-blue text-compdes-cream"
   aria-label={t('common.navAria')}
 >
-  <div class="site-nav__inner page-container">
-    <a class="site-nav__brand" href={localizedUrl('/', lang)}>
-      COMPDES <span class="site-nav__brand-year">2027</span>
-    </a>
+  <div class="border-b border-compdes-cream/20 bg-compdes-blue-900">
+    <div
+      class="mx-auto flex max-w-6xl items-center justify-between px-6 py-1 text-[11px] uppercase tracking-[0.25em] text-compdes-cream/70"
+    >
+      <span>compdes_2027 // sistema en línea</span>
+      <span class="hidden items-center gap-2 sm:flex">
+        <i class="status-led"></i>
+        sync&nbsp;ok
+      </span>
+    </div>
+  </div>
 
-    <ul class="site-nav__links" id="primary-nav">
-      {
-        links.map((link) => (
-          <li>
-            <a
-              href={localizedUrl(link.href, lang)}
-              class:list={['site-nav__link', { 'is-active': currentPath === link.href }]}
-              data-i18n={link.key}
-            >
-              {t(link.key)}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+  <div class="mx-auto max-w-6xl px-6">
+    <div class="flex items-center justify-between gap-6 py-4">
+      <a href={localizedUrl('/', lang)} class="flex items-center gap-2 font-display text-lg font-bold">
+        <span class="text-compdes-yellow">&gt;_</span>
+        COMPDES_<span class="text-compdes-yellow">2027</span>
+      </a>
 
-    <div class="site-nav__actions">
-      <LangToggle lang={lang} />
-      <button
-        class="site-nav__toggle"
-        type="button"
-        aria-expanded="false"
-        aria-controls="primary-nav"
-        aria-label={t('common.openMenu')}
+      <div class="flex items-center gap-3 md:hidden">
+        <LangToggle lang={lang} />
+        <button
+          id="menu-btn"
+          type="button"
+          aria-label={t('common.openMenu')}
+          aria-expanded="false"
+          aria-controls="menu"
+          class="rounded border border-compdes-cream/40 px-3 py-1.5 text-lg text-compdes-yellow"
+        >
+          [≡]
+        </button>
+      </div>
+
+      <ul
+        id="menu"
+        class="hidden flex-col gap-y-2 pb-4 md:flex md:flex-row md:flex-wrap md:items-center md:gap-x-5 md:pb-0"
       >
-        <span class="site-nav__toggle-bar" aria-hidden="true"></span>
-      </button>
+        {links.map((link, i) => {
+          const href = localizedUrl(link.href, lang);
+          const isActive = currentPath === href;
+          return (
+            <li>
+              <a
+                href={href}
+                aria-current={isActive ? 'page' : undefined}
+                data-i18n={link.key}
+                class:list={[
+                  'inline-flex items-baseline gap-1.5 text-xs leading-relaxed transition-colors',
+                  isActive
+                    ? 'text-compdes-yellow'
+                    : 'text-compdes-cream/80 hover:text-compdes-yellow',
+                ]}
+              >
+                <span class="text-[10px] text-compdes-yellow/80">
+                  {String(i + 1).padStart(2, '0')}.
+                </span>
+                <span
+                  class:list={[
+                    isActive
+                      ? 'border-b border-compdes-yellow pb-0.5'
+                      : 'border-b border-transparent pb-0.5',
+                  ]}
+                >
+                  {t(link.key)}
+                </span>
+              </a>
+            </li>
+          );
+        })}
+        <li class="hidden md:block">
+          <LangToggle lang={lang} />
+        </li>
+      </ul>
     </div>
   </div>
 </nav>
 
 <script>
-  const nav = document.querySelector('.site-nav');
-  const toggle = document.querySelector('.site-nav__toggle');
-  const links = nav.querySelectorAll('.site-nav__link');
-  const desktop = window.matchMedia('(min-width: 900px)');
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('menu');
 
-  function openMenu() {
-    nav.classList.add('is-open');
-    toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', 'Cerrar menú');
-    document.body.classList.add('no-scroll');
-    links[0]?.focus();
-  }
-
-  function closeMenu({ refocus = false } = {}) {
-    nav.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Abrir menú');
-    document.body.classList.remove('no-scroll');
-    if (refocus) toggle.focus();
-  }
-
-  toggle.addEventListener('click', () => {
-    nav.classList.contains('is-open') ? closeMenu() : openMenu();
+  btn?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden');
+    btn?.setAttribute('aria-expanded', String(!open));
   });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeMenu({ refocus: true });
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!nav.contains(event.target)) closeMenu();
-  });
-
-  links.forEach((link) => link.addEventListener('click', () => closeMenu()));
-
-  desktop.addEventListener('change', (event) => {
-    if (event.matches) closeMenu();
-  });
-
-  // Transparent (home) navbar: switch to solid background once the hero is
-  // scrolled past, so the links stay readable over light content.
-  if (nav.classList.contains('site-nav--transparent')) {
-    const onScroll = () => {
-      nav.classList.toggle('is-scrolled', window.scrollY > 60);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-  }
 </script>
-
-<style>
-  .site-nav {
-    --nav-text: var(--ink);
-    --nav-text-muted: var(--ink-muted);
-    --nav-brand: var(--ink);
-    --nav-brand-accent: var(--accent);
-    --nav-accent: var(--accent);
-    --nav-bg: var(--bg);
-    --nav-line: var(--line);
-
-    position: sticky;
-    top: 0;
-    z-index: var(--z-nav);
-    border-bottom: 1px solid var(--nav-line);
-    background: var(--nav-bg);
-    background: color-mix(in srgb, var(--nav-bg) 88%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-
-  /* Homepage: transparent over the hero illustration */
-  .site-nav--transparent {
-    position: absolute;
-    inset: 0 0 auto 0;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom-color: transparent;
-    --nav-text: var(--color-cream-50);
-    --nav-text-muted: var(--color-cream-100);
-    --nav-brand: var(--color-cream-50);
-    --nav-brand-accent: var(--color-ochre-200);
-    --nav-accent: var(--color-ochre-200);
-  }
-
-  /* Solid mode: scrolled past the hero, or while the mobile menu is open */
-  .site-nav--transparent.is-scrolled,
-  .site-nav.is-open {
-    background: var(--nav-bg);
-    background: color-mix(in srgb, var(--nav-bg) 88%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom-color: var(--nav-line);
-    --nav-text: var(--ink);
-    --nav-text-muted: var(--ink-muted);
-    --nav-brand: var(--ink);
-    --nav-brand-accent: var(--accent);
-    --nav-accent: var(--accent);
-  }
-
-  .site-nav__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    min-height: 4.5rem;
-  }
-
-  .site-nav__brand {
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--nav-brand);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .site-nav__brand:hover {
-    color: var(--nav-brand);
-  }
-
-  .site-nav__brand-year {
-    color: var(--nav-brand-accent);
-  }
-
-  .site-nav__actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .site-nav__links {
-    display: none;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .site-nav__toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 0;
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: var(--nav-text);
-    cursor: pointer;
-  }
-
-  .site-nav__toggle::before,
-  .site-nav__toggle::after,
-  .site-nav__toggle-bar {
-    content: "";
-    position: absolute;
-    left: 50%;
-    width: 1.4rem;
-    height: 2px;
-    border-radius: 2px;
-    background: currentColor;
-    transition:
-      transform var(--duration-base) var(--ease-out-quart),
-      top var(--duration-base) var(--ease-out-quart),
-      opacity var(--duration-base) var(--ease-out-quart);
-  }
-
-  .site-nav__toggle::before {
-    top: calc(50% - 0.42rem);
-    transform: translateX(-50%);
-  }
-
-  .site-nav__toggle::after {
-    top: calc(50% + 0.42rem);
-    transform: translateX(-50%);
-  }
-
-  .site-nav__toggle-bar {
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .site-nav.is-open .site-nav__toggle::before {
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-
-  .site-nav.is-open .site-nav__toggle::after {
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
-
-  .site-nav.is-open .site-nav__toggle-bar {
-    opacity: 0;
-  }
-
-  /* Desktop */
-  @media (min-width: 900px) {
-    .site-nav__links {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: clamp(0.9rem, 1.4vw, 1.6rem);
-    }
-
-    .site-nav__link {
-      display: inline-block;
-      padding-block: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--nav-text);
-      text-decoration: none;
-      border-bottom: 2px solid transparent;
-      transition:
-        color var(--duration-fast) var(--ease-out-quart),
-        border-color var(--duration-fast) var(--ease-out-quart);
-    }
-
-    .site-nav__link:hover {
-      color: var(--nav-text);
-      border-bottom-color: var(--nav-accent);
-    }
-
-    .site-nav__link.is-active {
-      font-weight: 600;
-      border-bottom-color: var(--nav-accent);
-    }
-  }
-
-  /* Mobile menu panel */
-  @media (max-width: 899px) {
-    .site-nav__links {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      padding: 0.5rem 0 1rem;
-      background: var(--nav-bg);
-      border-bottom: 1px solid var(--nav-line);
-      box-shadow: var(--shadow-pop);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-8px);
-      pointer-events: none;
-      transition:
-        opacity var(--duration-base) var(--ease-out-quart),
-        transform var(--duration-base) var(--ease-out-quart),
-        visibility var(--duration-base);
-    }
-
-    .site-nav.is-open .site-nav__links {
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-      pointer-events: auto;
-    }
-
-    .site-nav__link {
-      display: block;
-      padding: 0.85rem var(--gutter);
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--nav-text);
-      text-decoration: none;
-    }
-
-    .site-nav__link:hover {
-      color: var(--nav-text);
-      background: var(--bg-alt);
-    }
-
-    .site-nav__link.is-active {
-      font-weight: 600;
-      color: var(--accent);
-    }
-  }
-</style>

@@ -58,8 +58,14 @@ const alternateURL = new URL(localizedUrl(canonicalPath, alternateLang), Astro.s
     <meta name="twitter:description" content={description} />
 
     <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="flex min-h-screen flex-col bg-bg text-ink">
+  <body class="flex min-h-screen flex-col bg-compdes-cream font-mono text-compdes-blue">
     <a class="skip-link" href="#main" data-i18n="common.skipLink">{t('common.skipLink')}</a>
     <Navbar currentPath={canonicalPath} lang={lang} transparent={canonicalPath === '/'} />
     <main id="main" class="flex-1">

@@ -8,23 +8,44 @@ export interface Props {
   introKey?: UiKey;
   align?: 'left' | 'center';
   level?: 'h1' | 'h2';
+  sectionNumber?: number;
+  dark?: boolean;
 }
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
-const { eyebrowKey, titleKey, introKey, align = 'left', level = 'h2' } = Astro.props;
+const {
+  eyebrowKey,
+  titleKey,
+  introKey,
+  align = 'left',
+  level = 'h2',
+  sectionNumber,
+  dark = false,
+} = Astro.props;
 const Heading = level;
+
+const eyebrowLabel = eyebrowKey
+  ? `[ sec.${String(sectionNumber ?? 1).padStart(2, '0')} ] // ${t(eyebrowKey).toLowerCase()}`
+  : undefined;
 ---
 
-<div class:list={['section-heading', { 'section-heading--center': align === 'center' }]}>
+<div
+  class:list={[
+    'section-heading',
+    { 'section-heading--center': align === 'center' },
+    { 'section-heading--dark': dark },
+  ]}
+>
   {eyebrowKey && (
     <p class="section-heading__eyebrow" data-i18n={eyebrowKey}>
-      {t(eyebrowKey)}
+      {eyebrowLabel}
     </p>
   )}
   <Heading class="section-heading__title" data-i18n={titleKey}>
     {t(titleKey)}
   </Heading>
+  <div class="section-heading__bar" aria-hidden="true"></div>
   {introKey && (
     <p class="section-heading__intro" data-i18n={introKey} set:html={t(introKey)} />
   )}
@@ -40,25 +61,53 @@ const Heading = level;
     text-align: center;
   }
 
+  .section-heading--center .section-heading__bar {
+    margin-inline: auto;
+  }
+
   .section-heading__eyebrow {
     margin-bottom: 0.75rem;
-    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--color-compdes-yellow-600);
+  }
+
+  .section-heading--dark .section-heading__eyebrow {
+    color: var(--color-compdes-yellow);
   }
 
   .section-heading__title {
+    font-family: var(--font-display);
     font-size: clamp(1.9rem, 4vw, 2.75rem);
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.12;
-    color: var(--ink);
+    color: var(--color-compdes-blue);
+  }
+
+  .section-heading--dark .section-heading__title {
+    color: var(--color-compdes-cream);
+  }
+
+  .section-heading__bar {
+    margin-top: 1.25rem;
+    height: 0.25rem;
+    width: 4rem;
+    background-color: var(--color-compdes-yellow);
   }
 
   .section-heading__intro {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     font-size: 1.05rem;
-    color: var(--ink-muted);
+    line-height: 1.7;
+    color: var(--color-compdes-blue);
+    opacity: 0.8;
+  }
+
+  .section-heading--dark .section-heading__intro {
+    color: var(--color-compdes-cream);
+    opacity: 0.85;
   }
 </style>
