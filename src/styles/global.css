@@ -8,17 +8,55 @@
    Home/Hero get the new visual treatment too.
    ========================================================================== */
 @theme {
-  --color-compdes-blue: #003153;
-  --color-compdes-blue-900: #00253f;
-  --color-compdes-blue-800: #002d52;
-  --color-compdes-blue-700: #003d6b;
-  --color-compdes-blue-600: #0a4a7c;
-  --color-compdes-cream: #fff2df;
-  --color-compdes-cream-200: #ffe9c9;
-  --color-compdes-cream-300: #ffddab;
-  --color-compdes-yellow: #f5b70a;
-  --color-compdes-yellow-400: #f7c233;
-  --color-compdes-yellow-600: #d99f08;
+  /* Azul marino profundo, casi negro — fondo principal
+  --color-compdes-blue: #0b0f1a;
+  /* Más oscuro aún — franjas, barras de título, sombras densas
+  --color-compdes-blue-900: #05070d;
+  /* Superficie secundaria — tarjetas, terminal-window, secciones alternas
+  --color-compdes-blue-800: #121729;
+  /* Bordes / hover sobre superficies oscuras, con un leve tinte violáceo
+  --color-compdes-blue-700: #1c2138;
+  /* Divisores y detalles sutiles, mismo tinte violáceo
+  --color-compdes-blue-600: #262b4a; */
+
+--color-compdes-blue: #000a23;
+--color-compdes-blue-900: #000617;
+--color-compdes-blue-800: #041434;
+--color-compdes-blue-700: #0b1f4d;
+--color-compdes-blue-600: #152d63;
+
+  /* Blanco cálido / marfil — texto principal sobre fondo oscuro */
+  --color-compdes-cream: #f6f1e7;
+  --color-compdes-cream-200: #e7e1d3;
+  --color-compdes-cream-300: #d6cfbe;
+
+
+
+
+
+
+  /* Rojo coral / salmón — acento principal (antes amarillo) */
+  /* --color-compdes-yellow: #ff6b57;
+  --color-compdes-yellow-400: #ff8a75;
+  --color-compdes-yellow-600: #e14f3b; */
+
+--color-compdes-yellow: #38bdf8;
+--color-compdes-yellow-400: #7dd3fc;
+--color-compdes-yellow-600: #0284c7;
+
+/*--color-compdes-yellow: #ff5151;
+--color-compdes-yellow-400: #ff8080;
+--color-compdes-yellow-600: #cc2929;*/
+
+/*--color-compdes-yellow: #b4ff39;
+--color-compdes-yellow-400: #cdff77;
+--color-compdes-yellow-600: #8fd923;*/
+
+
+
+
+
+
 
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
@@ -191,7 +229,7 @@
     height: 0.5rem;
     border-radius: 9999px;
     background-color: var(--color-compdes-yellow);
-    box-shadow: 0 0 0 3px rgb(245 183 10 / 0.25);
+    box-shadow: 0 0 0 3px rgb(255 107 87 / 0.25);
     flex-shrink: 0;
   }
 
@@ -199,9 +237,12 @@
     animation: compdes-blink 1.1s steps(1) infinite;
   }
 
+  /* Tarjeta/superficie secundaria: azul oscuro un poco más claro que el fondo,
+     con toque violáceo en el borde para dar profundidad sin robarle
+     protagonismo al coral. */
   .terminal-window {
-    background-color: var(--color-compdes-cream);
-    border: 2px solid var(--color-compdes-blue);
+    background-color: var(--color-compdes-blue-800);
+    border: 2px solid var(--color-compdes-blue-600);
     box-shadow: 6px 6px 0 0 var(--color-compdes-yellow);
   }
 
@@ -210,7 +251,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    background-color: var(--color-compdes-blue);
+    background-color: var(--color-compdes-blue-900);
     color: var(--color-compdes-cream);
     padding: 0.5rem 0.75rem;
     font-size: 0.6875rem;

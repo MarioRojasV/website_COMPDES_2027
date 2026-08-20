@@ -25,10 +25,18 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
 ---
 
 <nav
-  class="sticky top-0 z-50 border-b-2 border-compdes-yellow bg-compdes-blue text-compdes-cream"
+  class:list={[
+    'site-nav sticky top-0 z-50 border-b-2 text-compdes-cream transition-colors duration-300',
+    transparent ? 'site-nav--transparent' : 'border-compdes-yellow bg-compdes-blue',
+  ]}
   aria-label={t('common.navAria')}
 >
-  <div class="border-b border-compdes-cream/20 bg-compdes-blue-900">
+  <div
+    class:list={[
+      'site-nav__topbar hidden border-b sm:block transition-colors duration-300',
+      transparent ? 'border-transparent' : 'border-compdes-cream/20 bg-compdes-blue-900',
+    ]}
+  >
     <div
       class="mx-auto flex max-w-6xl items-center justify-between px-6 py-1 text-[11px] uppercase tracking-[0.25em] text-compdes-cream/70"
     >
@@ -47,7 +55,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
         COMPDES_<span class="text-compdes-yellow">2027</span>
       </a>
 
-      <div class="flex items-center gap-3 md:hidden">
+      <div class="flex items-center gap-3 lg:hidden">
         <LangToggle lang={lang} />
         <button
           id="menu-btn"
@@ -63,19 +71,19 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
 
       <ul
         id="menu"
-        class="hidden flex-col gap-y-2 pb-4 md:flex md:flex-row md:flex-wrap md:items-center md:gap-x-5 md:pb-0"
+        class="hidden w-full flex-col gap-y-1 pb-4 lg:flex lg:w-auto lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-0 lg:pb-0"
       >
         {links.map((link, i) => {
           const href = localizedUrl(link.href, lang);
           const isActive = currentPath === href;
           return (
-            <li>
+            <li class="w-full lg:w-auto">
               <a
                 href={href}
                 aria-current={isActive ? 'page' : undefined}
                 data-i18n={link.key}
                 class:list={[
-                  'inline-flex items-baseline gap-1.5 text-xs leading-relaxed transition-colors',
+                  'flex w-full items-baseline gap-1.5 rounded px-1 py-2 text-xs leading-relaxed transition-colors lg:inline-flex lg:w-auto lg:px-0 lg:py-0',
                   isActive
                     ? 'text-compdes-yellow'
                     : 'text-compdes-cream/80 hover:text-compdes-yellow',
@@ -97,7 +105,10 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
             </li>
           );
         })}
-        <li class="hidden md:block">
+        <li class="mt-2 w-full lg:mt-0 lg:hidden">
+          <LangToggle lang={lang} />
+        </li>
+        <li class="hidden lg:block">
           <LangToggle lang={lang} />
         </li>
       </ul>
@@ -105,12 +116,76 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
   </div>
 </nav>
 
+<style>
+  /* Out of document flow: floats OVER the hero instead of pushing it down. */
+  .site-nav--transparent {
+    position: absolute;
+    inset: 0 0 auto 0;
+    background-color: transparent;
+    border-bottom-color: transparent;
+  }
+
+  /* Once scrolled past the hero: back into fixed positioning, solid background. */
+  .site-nav--transparent.is-scrolled {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-compdes-blue);
+    border-bottom-color: var(--color-compdes-yellow);
+  }
+
+  .site-nav--transparent.is-scrolled .site-nav__topbar {
+    background-color: var(--color-compdes-blue-900);
+    border-color: rgb(246 241 231 / 0.2);
+  }
+
+  /* While the mobile menu is open, force a solid + fixed navbar even before
+     scrolling, so links stay legible and reachable over the hero image. */
+  .site-nav--transparent:has(#menu:not(.hidden)) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-compdes-blue);
+    border-bottom-color: var(--color-compdes-yellow);
+  }
+</style>
+
 <script>
+  const nav = document.querySelector('.site-nav');
   const btn = document.getElementById('menu-btn');
   const menu = document.getElementById('menu');
 
   btn?.addEventListener('click', () => {
-    const open = menu?.classList.toggle('hidden');
-    btn?.setAttribute('aria-expanded', String(!open));
+    const isHidden = menu?.classList.contains('hidden');
+    menu?.classList.toggle('hidden');
+    menu?.classList.toggle('flex', isHidden);
+    btn?.setAttribute('aria-expanded', String(isHidden));
   });
+
+  // Transparent (home) navbar: switch to solid background once the hero has
+  // fully scrolled out of view (not just a few pixels), so the links stay
+  // readable over the hero image for as long as it's on screen.
+  if (nav?.classList.contains('site-nav--transparent')) {
+    const hero = document.querySelector('.hero');
+
+    if (hero && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          nav.classList.toggle('is-scrolled', !entry.isIntersecting);
+        },
+        { threshold: 0 },
+      );
+      observer.observe(hero);
+    } else {
+      // Fallback for browsers without IntersectionObserver, or if the hero
+      // section isn't found for some reason.
+      const onScroll = () => {
+        nav.classList.toggle('is-scrolled', window.scrollY > 60);
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+  }
 </script>

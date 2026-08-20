@@ -9,18 +9,19 @@ const t = useTranslations(lang);
 
 <Hero />
 
-<section id="que-es" class="bg-compdes-cream py-16 md:py-24">
+<section id="que-es" class="bg-compdes-blue py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
       sectionNumber={1}
       eyebrowKey="home.about.eyebrow"
       titleKey="home.about.title"
       introKey="home.about.intro"
+      dark
     />
   </div>
 </section>
 
-<section class="border-y-2 border-compdes-yellow bg-compdes-blue py-16 text-compdes-cream md:py-24">
+<section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
       sectionNumber={2}
@@ -33,13 +34,14 @@ const t = useTranslations(lang);
   </div>
 </section>
 
-<section class="bg-compdes-cream py-16 md:py-24">
+<section class="bg-compdes-blue py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
       sectionNumber={3}
       eyebrowKey="home.contact.eyebrow"
       titleKey="home.contact.title"
       align="center"
+      dark
     />
 
     <div class="terminal-window corner mt-8">
@@ -49,19 +51,19 @@ const t = useTranslations(lang);
         <span class="hidden sm:inline">fs</span>
       </div>
       <div class="space-y-3 px-6 py-6 font-mono text-sm">
-        <p class="text-compdes-blue">
-          <span class="text-compdes-blue/60" data-i18n="home.contact.email">{t('home.contact.email')}: </span>
+        <p class="text-compdes-cream">
+          <span class="text-compdes-cream/60" data-i18n="home.contact.email">{t('home.contact.email')}: </span>
           <span data-i18n="home.contact.emailValue">{t('home.contact.emailValue')}</span>
         </p>
-        <p class="text-compdes-blue">
-          <span class="text-compdes-blue/60" data-i18n="home.contact.phone">{t('home.contact.phone')}: </span>
+        <p class="text-compdes-cream">
+          <span class="text-compdes-cream/60" data-i18n="home.contact.phone">{t('home.contact.phone')}: </span>
           <span data-i18n="home.contact.phoneValue">{t('home.contact.phoneValue')}</span>
         </p>
-        <p class="text-compdes-blue">
-          <span class="text-compdes-blue/60" data-i18n="home.contact.social">{t('home.contact.social')}: </span>
+        <p class="text-compdes-cream">
+          <span class="text-compdes-cream/60" data-i18n="home.contact.social">{t('home.contact.social')}: </span>
           <span data-i18n="home.contact.socialValue">{t('home.contact.socialValue')}</span>
         </p>
-        <p class="pt-2 text-compdes-yellow-600">
+        <p class="pt-2 text-compdes-yellow">
           <span class="blink">▌</span>
         </p>
       </div>
@@ -69,7 +71,7 @@ const t = useTranslations(lang);
   </div>
 </section>
 
-<section class="border-y-2 border-compdes-yellow bg-compdes-blue py-16 text-compdes-cream md:py-24">
+<section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
       sectionNumber={4}

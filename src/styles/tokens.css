@@ -92,13 +92,13 @@
   --ink-muted: var(--color-ink-500);
   --on-ink: var(--color-cream-50);
 
-  /* Accent & links */
-  --accent: var(--color-ochre-600);
-  --accent-hover: var(--color-ochre-700);
-  --accent-soft: var(--color-ochre-100);
-  --on-accent: var(--color-cream-50);
-  --link: var(--color-forest-700);
-  --link-hover: var(--color-forest-600);
+/* Accent & links */
+--accent: var(--color-compdes-yellow);
+--accent-hover: var(--color-compdes-yellow-600);
+--accent-soft: var(--color-ochre-100);
+--on-accent: var(--color-cream-50);
+--link: var(--color-compdes-yellow);
+--link-hover: var(--color-compdes-yellow-400);
 
   /* Lines & selection */
   --line: var(--color-cream-200);
