@@ -39,7 +39,9 @@ export const ui = {
     "pageheader.tag.organizacion": "comité",
     "pageheader.tag.patrocinadores": "auspicios",
     "pageheader.tag.turismo": "visitas",
-    "pageheader.title.inscripcion": "Inscripción y participación",
+    "pageheader.title.inscripcion": "Inscripción",
+    "pageheader.desc.inscripcion":
+      "Forma parte de COMPDES y participa como espectador, ponente o tallerista, compartiendo experiencias, conocimientos e ideas.",
     "pageheader.desc.turismo":
       "Explora la riqueza natural de Costa Rica y descubre paisajes llenos de vida, flora y fauna.",
 
@@ -155,7 +157,9 @@ export const ui = {
     "pageheader.tag.organizacion": "committee",
     "pageheader.tag.patrocinadores": "sponsorship",
     "pageheader.tag.turismo": "visits",
-    "pageheader.title.inscripcion": "Registration and participation",
+    "pageheader.title.inscripcion": "Registration",
+    "pageheader.desc.inscripcion":
+      "Be part of COMPDES and participate as an attendee, speaker, or workshop facilitator, sharing experiences, knowledge, and ideas.",
     "pageheader.desc.turismo":
       "Explore Costa Rica's natural wealth and discover landscapes full of life, flora and fauna.",
 
