@@ -11,10 +11,9 @@ export interface Props {
 const { currentPath, lang, transparent = false } = Astro.props;
 const t = useTranslations(lang);
 
-const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
+const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
   { href: '/', key: 'nav.home' },
   { href: '/inscripcion-participacion', key: 'nav.inscripcion' },
-  { href: '/pre-inscripcion', key: 'nav.preinscripcion' },
   { href: '/areas-interes', key: 'nav.areas' },
   { href: '/cronograma', key: 'nav.cronograma' },
   { href: '/hospedaje', key: 'nav.hospedaje' },
@@ -38,7 +37,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
     ]}
   >
     <div
-      class="mx-auto flex max-w-6xl items-center justify-between px-6 py-1 text-[11px] uppercase tracking-[0.25em] text-compdes-cream/70"
+      class="flex items-center justify-between px-6 py-1 text-[11px] uppercase tracking-[0.25em] text-compdes-cream/70 lg:px-10"
     >
       <span>compdes_2027 // sistema en línea</span>
       <span class="hidden items-center gap-2 sm:flex">
@@ -48,14 +47,14 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
     </div>
   </div>
 
-  <div class="mx-auto max-w-6xl px-6">
-    <div class="flex items-center justify-between gap-6 py-4">
+  <div class="px-6 lg:px-10">
+    <div class="flex items-center justify-between gap-3 py-4 xl:justify-start xl:gap-8">
       <a href={localizedUrl('/', lang)} class="flex items-center gap-2 font-display text-lg font-bold">
         <span class="text-compdes-yellow">&gt;_</span>
         COMPDES_<span class="text-compdes-yellow">2027</span>
       </a>
 
-      <div class="flex items-center gap-3 lg:hidden">
+      <div class="flex items-center gap-3 xl:hidden">
         <LangToggle lang={lang} />
         <button
           id="menu-btn"
@@ -71,25 +70,25 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
 
       <ul
         id="menu"
-        class="hidden w-full flex-col gap-y-1 pb-4 lg:flex lg:w-auto lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-0 lg:pb-0"
+        class="hidden w-full flex-col gap-y-1 pb-4 xl:flex xl:w-auto xl:flex-row xl:items-center xl:gap-x-4 xl:pb-0"
       >
         {links.map((link, i) => {
           const href = localizedUrl(link.href, lang);
           const isActive = currentPath === href;
           return (
-            <li class="w-full lg:w-auto">
+            <li class="w-full xl:w-auto">
               <a
                 href={href}
                 aria-current={isActive ? 'page' : undefined}
                 data-i18n={link.key}
                 class:list={[
-                  'flex w-full items-baseline gap-1.5 rounded px-1 py-2 text-xs leading-relaxed transition-colors lg:inline-flex lg:w-auto lg:px-0 lg:py-0',
+                  'flex w-full items-baseline gap-1.5 rounded px-1 py-2 text-xs leading-relaxed transition-colors xl:inline-flex xl:w-auto xl:whitespace-nowrap xl:px-0 xl:py-0',
                   isActive
                     ? 'text-compdes-yellow'
                     : 'text-compdes-cream/80 hover:text-compdes-yellow',
                 ]}
               >
-                <span class="text-[10px] text-compdes-yellow/80">
+                <span class="text-[10px] text-compdes-yellow/80 xl:hidden">
                   {String(i + 1).padStart(2, '0')}.
                 </span>
                 <span
@@ -105,10 +104,10 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscr
             </li>
           );
         })}
-        <li class="mt-2 w-full lg:mt-0 lg:hidden">
+        <li class="mt-2 w-full xl:mt-0 xl:hidden">
           <LangToggle lang={lang} />
         </li>
-        <li class="hidden lg:block">
+        <li class="hidden xl:block">
           <LangToggle lang={lang} />
         </li>
       </ul>

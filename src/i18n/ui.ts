@@ -38,13 +38,14 @@ export const ui = {
     "pageheader.tag.inscripcion": "participación",
     "pageheader.tag.organizacion": "comité",
     "pageheader.tag.patrocinadores": "auspicios",
-    "pageheader.tag.preinscripcion": "inscripción",
     "pageheader.tag.turismo": "visitas",
+    "pageheader.title.inscripcion": "Inscripción y participación",
+    "pageheader.desc.turismo":
+      "Explora la riqueza natural de Costa Rica y descubre paisajes llenos de vida, flora y fauna.",
 
     // Navigation
     "nav.home": "Inicio",
-    "nav.inscripcion": "Inscripción y participación",
-    "nav.preinscripcion": "Pre-inscripción",
+    "nav.inscripcion": "Inscripción",
     "nav.areas": "Áreas de interés",
     "nav.cronograma": "Cronograma",
     "nav.hospedaje": "Hospedaje",
@@ -107,7 +108,6 @@ export const ui = {
 
     // Page titles
     "page.title.home": "COMPDES 2027 — Inicio",
-    "page.title.preinscripcion": "COMPDES 2027 — Pre-inscripción",
     "page.title.inscripcion": "COMPDES 2027 — Inscripción y participación",
     "page.title.areas": "COMPDES 2027 — Áreas de interés",
     "page.title.cronograma": "COMPDES 2027 — Cronograma",
@@ -119,8 +119,6 @@ export const ui = {
     // Meta descriptions
     "meta.desc.home":
       "Congreso COMPDES 2027 del Instituto Tecnológico de Costa Rica, Sede San Carlos: ciencia, tecnología y academia.",
-    "meta.desc.preinscripcion":
-      "Información y requisitos para la pre-inscripción al Congreso COMPDES 2027.",
     "meta.desc.inscripcion":
       "Modalidades de inscripción y participación en el Congreso COMPDES 2027.",
     "meta.desc.areas":
@@ -156,13 +154,14 @@ export const ui = {
     "pageheader.tag.inscripcion": "participation",
     "pageheader.tag.organizacion": "committee",
     "pageheader.tag.patrocinadores": "sponsorship",
-    "pageheader.tag.preinscripcion": "registration",
     "pageheader.tag.turismo": "visits",
+    "pageheader.title.inscripcion": "Registration and participation",
+    "pageheader.desc.turismo":
+      "Explore Costa Rica's natural wealth and discover landscapes full of life, flora and fauna.",
 
     // Navigation
     "nav.home": "Home",
-    "nav.inscripcion": "Registration and participation",
-    "nav.preinscripcion": "Pre-registration",
+    "nav.inscripcion": "Registration",
     "nav.areas": "Areas of interest",
     "nav.cronograma": "Schedule",
     "nav.hospedaje": "Accommodation",
@@ -226,7 +225,6 @@ export const ui = {
 
     // Page titles
     "page.title.home": "COMPDES 2027 — Home",
-    "page.title.preinscripcion": "COMPDES 2027 — Pre-registration",
     "page.title.inscripcion": "COMPDES 2027 — Registration and participation",
     "page.title.areas": "COMPDES 2027 — Areas of interest",
     "page.title.cronograma": "COMPDES 2027 — Schedule",
@@ -238,8 +236,6 @@ export const ui = {
     // Meta descriptions
     "meta.desc.home":
       "COMPDES 2027 conference at Costa Rica Institute of Technology, San Carlos Campus: science, technology and academia.",
-    "meta.desc.preinscripcion":
-      "Information and requirements to pre-register for the COMPDES 2027 conference.",
     "meta.desc.inscripcion":
       "Registration and participation options for the COMPDES 2027 conference.",
     "meta.desc.areas":

@@ -1,0 +1,315 @@
+---
+import { useTranslations } from '../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+---
+
+<section class="turismo-hero relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue text-compdes-cream">
+  <div class="turismo-art" aria-hidden="true">
+    <img
+      class="turismo-art__bg"
+      src="/elementos/fondo_tucan.webp"
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+    <img
+      class="turismo-art__bird"
+      src="/elementos/tucan.webp"
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+  </div>
+  <div class="scanlines"></div>
+  <div class="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <p class="mb-4 text-[11px] uppercase tracking-[0.3em] text-compdes-yellow">
+      <span data-i18n="pageheader.tag.turismo">{t('pageheader.tag.turismo')}</span>
+    </p>
+    <h1 class="font-display text-4xl font-bold leading-tight md:text-5xl">
+      <span class="text-compdes-yellow">&gt;_</span>{' '}
+      <span data-i18n="nav.turismo">{t('nav.turismo')}</span>
+    </h1>
+    <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
+    <p
+      class="mt-6 max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-[1.05rem]"
+      data-i18n="pageheader.desc.turismo"
+    >
+      {t('pageheader.desc.turismo')}
+    </p>
+  </div>
+</section>
+
+<section class="mx-auto max-w-5xl px-6 py-14">
+  <div class="terminal-window corner">
+    <div class="term-titlebar">
+      <span class="term-dots"><i></i><i></i><i></i></span>
+      <span data-i18n="pageheader.tag.turismo">[ {t('pageheader.tag.turismo')} ]</span>
+      <span class="hidden sm:inline">v2027</span>
+    </div>
+    <div class="px-6 py-7">
+      <p class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-compdes-yellow">
+        <i class="status-led"></i>
+        <span data-i18n="common.inPreparation">status: {t('common.inPreparation')}</span>
+      </p>
+      <p class="mt-3 text-sm leading-relaxed text-compdes-cream/80" data-i18n="common.sectionComingSoon">
+        {t('common.sectionComingSoon')}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Composición de dos capas anclada al borde derecho de la banda.
+     El fondo del paisaje se funde con el azul de la página mediante scrims
+     del MISMO color de fondo (nunca negro); el tucán es un recorte con alfa
+     que vive en su propia capa para moverse independiente (parallax). */
+  .turismo-art {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    height: 100%;
+    width: min(42vw, 580px);
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .turismo-art {
+      display: block;
+    }
+  }
+
+  /* Ambas capas sobredimensionadas (bleed) para que el desplazamiento del
+     parallax nunca deje bordes descubiertos. El sangrado extra por la derecha
+     recorta fuera de pantalla cualquier margen transparente interno de las
+     imágenes → pegado total al borde del viewport.
+     max-width:none anula el `img { max-width: 100% }` del preflight de
+     Tailwind, que si no colapsa las capas al ancho del contenedor. */
+  .turismo-art__bg,
+  .turismo-art__bird {
+    position: absolute;
+    inset: -9% -18% -9% -9%;
+    width: auto;
+    max-width: none;
+    height: 118%;
+    will-change: transform;
+  }
+
+  .turismo-art__bg {
+    object-fit: cover;
+    object-position: right center;
+    /* Disolución alfa EXCLUSIVA de esta capa (selva y rama): rampa larga de
+       7 paradas con crecimiento casi exponencial — disolución progresiva y
+       orgánica hacia el azul de la página, sin velo adicional. El borde
+       derecho llega SÓLIDO hasta el viewport, sin fundido de salida. */
+    -webkit-mask-image:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.03) 15%,
+        rgb(0 0 0 / 0.1) 28%,
+        rgb(0 0 0 / 0.22) 40%,
+        rgb(0 0 0 / 0.42) 52%,
+        rgb(0 0 0 / 0.65) 64%,
+        rgb(0 0 0 / 0.85) 76%,
+        #000 90%,
+        #000 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 14%,
+        #000 34%,
+        #000 68%,
+        rgb(0 0 0 / 0.35) 86%,
+        transparent 100%
+      );
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.03) 15%,
+        rgb(0 0 0 / 0.1) 28%,
+        rgb(0 0 0 / 0.22) 40%,
+        rgb(0 0 0 / 0.42) 52%,
+        rgb(0 0 0 / 0.65) 64%,
+        rgb(0 0 0 / 0.85) 76%,
+        #000 90%,
+        #000 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 14%,
+        #000 34%,
+        #000 68%,
+        rgb(0 0 0 / 0.35) 86%,
+        transparent 100%
+      );
+    mask-composite: intersect;
+  }
+
+  .turismo-art__bird {
+    /* El img es un elemento REEMPLAZADO: con altura fija el navegador deriva
+       el ancho desde su relación de aspecto (ignora el estiramiento por
+       inset) y el lienzo medía 694px, cortado por ambos lados. Se dimensiona
+       por ANCHO (= ventana visible) para que contain dibuje el ave completa,
+       anclada al borde derecho y centrada en vertical. */
+    inset: 0 0 0 auto;
+    width: 100%;
+    height: auto;
+    margin-block: auto;
+    object-fit: contain;
+    object-position: right center;
+    /* Sin máscara ni filtros: el tucán conserva su recorte alfa original,
+       nítido, opaco y sin halos — solo la selva y la rama se disuelven. */
+  }
+
+    /* Sin transición CSS para el revelado: la opacity del fondo se anima
+       por JS (mismo bucle rAF del resorte) — determinístico en cualquier
+       navegador, incluidos entornos donde el reloj de transiciones CSS
+       no avanza. */
+</style>
+
+<script>
+  const section = document.querySelector('.turismo-hero');
+  const bg = document.querySelector('.turismo-art__bg');
+  const bird = document.querySelector('.turismo-art__bird');
+
+  if (section && bg && bird) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Velocidades intencionalmente asimétricas: fondo lejano casi estático,
+    // tucán cercano con recorrido amplio y evidente.
+    const BG_SPEED = 30;
+    const BIRD_SPEED = 320;
+    // Resorte subamortiguado del tucán: ω fija el periodo (2π/ω ≈ 0.52 s,
+    // el retraso con que alcanza al fondo) y ζ < 1 hace que sobrepase su
+    // objetivo una vez y rebote antes de asentarse en su lugar.
+    const SPRING_OMEGA = 12; // rad/s
+    const SPRING_ZETA = 0.5; // razón de amortiguación (<1 = subamortiguado)
+    // Entrada escénica: el tucán arranca fuera del encuadre (por arriba de
+    // la banda, que mide ~390px) y "aterriza" con este mismo resorte la
+    // primera vez que la sección asoma en pantalla.
+    const ENTER_OFFSET = 400;
+
+    let targetBgY = 0;
+    let targetBirdY = 0;
+    let birdY = 0;
+    let birdV = 0;
+    let rafId = null;
+    let lastT = 0;
+    // Con motion reducido no hay puesta en escena: todo visible y estático.
+    let entered = reduceMotion;
+
+    function computeTargets() {
+      const rect = section.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // 0 cuando la sección aún entra por abajo, 1 cuando ya salió por arriba.
+      const p = Math.min(Math.max((vh - rect.top) / (vh + rect.height), 0), 1);
+      const centered = p - 0.5;
+      targetBgY = centered * BG_SPEED;
+      targetBirdY = centered * BIRD_SPEED;
+    }
+
+    function render() {
+      bg.style.transform = `translate3d(0, ${targetBgY.toFixed(1)}px, 0)`;
+      bird.style.transform = `translate3d(0, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
+    }
+
+    function frame(t) {
+      rafId = null;
+      const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
+      lastT = t;
+
+      // El fondo obedece el scroll de inmediato; el resorte corre solo para
+      // el tucán (capa cercana con personalidad propia).
+      const accel =
+        SPRING_OMEGA * SPRING_OMEGA * (targetBirdY - birdY) -
+        2 * SPRING_ZETA * SPRING_OMEGA * birdV;
+      birdV += accel * dt;
+      birdY += birdV * dt;
+
+      if (Math.abs(targetBirdY - birdY) < 0.3 && Math.abs(birdV) < 8) {
+        birdY = targetBirdY;
+        birdV = 0;
+        render();
+        return; // converge: se detiene el bucle hasta el próximo scroll
+      }
+      render();
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function wake() {
+      if (!entered) return; // antes de la entrada, el tucán permanece oculto
+      computeTargets();
+      if (rafId === null) {
+        lastT = performance.now();
+        rafId = requestAnimationFrame(frame);
+      }
+    }
+
+    // Revelado de la selva: tween de opacity conducido por rAF (easeOutCubic).
+    // No depende del reloj de transiciones CSS, que en algunos entornos no
+    // avanza; así el fundido es idéntico en cualquier navegador.
+    const BG_FADE_MS = 900;
+    let fadeRaf = null;
+
+    function startBgFade() {
+      if (reduceMotion || fadeRaf !== null) return;
+      const t0 = performance.now();
+      function step(t) {
+        const k = Math.min((t - t0) / BG_FADE_MS, 1);
+        bg.style.opacity = (1 - Math.pow(1 - k, 3)).toFixed(3);
+        fadeRaf = k < 1 ? requestAnimationFrame(step) : null;
+      }
+      fadeRaf = requestAnimationFrame(step);
+    }
+
+    function startEntrance() {
+      entered = true;
+      // Un frame de respiro para que el estado oculto llegue a pintarse
+      // antes de arrancar el revelado y el aterrizaje del tucán.
+      requestAnimationFrame(() => {
+        void bg.offsetWidth;
+        startBgFade();
+        wake();
+      });
+    }
+
+    // Estado inicial: sin motion reducido el tucán se coloca fuera del
+    // encuadre y la selva en opacity 0, a la espera del IntersectionObserver.
+    computeTargets();
+    render();
+
+    if (!reduceMotion) {
+      birdY = targetBirdY - ENTER_OFFSET;
+      render();
+      bg.style.opacity = '0';
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              io.disconnect();
+              startEntrance();
+            }
+          },
+          { threshold: 0.25 }
+        );
+        io.observe(section);
+      } else {
+        startEntrance();
+      }
+
+      window.addEventListener('scroll', wake, { passive: true });
+      window.addEventListener('resize', wake, { passive: true });
+    }
+  }
+</script>

@@ -73,7 +73,7 @@ const isHome = localizedUrl(canonicalPath, 'es') === '/';
   <body class="flex min-h-screen flex-col bg-compdes-cream font-mono text-compdes-blue">
     <a class="skip-link" href="#main" data-i18n="common.skipLink">{t('common.skipLink')}</a>
     <Navbar currentPath={canonicalPath} lang={lang} transparent={isHome} />
-    <main id="main" class="flex-1">
+    <main id="main" class:list={['flex-1', !isHome && 'bg-compdes-blue']}>
       <slot />
     </main>
     <Footer lang={lang} />

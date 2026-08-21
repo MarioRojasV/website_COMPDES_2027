@@ -8,10 +8,9 @@ export interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.preinscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
+const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
   { href: '/', key: 'nav.home' },
   { href: '/inscripcion-participacion', key: 'nav.inscripcion' },
-  { href: '/pre-inscripcion', key: 'nav.preinscripcion' },
   { href: '/areas-interes', key: 'nav.areas' },
   { href: '/cronograma', key: 'nav.cronograma' },
   { href: '/hospedaje', key: 'nav.hospedaje' },
