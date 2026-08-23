@@ -1,0 +1,177 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+---
+
+<!--
+  Sección 03 — Indexación IEEE.
+  Marca de agua gigante detrás del encabezado + tres tarjetas (qué significa /
+  hito histórico / qué gana quien publica) + terminal con revelado escalonado
+  de líneas al entrar en viewport (respeta prefers-reduced-motion).
+-->
+<section id="ieee" class="relative overflow-hidden bg-compdes-blue py-16 text-compdes-cream md:py-24">
+  <span class="ieee-watermark" aria-hidden="true">IEEE</span>
+
+  <div class="relative mx-auto max-w-6xl px-6">
+    <SectionHeading
+      sectionNumber={3}
+      eyebrowKey="home.ieee.eyebrow"
+      titleKey="home.ieee.title"
+      introKey="home.ieee.intro"
+      align="center"
+      dark
+    />
+
+    <div class="mt-12 grid gap-5 md:mt-16 md:grid-cols-3 md:gap-6">
+      <!-- Tarjeta 1 · Qué significa -->
+      <article
+        class="relative border-2 border-compdes-blue-600 bg-compdes-blue-800 p-6 transition-colors duration-300 hover:border-compdes-yellow md:p-7"
+      >
+        <div class="flex h-11 w-11 items-center justify-center border-2 border-compdes-blue-600 text-compdes-yellow">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <path d="M14 2v6h6" />
+            <path d="M9 13h6M9 17h4" />
+          </svg>
+        </div>
+        <h3 class="mt-5 font-display text-xl font-bold leading-snug" data-i18n="home.ieee.card.what.title">
+          {t('home.ieee.card.what.title')}
+        </h3>
+        <div class="mt-3 h-0.5 w-10 bg-compdes-yellow/60"></div>
+        <p
+          class="mt-3 text-sm leading-relaxed text-compdes-cream/75"
+          data-i18n="home.ieee.card.what.body"
+          set:html={t('home.ieee.card.what.body')}
+        />
+      </article>
+
+      <!-- Tarjeta 2 · Hito histórico (destacada con badge) -->
+      <article
+        class="ieee-card--milestone relative border-2 border-compdes-yellow/70 bg-compdes-blue-800 p-6 shadow-[6px_6px_0_0_var(--color-compdes-blue-600)] transition-all duration-300 hover:border-compdes-yellow hover:shadow-[6px_6px_0_0_var(--color-compdes-yellow)] md:p-7"
+      >
+        <p
+          class="absolute -top-3.5 right-5 flex items-center gap-2 border border-compdes-blue-900 bg-compdes-yellow px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-compdes-blue"
+        >
+          <i class="status-led !bg-compdes-blue"></i>
+          <span data-i18n="home.ieee.badge">{t('home.ieee.badge')}</span>
+        </p>
+        <div class="flex h-11 w-11 items-center justify-center border-2 border-compdes-yellow/70 text-compdes-yellow">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="6" />
+            <path d="M15.5 13 17 22l-5-3-5 3 1.5-9" />
+          </svg>
+        </div>
+        <h3 class="mt-5 font-display text-xl font-bold leading-snug" data-i18n="home.ieee.card.milestone.title">
+          {t('home.ieee.card.milestone.title')}
+        </h3>
+        <div class="mt-3 h-0.5 w-10 bg-compdes-yellow/60"></div>
+        <p
+          class="mt-3 text-sm leading-relaxed text-compdes-cream/75"
+          data-i18n="home.ieee.card.milestone.body"
+          set:html={t('home.ieee.card.milestone.body')}
+        />
+      </article>
+
+      <!-- Tarjeta 3 · Qué gana quien publica -->
+      <article
+        class="relative border-2 border-compdes-blue-600 bg-compdes-blue-800 p-6 transition-colors duration-300 hover:border-compdes-yellow md:p-7"
+      >
+        <div class="flex h-11 w-11 items-center justify-center border-2 border-compdes-blue-600 text-compdes-yellow">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+        </div>
+        <h3 class="mt-5 font-display text-xl font-bold leading-snug" data-i18n="home.ieee.card.authors.title">
+          {t('home.ieee.card.authors.title')}
+        </h3>
+        <div class="mt-3 h-0.5 w-10 bg-compdes-yellow/60"></div>
+        <p
+          class="mt-3 text-sm leading-relaxed text-compdes-cream/75"
+          data-i18n="home.ieee.card.authors.body"
+          set:html={t('home.ieee.card.authors.body')}
+        />
+      </article>
+    </div>
+
+    <!-- Consola: resumen del hito, líneas reveladas en cascada por JS -->
+    <div class="terminal-window corner mt-10 md:mx-auto md:max-w-3xl">
+      <div class="term-titlebar">
+        <span class="term-dots"><i></i><i></i><i></i></span>
+        <span>ieee_xplore</span>
+        <span class="hidden sm:inline">pub.conf</span>
+      </div>
+      <div class="scanlines"></div>
+      <div class="space-y-2 px-6 py-6 font-mono text-[13px] leading-relaxed" data-term-body>
+        <p class="term-line text-compdes-cream/90">$ <span data-i18n="home.ieee.term.cmd">{t('home.ieee.term.cmd')}</span></p>
+        <p class="term-line text-compdes-cream/70" data-i18n="home.ieee.term.line1">{t('home.ieee.term.line1')}</p>
+        <p class="term-line text-compdes-cream/70" data-i18n="home.ieee.term.line2">{t('home.ieee.term.line2')}</p>
+        <p class="term-line text-compdes-cream/70" data-i18n="home.ieee.term.line3">{t('home.ieee.term.line3')}</p>
+        <p class="term-line text-compdes-yellow" data-i18n="home.ieee.term.line4">{t('home.ieee.term.line4')}</p>
+        <p class="pt-1 text-compdes-yellow"><span class="blink">▌</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Marca de agua tipográfica: solo contorno, muy tenue, sin interferir. */
+  .ieee-watermark {
+    position: absolute;
+    top: -0.06em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: clamp(7rem, 24vw, 20rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(56 189 248 / 0.13);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Revelado en cascada: el estado oculto SOLO existe cuando JS añade
+     .is-pending al contenedor; sin JS las líneas siempre son visibles.
+     Con motion reducido el script no llega a ocultar nada. */
+  .is-pending .term-line {
+    opacity: 0;
+    transform: translateX(0.75rem);
+  }
+
+  .is-pending .term-line.is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.45s var(--ease-out-quart),
+      transform 0.45s var(--ease-out-quart);
+  }
+</style>
+
+<script>
+  const body = document.querySelector('[data-term-body]');
+
+  if (body && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const lines = Array.from(body.querySelectorAll('.term-line'));
+    if ('IntersectionObserver' in window) {
+      body.classList.add('is-pending');
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          io.disconnect();
+          lines.forEach((line, i) => {
+            setTimeout(() => line.classList.add('is-in'), 240 * i);
+          });
+        },
+        { threshold: 0.35 },
+      );
+      io.observe(body);
+    }
+  }
+</script>

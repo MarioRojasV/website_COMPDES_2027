@@ -87,11 +87,36 @@ export const ui = {
       "El <strong>XX Congreso Iberoamericano de Computación para el Desarrollo — COMPDES2027 —</strong> se \
       desarrollará del 21 al 23 de julio de 2027, organizado por el Instituto Tecnológico de Costa Rica (Sede de San Carlos) \
       en el marco de actividades de la RED COMPDES. La sede del evento será el cantón de San Carlos, Costa Rica, en el \
-      distrito de Santa Clara.<br /><br />Adicionalmente, este año el congreso alcanzará un hito histórico en su evolución. \
-      Por primera vez con publicaciones indexadas internacionalmente en <strong>IEEE</strong>.",
-    // IEEE
-    "home.ieee_info.eyebrow": "Publicaciones IEEE",
-    "home.ieee_info.title": "¡¡¡Indexados a IEEE!!!",
+      distrito de Santa Clara.<br /><br />Además, esta edición marcará un hito histórico: por primera vez, sus \
+      publicaciones estarán indexadas en <strong>IEEE</strong>.",
+    // IEEE — indexación internacional
+    "home.ieee.eyebrow": "Publicaciones",
+    "home.ieee.title": "Por primera vez: indexados en IEEE",
+    "home.ieee.intro":
+      "En su edición 2027, el Congreso COMPDES alcanza un hito histórico: por primera vez en la historia de la red, \
+      los trabajos aceptados contarán con publicación e indexación internacional a través de <strong>IEEE</strong>, \
+      la asociación profesional más grande del mundo en ingeniería y computación.",
+    "home.ieee.badge": "primera vez",
+    "home.ieee.card.what.title": "¿Qué significa estar indexados?",
+    "home.ieee.card.what.body":
+      "Los artículos aceptados se publican en las memorias del congreso y quedan registrados en \
+      <strong>IEEE Xplore</strong>, la biblioteca digital de referencia mundial en ingeniería y computación, donde \
+      pueden ser consultados y citados por investigadores de todo el mundo.",
+    "home.ieee.card.milestone.title": "Un hito para la red COMPDES",
+    "home.ieee.card.milestone.body":
+      "Desde sus primeras ediciones, el congreso ha sido un espacio abierto para compartir computación para el \
+      desarrollo. Esta es la primera vez que sus publicaciones alcanzan indexación internacional: un salto de calidad \
+      para autores, instituciones y toda la red.",
+    "home.ieee.card.authors.title": "¿Qué gana quien publica?",
+    "home.ieee.card.authors.body":
+      "Publicar en COMPDES 2027 significa visibilidad internacional, trazabilidad formal del propio trabajo y la \
+      solidez de un proceso editorial respaldado por IEEE. Una oportunidad ideal para estudiantes, docentes e \
+      investigadores de la región.",
+    "home.ieee.term.cmd": "compdes2027 --estado-publicaciones",
+    "home.ieee.term.line1": "[ ok ] indexación internacional ......... IEEE",
+    "home.ieee.term.line2": "[ ok ] biblioteca digital .............. IEEE Xplore",
+    "home.ieee.term.line3": "[ ok ] alcance ......................... visible y citable a nivel global",
+    "home.ieee.term.line4": "[ >> ] estado .......................... hito_historico // primera_vez_en_la_red",
     // Contacto
     "home.contact.eyebrow": "Contacto",
     "home.contact.title": "Póngase en contacto",
@@ -102,11 +127,27 @@ export const ui = {
     "home.contact.phoneValue": "+506 9999 9999",
     "home.contact.socialValue":
       "@compdes2027 en Facebook, X (Twitter) e Instagram",
-    // Sede
-    "home.venue.eyebrow": "Sede",
-    "home.venue.title": "Lugar del evento",
-    "home.venue.intro":
-      "La información de la sede del congreso estará disponible próximamente.",
+    // Ubicación — San Carlos
+    "home.location.eyebrow": "Ubicación",
+    "home.location.title": "San Carlos, Costa Rica",
+    "home.location.intro":
+      "La sede del congreso está en el corazón de la zona norte del país: un territorio de llanuras, ríos y volcanes, \
+      y la tierra agrícola más productiva de Costa Rica.",
+    "home.location.body.sancarlos":
+      "San Carlos es el cantón más extenso de Costa Rica y uno de los motores agroproductores del país: tierra de \
+      lecherías y quesos, piña, caña, ganado y granos. También es la puerta de entrada al volcán Arenal y a La Fortuna, \
+      dos de los íconos naturales del país.",
+    "home.location.fact.size": "El cantón más extenso del país",
+    "home.location.fact.agro": "Corazón agroproductor: leche, piña y carne",
+    "home.location.fact.arenal": "Hogar del volcán Arenal",
+    "home.location.fact.tec": "Campus del TEC en Santa Clara",
+    "home.location.body.tec.title": "TEC · Sede San Carlos",
+    "home.location.body.tec":
+      "El congreso se realizará en el Campus Tecnológico Local San Carlos del Instituto Tecnológico de Costa Rica \
+      (TEC), ubicado en el distrito de Santa Clara, a 18 km al norte de Ciudad Quesada. Su campus de 35 500 m² reúne \
+      aulas, laboratorios, biblioteca, residencias estudiantiles y el centro CTEC, punto de encuentro académico y \
+      tecnológico de la región.",
+    "home.location.map.cta": "Abrir en Google Maps",
 
     // Page titles
     "page.title.home": "COMPDES 2027 — Inicio",
@@ -206,11 +247,36 @@ export const ui = {
       "The <strong>20th Ibero-American Conference on Computing for Development — COMPDES2027 —</strong> will \
       take place from July 21 to 23, 2027, organized by the Costa Rica Institute of Technology (San Carlos Campus) \
       as part of the COMPDES NETWORK’s activities. The event will be held in the canton of San Carlos, Costa Rica, in the \
-      district of Santa Clara.<br /><br />Additionally, this year the conference will reach a historic milestone in its evolution, \
-      featuring internationally indexed publications in <strong>IEEE</strong> for the first time.",
+      district of Santa Clara.<br /><br />In addition, this edition will mark a historic milestone: for the first time, \
+      its publications will be indexed in <strong>IEEE</strong>.",
     // IEEE
-    "home.ieee_info.eyebrow": "Publicaciones IEEE",
-    "home.ieee_info.title": "¡¡¡Indexados a IEEE!!!",
+    "home.ieee.eyebrow": "Publications",
+    "home.ieee.title": "For the first time: indexed in IEEE",
+    "home.ieee.intro":
+      "In its 2027 edition, the COMPDES Conference reaches a historic milestone: for the first time in the network's \
+      history, accepted papers will receive international publication and indexing through <strong>IEEE</strong>, the \
+      world's largest professional association in engineering and computing.",
+    "home.ieee.badge": "first time",
+    "home.ieee.card.what.title": "What does indexing mean?",
+    "home.ieee.card.what.body":
+      "Accepted articles are published in the conference proceedings and registered in <strong>IEEE Xplore</strong>, \
+      the world's reference digital library in engineering and computing, where they can be found and cited by \
+      researchers everywhere.",
+    "home.ieee.card.milestone.title": "A milestone for the COMPDES network",
+    "home.ieee.card.milestone.body":
+      "Since its earliest editions, the conference has been an open space for computing for development. This is the \
+      first time its publications reach international indexing: a quality leap for authors, institutions, and the \
+      entire network.",
+    "home.ieee.card.authors.title": "What do authors gain?",
+    "home.ieee.card.authors.body":
+      "Publishing at COMPDES 2027 means international visibility, a formal record of your work, and the credibility of \
+      an editorial process backed by IEEE. An ideal opportunity for students, faculty, and researchers across the \
+      region.",
+    "home.ieee.term.cmd": "compdes2027 --publication-status",
+    "home.ieee.term.line1": "[ ok ] international indexing .......... IEEE",
+    "home.ieee.term.line2": "[ ok ] digital library ................. IEEE Xplore",
+    "home.ieee.term.line3": "[ ok ] reach ........................... visible and citable worldwide",
+    "home.ieee.term.line4": "[ >> ] status .......................... historic_milestone // first_time_in_network",
     // Contact
     "home.contact.eyebrow": "Contact",
     "home.contact.title": "Get in touch",
@@ -221,11 +287,27 @@ export const ui = {
     "home.contact.phoneValue": "+506 9999 9999",
     "home.contact.socialValue":
       "@compdes2027 on Facebook, X (Twitter) and Instagram",
-    // Venue
-    "home.venue.eyebrow": "Venue",
-    "home.venue.title": "Event location",
-    "home.venue.intro":
-      "Information about the conference venue will be available soon.",
+    // Location — San Carlos
+    "home.location.eyebrow": "Location",
+    "home.location.title": "San Carlos, Costa Rica",
+    "home.location.intro":
+      "The conference venue lies in the heart of Costa Rica's northern region: a land of plains, rivers and volcanoes, \
+      and the country's most productive farmland.",
+    "home.location.body.sancarlos":
+      "San Carlos is the largest canton in Costa Rica and one of the country's agricultural powerhouses: land of dairy \
+      farms and cheese, pineapple, sugarcane, cattle and grains. It is also the gateway to Arenal Volcano and La \
+      Fortuna, two of the country's natural icons.",
+    "home.location.fact.size": "The country's largest canton",
+    "home.location.fact.agro": "Agricultural heartland: dairy, pineapple and beef",
+    "home.location.fact.arenal": "Home of Arenal Volcano",
+    "home.location.fact.tec": "TEC campus in Santa Clara",
+    "home.location.body.tec.title": "TEC · San Carlos Campus",
+    "home.location.body.tec":
+      "The conference will be held at the San Carlos Technology Campus of the Costa Rica Institute of Technology (TEC), \
+      located in the district of Santa Clara, 18 km north of Ciudad Quesada. Its 35,500 m² campus brings together \
+      classrooms, laboratories, a library, student residences and the CTEC center, an academic and technology hub for \
+      the region.",
+    "home.location.map.cta": "Open in Google Maps",
 
     // Page titles
     "page.title.home": "COMPDES 2027 — Home",

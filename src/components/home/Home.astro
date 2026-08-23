@@ -1,5 +1,7 @@
 ---
 import Hero from './Hero.astro';
+import IeeeSection from './IeeeSection.astro';
+import LocationSection from './LocationSection.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 import { useTranslations } from '../../i18n/ui';
 
@@ -9,6 +11,7 @@ const t = useTranslations(lang);
 
 <Hero />
 
+<!-- [ sec.01 ] Bienvenida -->
 <section id="que-es" class="bg-compdes-blue py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
@@ -21,6 +24,7 @@ const t = useTranslations(lang);
   </div>
 </section>
 
+<!-- [ sec.02 ] Información general -->
 <section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
@@ -34,10 +38,14 @@ const t = useTranslations(lang);
   </div>
 </section>
 
-<section class="bg-compdes-blue py-16 text-compdes-cream md:py-24">
+<!-- [ sec.03 ] Indexación IEEE -->
+<IeeeSection />
+
+<!-- [ sec.04 ] Contacto -->
+<section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
-      sectionNumber={3}
+      sectionNumber={4}
       eyebrowKey="home.contact.eyebrow"
       titleKey="home.contact.title"
       align="center"
@@ -71,15 +79,5 @@ const t = useTranslations(lang);
   </div>
 </section>
 
-<section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
-  <div class="mx-auto max-w-4xl px-6">
-    <SectionHeading
-      sectionNumber={4}
-      eyebrowKey="home.venue.eyebrow"
-      titleKey="home.venue.title"
-      introKey="home.venue.intro"
-      align="center"
-      dark
-    />
-  </div>
-</section>
+<!-- [ sec.05 ] Ubicación -->
+<LocationSection />

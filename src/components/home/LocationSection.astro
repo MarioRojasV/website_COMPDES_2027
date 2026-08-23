@@ -1,0 +1,251 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+
+/*
+  Enlace oficial del campus publicado por el TEC ("Ver ubicación en el mapa"
+  en tec.ac.cr). Coordenadas decorativas tomadas de OpenStreetMap
+  (way 351554216): 10.36594 N, 84.51155 W.
+*/
+const MAPS_URL = 'https://maps.app.goo.gl/QMTTpvNmGfH1bPp69';
+
+const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
+  {
+    key: 'size',
+    icon: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
+  },
+  {
+    key: 'agro',
+    icon: 'M12 22v-8M12 14c0-4-3-6.5-7-6.5 0 4 3 6.5 7 6.5zM12 12c0-3.5 2.6-5.5 7-5.5 0 4-2.6 5.5-7 5.5z',
+  },
+  {
+    key: 'arenal',
+    icon: 'm8 4 4 8 4.5-4.5L22 21H2L8 4zM11 2v.01M15 2v.01',
+  },
+  {
+    key: 'tec',
+    icon: 'M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2 3 7h18z',
+  },
+];
+---
+
+<!--
+  Sección 05 — Ubicación.
+  Dos columnas: contexto de San Carlos + datos del campus TEC a la izquierda;
+  tarjeta "mapa" estilizada (rejilla, rutas, río y pin con pulso) que enlaza
+  al campus en Google Maps a la derecha. Sin iframes ni API keys: todo CSS/SVG
+  en la paleta del sitio.
+-->
+<section id="ubicacion" class="border-y-2 border-compdes-yellow bg-compdes-blue py-16 text-compdes-cream md:py-24">
+  <div class="mx-auto max-w-6xl px-6">
+    <SectionHeading
+      sectionNumber={5}
+      eyebrowKey="home.location.eyebrow"
+      titleKey="home.location.title"
+      introKey="home.location.intro"
+      dark
+    />
+
+    <div class="mt-12 grid items-start gap-10 md:mt-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+      <!-- Contexto -->
+      <div>
+        <p
+          class="max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-base"
+          data-i18n="home.location.body.sancarlos"
+          set:html={t('home.location.body.sancarlos')}
+        />
+
+        <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+          {
+            facts.map((fact) => (
+              <li class="flex items-center gap-3 border border-compdes-blue-600 bg-compdes-blue-800 p-3.5">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center border border-compdes-blue-600 text-compdes-yellow">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d={fact.icon} />
+                  </svg>
+                </span>
+                <span class="text-sm leading-snug text-compdes-cream/85" data-i18n={`home.location.fact.${fact.key}`}>
+                  {t(`home.location.fact.${fact.key}`)}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="mt-9 max-w-xl border-l-2 border-compdes-yellow pl-4 md:pl-5">
+          <h3
+            class="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-compdes-yellow"
+            data-i18n="home.location.body.tec.title"
+          >
+            {t('home.location.body.tec.title')}
+          </h3>
+          <p
+            class="mt-3 text-sm leading-relaxed text-compdes-cream/75"
+            data-i18n="home.location.body.tec"
+            set:html={t('home.location.body.tec')}
+          />
+        </div>
+      </div>
+
+      <!-- Tarjeta mapa → Google Maps -->
+      <a
+        href={MAPS_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group block"
+        aria-label={`${t('home.location.map.cta')} — ${t('home.location.body.tec.title')}`}
+      >
+        <div
+          class="terminal-window corner transition-transform duration-300 ease-out group-hover:-translate-y-1"
+        >
+          <div class="term-titlebar">
+            <span class="term-dots"><i></i><i></i><i></i></span>
+            <span>maps://sede-san-carlos</span>
+            <span class="hidden sm:inline">geo</span>
+          </div>
+
+          <!-- Lienzo del mapa: rejilla + rutas + río + pin con pulso -->
+          <div class="map-art relative aspect-[4/3] overflow-hidden" aria-hidden="true">
+            <svg
+              class="absolute inset-0 h-full w-full"
+              viewBox="0 0 400 300"
+              preserveAspectRatio="none"
+              fill="none"
+            >
+              <path
+              d="M-10 252 C 80 215, 140 262, 225 218 S 355 150, 420 172"
+              stroke="#0284c7"
+              stroke-opacity="0.38"
+              stroke-width="10"
+              stroke-linecap="round"
+            ></path>
+              <path d="M-10 62 L 175 118 L 420 88" stroke="#152d63" stroke-width="5"></path>
+              <path d="M305 -10 L 272 142 L 332 310" stroke="#152d63" stroke-width="4"></path>
+              <path d="M60 120 L 200 128 M200 128 L 240 260" stroke="#152d63" stroke-width="3"></path>
+              <path
+              class="map-route"
+              d="M20 292 C 90 250, 150 190, 197 138"
+              stroke="var(--color-compdes-yellow)"
+              stroke-opacity="0.75"
+              stroke-width="2"
+              stroke-dasharray="7 7"
+            ></path>
+            </svg>
+
+            <!-- Pin del campus + anillos de pulso -->
+            <div class="map-pin absolute left-1/2 top-[42%]">
+              <span class="map-pin__ring"></span>
+              <span class="map-pin__ring map-pin__ring--late"></span>
+              <svg
+                width="34"
+                height="34"
+                viewBox="0 0 24 24"
+                class="relative transition-transform duration-300 ease-out group-hover:-translate-y-1.5"
+                fill="var(--color-compdes-yellow)"
+                stroke="var(--color-compdes-blue-900)"
+                stroke-width="1.4"
+              >
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path>
+                <circle cx="12" cy="10" r="3" fill="var(--color-compdes-blue-900)"></circle>
+              </svg>
+            </div>
+
+            <!-- Etiqueta flotante junto al pin -->
+            <span
+              class="absolute left-1/2 top-[42%] z-10 -translate-x-1/2 -translate-y-[calc(100%+34px)] whitespace-nowrap border border-compdes-blue-600 bg-compdes-blue px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-compdes-cream/90"
+              data-i18n="home.location.body.tec.title"
+            >
+              {t('home.location.body.tec.title')}
+            </span>
+
+            <span class="absolute right-3 top-2.5 font-mono text-[11px] text-compdes-yellow/90">N ↑</span>
+            <span class="absolute bottom-2.5 left-3 font-mono text-[10px] tracking-wide text-compdes-cream/50">
+              10.36594° N · 84.51155° W
+            </span>
+          </div>
+
+          <!-- CTA -->
+          <div
+            class="flex items-center justify-between border-t-2 border-compdes-blue-600 bg-compdes-blue-800 px-5 py-3.5"
+          >
+            <span
+              class="font-mono text-xs uppercase tracking-[0.2em] text-compdes-cream/80 transition-colors duration-300 group-hover:text-compdes-yellow"
+              data-i18n="home.location.map.cta"
+            >
+              {t('home.location.map.cta')}
+            </span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-compdes-yellow transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7M7 7h10v10" />
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Rejilla cartográfica sobre azul profundo, con foco radial tras el pin. */
+  .map-art {
+    background-color: var(--color-compdes-blue-900);
+    background-image:
+      radial-gradient(circle at 50% 42%, rgb(56 189 248 / 0.1), transparent 55%),
+      repeating-linear-gradient(to right, rgb(21 45 99 / 0.55) 0 1px, transparent 1px 42px),
+      repeating-linear-gradient(to bottom, rgb(21 45 99 / 0.55) 0 1px, transparent 1px 42px);
+  }
+
+  /* Ruta punteada "en marcha": el dash avanza lentamente; la regla global de
+     reduced-motion detiene la animación sin tocar el trazo. */
+  .map-route {
+    animation: map-dash 1.6s linear infinite;
+  }
+
+  @keyframes map-dash {
+    to {
+      stroke-dashoffset: -14;
+    }
+  }
+
+  .map-pin__ring {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin: -7px;
+    border: 2px solid var(--color-compdes-yellow);
+    border-radius: 9999px;
+    animation: map-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .map-pin__ring--late {
+    animation-delay: 1.2s;
+  }
+
+  @keyframes map-ping {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.9;
+    }
+
+    80%,
+    100% {
+      transform: scale(3.6);
+      opacity: 0;
+    }
+  }
+</style>
