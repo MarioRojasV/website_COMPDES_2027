@@ -79,6 +79,15 @@ export const ui = {
     "tur.label.email": "Correo",
     "tur.label.website": "Sitio web",
     "tur.card.map": "Cómo llegar",
+    "areas.general.title": "Áreas de interés general",
+    "areas.general.intro":
+      "Desde su creación, las conferencias COMPDES son un foro para presentar y discutir trabajos de las Ciencias de la Computación, las Tecnologías de la Información y campos afines:",
+    "areas.tracks.title": "Líneas temáticas prioritarias",
+    "areas.tracks.intro":
+      "Para esta edición se recibirán con especial interés trabajos vinculados a los siguientes ejes. Explora el árbol y abre cada módulo para ver sus subtemas.",
+    "areas.explorer.hint": "$ selecciona un módulo del árbol",
+    "pageheader.desc.areas":
+      "Los ejes temáticos del XX Congreso COMPDES: las áreas generales de siempre y las líneas prioritarias de esta edición, listas para explorar módulo por módulo.",
 
     // Cronograma
     "cron.dates.eyebrow": "fechas clave",
@@ -319,6 +328,15 @@ export const ui = {
     "tur.label.email": "Email",
     "tur.label.website": "Website",
     "tur.card.map": "Get directions",
+    "areas.general.title": "General areas of interest",
+    "areas.general.intro":
+      "Since their creation, COMPDES conferences have served as a forum for presenting and discussing work in Computer Science, Information Technology, and related fields:",
+    "areas.tracks.title": "Priority thematic tracks",
+    "areas.tracks.intro":
+      "For this edition, papers connected to the following tracks will be especially welcome. Explore the tree and open each module to see its subtopics.",
+    "areas.explorer.hint": "$ select a module from the tree",
+    "pageheader.desc.areas":
+      "The thematic axes of the 20th COMPDES Conference: the classic general areas and this edition's priority tracks, ready to explore module by module.",
 
     // Schedule
     "cron.dates.eyebrow": "key dates",

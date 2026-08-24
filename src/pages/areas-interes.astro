@@ -1,8 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import AreasList from '../components/areas/AreasList.astro';
 ---
 
 <BaseLayout titleKey="page.title.areas" descriptionKey="meta.desc.areas">
-  <PageHeader titleKey="nav.areas" index="03" tagKey="pageheader.tag.areas" />
+  <PageHeader
+    titleKey="nav.areas"
+    index="03"
+    tagKey="pageheader.tag.areas"
+    descKey="pageheader.desc.areas"
+    placeholder={false}
+  />
+  <AreasList />
 </BaseLayout>
