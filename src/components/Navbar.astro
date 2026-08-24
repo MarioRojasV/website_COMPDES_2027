@@ -11,6 +11,12 @@ export interface Props {
 const { currentPath, lang, transparent = false } = Astro.props;
 const t = useTranslations(lang);
 
+/* El pathname en build/preview llega con barra final ("/cronograma/", "/en/")
+   por el formato de directorios; en dev llega sin ella. Normalizar ambos
+   lados hace que el resaltado funcione igual en los tres entornos. */
+const normalizePath = (path: string) =>
+  path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+
 const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
   { href: '/', key: 'nav.home' },
   { href: '/inscripcion-participacion', key: 'nav.inscripcion' },
@@ -74,7 +80,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
       >
         {links.map((link, i) => {
           const href = localizedUrl(link.href, lang);
-          const isActive = currentPath === href;
+          const isActive = normalizePath(currentPath) === normalizePath(href);
           return (
             <li class="w-full xl:w-auto">
               <a

@@ -7,11 +7,15 @@ export interface Props {
   index: string;
   id?: string;
   tagKey?: UiKey;
+  /** Descripción opcional bajo el título, dentro de la banda de cabecera. */
+  descKey?: UiKey;
+  /** Muestra el recuadro terminal "en preparación" bajo el encabezado. */
+  placeholder?: boolean;
 }
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
-const { titleKey, index, id, tagKey } = Astro.props;
+const { titleKey, index, id, tagKey, descKey, placeholder = true } = Astro.props;
 const tagLabel = tagKey ? t(tagKey) : t('common.section');
 ---
 
@@ -26,9 +30,17 @@ const tagLabel = tagKey ? t(tagKey) : t('common.section');
       {t(titleKey)}
     </h1>
     <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
+    {
+      descKey && (
+        <p class="mt-6 max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-[1.05rem]" data-i18n={descKey}>
+          {t(descKey)}
+        </p>
+      )
+    }
   </div>
 </section>
 
+{placeholder && (
 <section class="mx-auto max-w-5xl px-6 py-14">
   <div class="terminal-window corner">
     <div class="term-titlebar">
@@ -47,3 +59,4 @@ const tagLabel = tagKey ? t(tagKey) : t('common.section');
     </div>
   </div>
 </section>
+)}

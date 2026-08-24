@@ -1,0 +1,284 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import LangText from '../ui/LangText.astro';
+import { Image, type ImageMetadata } from 'astro:assets';
+import { useTranslations } from '../../i18n/ui';
+import { hoteles, type Currency } from '../../data/hoteles';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+
+/* Símbolo de moneda por tarifa y formato numérico por idioma.
+   El precio se renderiza como par bilingüe (lt--es / lt--en) para que el
+   toggle instantáneo también lo intercambie junto con el resto del texto. */
+const CURRENCY_SYMBOL: Record<Currency, string> = { CRC: '₡', USD: 'US$' };
+const fmtEs = new Intl.NumberFormat('es-CR');
+const fmtEn = new Intl.NumberFormat('en-US');
+
+/* Fotos en src/assets/images/hoteles/, resueltas por nombre de archivo con el
+   pipeline de Astro. Sin foto (o archivo inexistente) => arte placeholder. */
+const gallery = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/images/hoteles/*.{webp,jpg,jpeg,png}',
+  { eager: true },
+);
+const imageFor = (path?: string): ImageMetadata | undefined => {
+  if (!path) return undefined;
+  const base = path.split('/').pop() ?? '';
+  return Object.entries(gallery).find(([key]) => key.endsWith(base))?.[1].default;
+};
+
+const telHref = (phone: string) => `tel:+${phone.replace(/\D/g, '')}`;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<!-- [ sec.01 ] Hoteles disponibles — tarjetas expandibles (details/summary nativo) -->
+<section id="hoteles" class="border-t border-compdes-cream/10 bg-compdes-blue py-16 text-compdes-cream md:py-24">
+  <div class="mx-auto max-w-6xl px-6">
+    <SectionHeading
+      sectionNumber={1}
+      eyebrowKey="nav.hospedaje"
+      titleKey="hosp.list.title"
+      introKey="hosp.list.intro"
+      align="center"
+      dark
+    />
+
+    <ul class="mt-12 grid gap-5 md:mt-16 md:grid-cols-2">
+      {
+        hoteles.map((hotel, i) => {
+          const img = imageFor(hotel.image);
+          return (
+          <li>
+            <details class="hotel-card group" id={hotel.id}>
+              <summary>
+                {/* Encabezado visual — foto o arte placeholder + chip de tiempo */}
+                <span class="relative block h-44 overflow-hidden border-b-2 border-compdes-yellow/60">
+                  {img ? (
+                    <Image
+                      src={img}
+                      alt={hotel.name}
+                      class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      widths={[320, 480, 640]}
+                      sizes="(min-width: 768px) 46vw, 92vw"
+                    />
+                  ) : (
+                    <span class="fallback-art" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-12 opacity-50">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6" /><path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1z" /><path d="M21 10h-1M4 10H3" />
+                      </svg>
+                    </span>
+                  )}
+                  <span class="absolute right-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-full border border-compdes-yellow/40 bg-compdes-blue/85 px-2.5 py-1 font-mono text-[11px] leading-none text-compdes-yellow backdrop-blur-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <LangText value={hotel.travelTime} />
+                    <span class="text-compdes-yellow/70">{t('hosp.card.travel')}</span>
+                  </span>
+                </span>
+
+                <span class="block px-5 pb-5 pt-4">
+                  <span class="font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
+                    [ hot.{pad(i + 1)} ]
+                  </span>
+
+                  <h3 class="mt-2 font-display text-xl font-bold leading-tight text-compdes-cream transition-colors group-hover:text-compdes-yellow">
+                  {hotel.name}
+                </h3>
+
+                <dl class="mt-4 space-y-1.5 font-mono text-[13px] text-compdes-cream/75">
+                  <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    <dt class="sr-only">{t('nav.contacto')}</dt>
+                    <dd>
+                      <a href={telHref(hotel.phone)} class="transition-colors hover:text-compdes-yellow">{hotel.phone}</a>
+                    </dd>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    <dt class="sr-only">{t('hosp.price.perNight')}</dt>
+                    <dd>
+                      <strong class="font-semibold text-compdes-cream">
+                        <span class="lt lt--es">{CURRENCY_SYMBOL[hotel.currency]} {fmtEs.format(hotel.pricePerNight)}</span>
+                        <span class="lt lt--en">{CURRENCY_SYMBOL[hotel.currency]} {fmtEn.format(hotel.pricePerNight)}</span>
+                      </strong>
+                      <span class="text-compdes-cream/50"> {t('hosp.price.perNight')}</span>
+                    </dd>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                      <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9" />
+                    </svg>
+                    <dt class="shrink-0">{t('hosp.card.rooms')}:</dt>
+                    <dd><LangText value={hotel.roomTypes} /></dd>
+                  </div>
+                </dl>
+
+                <span class="hotel-hint mt-4 flex items-center gap-1.5 font-mono text-[11px] tracking-wide text-compdes-yellow/80" data-i18n="hosp.card.details">
+                  <span class="hint-closed" aria-hidden="true">[+]</span>
+                  <span class="hint-open" aria-hidden="true">[−]</span>
+                  {t('hosp.card.details')}
+                </span>
+                </span>
+              </summary>
+
+              <div class="hotel-body space-y-4 border-t border-dashed border-compdes-blue-600 px-5 pb-5 pt-4 sm:px-6">
+                <p class="flex items-start gap-2 text-sm leading-relaxed text-compdes-cream/75">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                  </svg>
+                  {hotel.address}
+                </p>
+
+                {
+                  hotel.email && (
+                    <div>
+                      <p class="label-mono">{t('hosp.label.email')}</p>
+                      <a href={`mailto:${hotel.email}`} class="text-sm text-compdes-yellow underline decoration-compdes-yellow/40 underline-offset-2 transition-colors hover:decoration-compdes-yellow">
+                        {hotel.email}
+                      </a>
+                    </div>
+                  )
+                }
+
+                <div>
+                  <p class="label-mono">{t('hosp.label.amenities')}</p>
+                  <p class="text-sm leading-relaxed text-compdes-cream/75"><LangText value={hotel.amenities} /></p>
+                </div>
+
+                {
+                  hotel.paymentMethods && (
+                    <div>
+                      <p class="label-mono">{t('hosp.label.payment')}</p>
+                      <p class="text-sm leading-relaxed text-compdes-cream/75"><LangText value={hotel.paymentMethods} /></p>
+                    </div>
+                  )
+                }
+
+                {
+                  hotel.cancellationPolicy && (
+                    <div>
+                      <p class="label-mono">{t('hosp.label.cancellation')}</p>
+                      <p class="text-sm leading-relaxed text-compdes-cream/75"><LangText value={hotel.cancellationPolicy} /></p>
+                    </div>
+                  )
+                }
+
+                {
+                  hotel.notes && (
+                    <div class="rounded border border-compdes-yellow/20 bg-compdes-yellow/5 px-3 py-2.5">
+                      <p class="label-mono">{t('hosp.label.notes')}</p>
+                      <p class="text-[13px] leading-relaxed text-compdes-cream/70"><LangText value={hotel.notes} /></p>
+                    </div>
+                  )
+                }
+              </div>
+            </details>
+          </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Tarjeta expandible con la misma receta visual de las tarjetas IEEE:
+     superficie blue-800, borde amarillo tenue y sombra dura azul que pasa
+     a amarilla al enfocar/expandir. details/summary da el comportamiento
+     acordeón sin JS y con accesibilidad de teclado de fábrica. */
+  .hotel-card {
+    position: relative;
+    display: block;
+    height: 100%;
+    background-color: var(--color-compdes-blue-800);
+    border: 2px solid color-mix(in srgb, var(--color-compdes-yellow) 45%, transparent);
+    box-shadow: 6px 6px 0 0 var(--color-compdes-blue-600);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hotel-card:hover,
+  .hotel-card:focus-within,
+  .hotel-card[open] {
+    border-color: var(--color-compdes-yellow);
+    box-shadow: 6px 6px 0 0 var(--color-compdes-yellow);
+  }
+
+  .hotel-card summary {
+    display: block;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .hotel-card summary::-webkit-details-marker,
+  .hotel-card summary::marker {
+    display: none;
+    content: '';
+  }
+
+  .hotel-card summary:focus-visible {
+    outline: 2px solid var(--color-compdes-yellow);
+    outline-offset: -4px;
+  }
+
+  .hotel-hint .hint-open {
+    display: none;
+  }
+
+  /* Arte placeholder mientras no haya foto del hotel. */
+  .fallback-art {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-compdes-yellow);
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(56, 189, 248, 0.18), transparent 55%),
+      linear-gradient(160deg, var(--color-compdes-blue-700), var(--color-compdes-blue-900));
+  }
+
+  .hotel-card[open] .hotel-hint .hint-open {
+    display: inline;
+  }
+
+  .hotel-card[open] .hotel-hint .hint-closed {
+    display: none;
+  }
+
+  .hotel-body {
+    animation: hotel-reveal 0.28s ease-out both;
+  }
+
+  .label-mono {
+    margin-bottom: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-compdes-yellow-400);
+  }
+
+  @keyframes hotel-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hotel-body {
+      animation: none;
+    }
+  }
+</style>

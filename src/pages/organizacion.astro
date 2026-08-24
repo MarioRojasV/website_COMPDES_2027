@@ -1,8 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import CommitteeSection from '../components/organizacion/CommitteeSection.astro';
+import { committees } from '../data/organizacion';
 ---
 
 <BaseLayout titleKey="page.title.organizacion" descriptionKey="meta.desc.organizacion">
-  <PageHeader titleKey="nav.organizacion" index="07" tagKey="pageheader.tag.organizacion" />
+  <PageHeader
+    titleKey="nav.organizacion"
+    index="07"
+    tagKey="pageheader.tag.organizacion"
+    descKey="pageheader.desc.organizacion"
+    placeholder={false}
+  />
+  {committees.map((committee, i) => (
+    <CommitteeSection
+      committeeId={committee.id}
+      sectionNumber={i + 1}
+      members={committee.members}
+      alt={i % 2 === 1}
+    />
+  ))}
 </BaseLayout>

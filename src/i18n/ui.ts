@@ -46,6 +46,39 @@ export const ui = {
       "Explora la riqueza natural de Costa Rica y descubre paisajes llenos de vida, flora y fauna.",
     "pageheader.desc.cronograma":
       "Fechas clave, programa académico por día y agenda detallada de ponencias del XX Congreso COMPDES.",
+    "pageheader.desc.hospedaje":
+      "En esta sección encontrarás una variedad de opciones de alojamiento cerca del TEC para tu estadía durante el COMPDES 2027. Explora las opciones disponibles y elige la que mejor se adapte a tus necesidades.",
+    "pageheader.desc.organizacion":
+      "Las personas detrás del XX Congreso COMPDES: comités científico y organizador, la Comisión Permanente de la red y los representantes de sus universidades miembro.",
+    "org.cientifico.eyebrow": "comite_cientifico",
+    "org.cientifico.title": "Comité Científico",
+    "org.cientifico.intro":
+      "Responsable del proceso de arbitraje por pares y de la selección académica de los trabajos recibidos.",
+    "org.organizador.eyebrow": "comite_organizador",
+    "org.organizador.title": "Comité Organizador",
+    "org.organizador.intro":
+      "Equipo local anfitrión del Tecnológico de Costa Rica, encargado de la logística, la sede y la experiencia de las personas asistentes.",
+    "org.comision.eyebrow": "comision_permanente",
+    "org.comision.title": "Comisión Permanente de la Red COMPDES",
+    "org.comision.intro":
+      "Órgano estable de la red que vela por la continuidad académica del congreso entre ediciones.",
+    "org.representantes.eyebrow": "representantes_red",
+    "org.representantes.title": "Representantes de la Red COMPDES",
+    "org.representantes.intro":
+      "Un representante por cada universidad miembro, enlace entre su institución y la organización del congreso.",
+    "tur.list.title": "Actividades disponibles",
+    "tur.list.intro":
+      "Atractivos turísticos en San Carlos y La Fortuna. Tarifas de referencia: confirma horarios, precios y reservación directamente con cada operador.",
+    "tur.card.category": "Tipo",
+    "tur.card.price": "Tarifa",
+    "tur.card.hours": "Horario",
+    "tur.card.travel": "desde el TEC",
+    "tur.card.details": "+ más información",
+    "tur.label.description": "Descripción",
+    "tur.label.duration": "Duración estimada",
+    "tur.label.email": "Correo",
+    "tur.label.website": "Sitio web",
+    "tur.card.map": "Cómo llegar",
 
     // Cronograma
     "cron.dates.eyebrow": "fechas clave",
@@ -205,6 +238,19 @@ export const ui = {
       "Fechas importantes y programación del Congreso COMPDES 2027.",
     "meta.desc.hospedaje":
       "Opciones de hospedaje para asistentes al Congreso COMPDES 2027 en San Carlos.",
+    "hosp.list.title": "Hoteles disponibles",
+    "hosp.list.intro":
+      "<strong>En preparación:</strong> esta sección se seguirá actualizando próximamente con más información sobre el hospedaje. Mientras tanto, estos son los hoteles en Ciudad Quesada y alrededores; las tarifas son de referencia por noche, así que confirma disponibilidad y precio final directamente con cada hotel.",
+    "hosp.card.travel": "desde el TEC",
+    "hosp.card.rooms": "Habitaciones",
+    "hosp.price.perNight": "/ noche",
+    "hosp.card.details": "+ más información",
+    "hosp.label.email": "Correo",
+    "hosp.label.address": "Dirección",
+    "hosp.label.amenities": "Servicios",
+    "hosp.label.payment": "Formas de pago",
+    "hosp.label.cancellation": "Política de cancelación",
+    "hosp.label.notes": "Notas",
     "meta.desc.turismo":
       "Turismo y actividades en la región de San Carlos durante el Congreso COMPDES 2027.",
     "meta.desc.organizacion": "Comité organizador del Congreso COMPDES 2027.",
@@ -240,6 +286,39 @@ export const ui = {
       "Explore Costa Rica's natural wealth and discover landscapes full of life, flora and fauna.",
     "pageheader.desc.cronograma":
       "Key dates, daily academic program, and detailed talk agenda of the 20th COMPDES Conference.",
+    "pageheader.desc.hospedaje":
+      "In this section, you'll find a variety of accommodation options near TEC for your stay during COMPDES 2027. Explore the available options and choose the one that best suits your needs.",
+    "pageheader.desc.organizacion":
+      "The people behind the 20th COMPDES Conference: scientific and organizing committees, the Network's Permanent Commission, and the representatives of its member universities.",
+    "org.cientifico.eyebrow": "scientific_committee",
+    "org.cientifico.title": "Scientific Committee",
+    "org.cientifico.intro":
+      "In charge of the peer-review process and the academic selection of submitted papers.",
+    "org.organizador.eyebrow": "organizing_committee",
+    "org.organizador.title": "Organizing Committee",
+    "org.organizador.intro":
+      "The local host team from Tecnológico de Costa Rica, in charge of logistics, venue, and the attendee experience.",
+    "org.comision.eyebrow": "permanent_commission",
+    "org.comision.title": "COMPDES Network Permanent Commission",
+    "org.comision.intro":
+      "A standing body of the network that safeguards the conference's academic continuity across editions.",
+    "org.representantes.eyebrow": "network_representatives",
+    "org.representantes.title": "Representatives of the COMPDES Network",
+    "org.representantes.intro":
+      "One representative per member university, serving as the liaison between their institution and the conference organization.",
+    "tur.list.title": "Available activities",
+    "tur.list.intro":
+      "Tourist attractions in San Carlos and La Fortuna. Rates are reference prices: confirm schedules, pricing and bookings directly with each operator.",
+    "tur.card.category": "Type",
+    "tur.card.price": "Rate",
+    "tur.card.hours": "Hours",
+    "tur.card.travel": "from the TEC",
+    "tur.card.details": "+ more information",
+    "tur.label.description": "Description",
+    "tur.label.duration": "Estimated duration",
+    "tur.label.email": "Email",
+    "tur.label.website": "Website",
+    "tur.card.map": "Get directions",
 
     // Schedule
     "cron.dates.eyebrow": "key dates",
@@ -400,6 +479,19 @@ export const ui = {
       "Important dates and program of the COMPDES 2027 conference.",
     "meta.desc.hospedaje":
       "Accommodation options for COMPDES 2027 attendees in San Carlos.",
+    "hosp.list.title": "Available hotels",
+    "hosp.list.intro":
+      "<strong>In preparation:</strong> this section will keep being updated soon with more accommodation information. In the meantime, these are the hotels in Ciudad Quesada and surroundings; rates are reference prices per night, so confirm availability and final pricing directly with each hotel.",
+    "hosp.card.travel": "from the TEC",
+    "hosp.card.rooms": "Rooms",
+    "hosp.price.perNight": "/ night",
+    "hosp.card.details": "+ more information",
+    "hosp.label.email": "Email",
+    "hosp.label.address": "Address",
+    "hosp.label.amenities": "Amenities",
+    "hosp.label.payment": "Payment methods",
+    "hosp.label.cancellation": "Cancellation policy",
+    "hosp.label.notes": "Notes",
     "meta.desc.turismo":
       "Tourism and activities in the San Carlos region during COMPDES 2027.",
     "meta.desc.organizacion":

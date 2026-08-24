@@ -1,0 +1,306 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import LangText from '../ui/LangText.astro';
+import { Image, type ImageMetadata } from 'astro:assets';
+import { useTranslations } from '../../i18n/ui';
+import { actividades } from '../../data/actividades';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+
+/* Las imágenes viven en src/assets/images/actividades/ y se resuelven por
+   nombre de archivo con el pipeline de Astro (optimización incluida).
+   Si una actividad aún no tiene foto propia, cae al arte placeholder. */
+const gallery = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/images/actividades/*.{webp,jpg,jpeg,png}',
+  { eager: true },
+);
+const imageFor = (path?: string): ImageMetadata | undefined => {
+  if (!path) return undefined;
+  const base = path.split('/').pop() ?? '';
+  return Object.entries(gallery).find(([key]) => key.endsWith(base))?.[1].default;
+};
+
+const telHref = (phone: string) => `tel:+${phone.replace(/\D/g, '')}`;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<!-- [ sec.01 ] Actividades disponibles — tarjetas expandibles con imagen -->
+<section
+  id="actividades"
+  class="border-t border-compdes-cream/10 bg-compdes-blue py-16 text-compdes-cream md:py-24"
+>
+  <div class="mx-auto max-w-6xl px-6">
+    <SectionHeading
+      sectionNumber={1}
+      eyebrowKey="nav.turismo"
+      titleKey="tur.list.title"
+      introKey="tur.list.intro"
+      align="center"
+      dark
+    />
+
+    <ul class="mt-12 grid gap-5 sm:grid-cols-2 md:mt-16">
+      {
+        actividades.map((activity, i) => {
+          const img = imageFor(activity.image);
+          return (
+            <li>
+              <details class="activity-card group" id={activity.id}>
+                <summary>
+                  {/* Encabezado visual */}
+                  <span class="relative block h-44 overflow-hidden border-b-2 border-compdes-yellow/60">
+                    {img ? (
+                      <Image
+                        src={img}
+                        alt={activity.name}
+                        class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        widths={[320, 480, 640]}
+                        sizes="(min-width: 640px) 46vw, 92vw"
+                      />
+                    ) : (
+                      <span class="fallback-art" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-12 opacity-50">
+                          <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+                        </svg>
+                      </span>
+                    )}
+                    <span class="absolute right-2 top-2 z-10 inline-flex items-center gap-1.5 rounded-full border border-compdes-yellow/40 bg-compdes-blue/85 px-2.5 py-1 font-mono text-[11px] leading-none text-compdes-yellow backdrop-blur-sm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      <LangText value={activity.travelTime} />
+                      <span class="text-compdes-yellow/70">{t('tur.card.travel')}</span>
+                    </span>
+                  </span>
+
+                  <span class="block px-5 pb-5 pt-4">
+                    <span class="flex items-baseline justify-between gap-3">
+                      <span class="shrink-0 font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
+                        [ act.{pad(i + 1)} ]
+                      </span>
+                      <span class="chip-category max-w-[62%] truncate">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3 shrink-0" aria-hidden="true">
+                          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><circle cx="7.5" cy="7.5" r="1" fill="currentColor" />
+                        </svg>
+                        <LangText value={activity.category} />
+                      </span>
+                    </span>
+
+                    <h3 class="mt-3 font-display text-xl font-bold leading-tight text-compdes-cream transition-colors group-hover:text-compdes-yellow">
+                      {activity.name}
+                    </h3>
+
+                    <dl class="mt-4 space-y-1.5 font-mono text-[13px] text-compdes-cream/75">
+                      {activity.phone && (
+                        <div class="flex items-center gap-2">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                          </svg>
+                          <dt class="sr-only">{t('nav.contacto')}</dt>
+                          <dd><a href={telHref(activity.phone)} class="transition-colors hover:text-compdes-yellow">{activity.phone}</a></dd>
+                        </div>
+                      )}
+                      <div class="flex items-start gap-2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                        <dt class="sr-only">{t('tur.card.price')}</dt>
+                        <dd><LangText value={activity.price} /></dd>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                          <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <dt class="shrink-0">{t('tur.card.hours')}:</dt>
+                        <dd><LangText value={activity.hours} /></dd>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <dt class="sr-only">{t('hosp.label.address')}</dt>
+                        <dd class="min-w-0">{activity.address}</dd>
+                      </div>
+                    </dl>
+
+                    <span class="activity-hint mt-4 flex items-center gap-1.5 font-mono text-[11px] tracking-wide text-compdes-yellow/80" data-i18n="tur.card.details">
+                      <span class="hint-closed" aria-hidden="true">[+]</span>
+                      <span class="hint-open" aria-hidden="true">[−]</span>
+                      {t('tur.card.details')}
+                    </span>
+                  </span>
+                </summary>
+
+                <div class="activity-body space-y-4 border-t border-dashed border-compdes-blue-600 px-5 pb-5 pt-4">
+                  <div>
+                    <p class="label-mono">{t('tur.label.description')}</p>
+                    <p class="text-sm leading-relaxed text-compdes-cream/75"><LangText value={activity.description} /></p>
+                  </div>
+
+                  <div class="flex flex-wrap gap-x-6 gap-y-2 font-mono text-[13px] text-compdes-cream/75">
+                    <p class="flex items-center gap-2">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0 text-compdes-yellow/60" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 2 12" />
+                      </svg>
+                      {t('tur.label.duration')}: <LangText value={activity.duration} />
+                    </p>
+                    {activity.email && (
+                      <a href={`mailto:${activity.email}`} class="inline-flex items-center gap-2 text-compdes-yellow underline decoration-compdes-yellow/40 underline-offset-2 transition-colors hover:decoration-compdes-yellow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5 shrink-0" aria-hidden="true">
+                          <rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                        {activity.email}
+                      </a>
+                    )}
+                  </div>
+
+                  {(activity.mapsUrl || activity.website) && (
+                    <div class="flex flex-wrap gap-3">
+                      {activity.mapsUrl && (
+                        <a
+                          href={activity.mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-2 rounded bg-compdes-yellow px-4 py-2 font-mono text-xs font-semibold tracking-wide text-compdes-blue transition-colors hover:bg-compdes-yellow-400"
+                          data-i18n="tur.card.map"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                          </svg>
+                          {t('tur.card.map')}
+                        </a>
+                      )}
+                      {activity.website && (
+                        <a
+                          href={activity.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-2 rounded border border-compdes-cream/30 px-4 py-2 font-mono text-xs tracking-wide text-compdes-cream/80 transition-colors hover:border-compdes-yellow hover:text-compdes-yellow"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+                            <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                          </svg>
+                          {t('tur.label.website')}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </details>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Misma receta de tarjeta expandible que HotelsList: superficie blue-800,
+     borde amarillo tenue y sombra dura que pasa a amarilla al abrir/enfocar.
+     details/summary = acordeón sin JS con accesibilidad de teclado nativa. */
+  .activity-card {
+    position: relative;
+    display: block;
+    height: 100%;
+    background-color: var(--color-compdes-blue-800);
+    border: 2px solid color-mix(in srgb, var(--color-compdes-yellow) 45%, transparent);
+    box-shadow: 6px 6px 0 0 var(--color-compdes-blue-600);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .activity-card:hover,
+  .activity-card:focus-within,
+  .activity-card[open] {
+    border-color: var(--color-compdes-yellow);
+    box-shadow: 6px 6px 0 0 var(--color-compdes-yellow);
+  }
+
+  .activity-card summary {
+    display: block;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .activity-card summary::-webkit-details-marker,
+  .activity-card summary::marker {
+    display: none;
+    content: '';
+  }
+
+  .activity-card summary:focus-visible {
+    outline: 2px solid var(--color-compdes-yellow);
+    outline-offset: -4px;
+  }
+
+  .chip-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-compdes-yellow) 40%, transparent);
+    background-color: color-mix(in srgb, var(--color-compdes-yellow) 10%, transparent);
+    padding: 0.2rem 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--color-compdes-yellow);
+  }
+
+  .fallback-art {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-compdes-yellow);
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(56, 189, 248, 0.18), transparent 55%),
+      linear-gradient(160deg, var(--color-compdes-blue-700), var(--color-compdes-blue-900));
+  }
+
+  .activity-hint .hint-open {
+    display: none;
+  }
+
+  .activity-card[open] .hint-open {
+    display: inline;
+  }
+
+  .activity-card[open] .hint-closed {
+    display: none;
+  }
+
+  .activity-body {
+    animation: activity-reveal 0.28s ease-out both;
+  }
+
+  .label-mono {
+    margin-bottom: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-compdes-yellow-400);
+  }
+
+  @keyframes activity-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .activity-body {
+      animation: none;
+    }
+  }
+</style>

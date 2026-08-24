@@ -1,0 +1,81 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import LangText from '../ui/LangText.astro';
+import { useTranslations } from '../../i18n/ui';
+import type { UiKey } from '../../i18n/ui';
+import type { CommitteeId, OrgMember } from '../../data/organizacion';
+
+export interface Props {
+  committeeId: CommitteeId;
+  sectionNumber: number;
+  members: OrgMember[];
+  /** Fondo alterno (blue vs blue-800) para alternar secciones como en Home/Cronograma. */
+  alt?: boolean;
+}
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+const { committeeId, sectionNumber, members, alt = false } = Astro.props;
+
+/* Convención de claves: org.<id>.eyebrow | .title | .intro */
+const eyebrowKey = `org.${committeeId}.eyebrow` as UiKey;
+const titleKey = `org.${committeeId}.title` as UiKey;
+const introKey = `org.${committeeId}.intro` as UiKey;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<!-- [ com.NN ] Comité — listado estilo directorio dentro de una terminal -->
+<section
+  id={committeeId}
+  class:list={[
+    'py-16 text-compdes-cream md:py-24',
+    alt ? 'bg-compdes-blue-800' : 'bg-compdes-blue',
+  ]}
+>
+  <div class="mx-auto max-w-4xl px-6">
+    <SectionHeading
+      sectionNumber={sectionNumber}
+      eyebrowKey={eyebrowKey}
+      titleKey={titleKey}
+      introKey={introKey}
+      align="center"
+      dark
+    />
+
+    <div class="terminal-window corner mt-12 md:mt-16">
+      <div class="term-titlebar">
+        <span class="term-dots"><i></i><i></i><i></i></span>
+        <span>$ {t(eyebrowKey)} --{lang === 'en' ? 'members' : 'miembros'}</span>
+        <span class="hidden sm:inline">v2027</span>
+      </div>
+      <div class="scanlines"></div>
+
+      <ul class="divide-y divide-dashed divide-compdes-blue-600">
+        {
+          members.map((member, i) => (
+            <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 px-5 py-4 sm:px-6">
+              <span class="shrink-0 font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
+                [ {pad(i + 1)} ]
+              </span>
+              <span class="font-semibold leading-snug text-compdes-cream">{member.name}</span>
+              <span class="min-w-0 basis-full text-[13px] leading-snug text-compdes-cream/60 sm:basis-auto sm:flex-1">
+                — {member.affiliation}
+              </span>
+              {member.role && (
+                <span class="ml-auto shrink-0 rounded-full border border-compdes-yellow/50 bg-compdes-yellow/10 px-2.5 py-0.5 font-mono text-[11px] leading-relaxed text-compdes-yellow">
+                  <LangText value={member.role} />
+                </span>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="border-t border-compdes-blue-600 px-5 py-2.5 sm:px-6">
+        <p class="font-mono text-[11px] tracking-wide text-compdes-cream/40">
+          {members.length} miembros · {t(titleKey)}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
