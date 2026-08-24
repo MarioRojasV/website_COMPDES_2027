@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import LangToggle from '../i18n/LangToggle.astro';
 import { useTranslations, localizedUrl } from '../i18n/ui';
+import logo from '../assets/logo/logo.webp';
 
 export interface Props {
   currentPath: string;
@@ -56,8 +58,12 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
   <div class="px-6 lg:px-10">
     <div class="flex items-center justify-between gap-3 py-4 xl:justify-start xl:gap-8">
       <a href={localizedUrl('/', lang)} class="flex items-center gap-2 font-display text-lg font-bold">
-        <span class="text-compdes-yellow">&gt;_</span>
-        COMPDES_<span class="text-compdes-yellow">2027</span>
+        <Image src={logo} alt="" height={72} loading="eager" class="h-8 w-auto xl:h-9" />
+        {/* El texto vive en un solo span: como items flex separados, el gap-2
+            del enlace metía un hueco entre "COMPDES_" y "2027". */}
+        <span>
+          COMPDES_<span class="text-compdes-yellow">2027</span>
+        </span>
       </a>
 
       <div class="flex items-center gap-3 xl:hidden">
