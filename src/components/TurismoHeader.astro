@@ -173,14 +173,22 @@ const t = useTranslations(lang);
     const SPRING_OMEGA = 12; // rad/s
     const SPRING_ZETA = 0.5; // razón de amortiguación (<1 = subamortiguado)
     // Entrada escénica: el tucán arranca fuera del encuadre (por arriba de
-    // la banda, que mide ~390px) y "aterriza" con este mismo resorte la
-    // primera vez que la sección asoma en pantalla.
-    const ENTER_OFFSET = 400;
+    // la banda) y "aterriza" con este mismo resorte la primera vez que la
+    // sección asoma en pantalla. El margen sobrio evita que asome un borde
+    // del recorte cuando cambia la altura de la banda entre viewports.
+    const ENTER_OFFSET = 460;
+    // Flotación idle VERTICAL: oscilación senoidal continua cuando no hay
+    // scroll. El recorte alfa del tucán deja ~61px de aire arriba y ~43px
+    // abajo (ya escalados a su tamaño de banda), así que ±8px no marca
+    // cortes contra los bordes del panel.
+    const IDLE_AMP = 8; // px
+    const IDLE_PERIOD = 3.2; // s
 
     let targetBgY = 0;
     let targetBirdY = 0;
     let birdY = 0;
     let birdV = 0;
+    let idlePhase = 0;
     let rafId = null;
     let lastT = 0;
     // Con motion reducido no hay puesta en escena: todo visible y estático.
@@ -198,11 +206,13 @@ const t = useTranslations(lang);
 
     function render() {
       bg.style.transform = `translate3d(0, ${targetBgY.toFixed(1)}px, 0)`;
-      bird.style.transform = `translate3d(0, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
+      const idleY = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
+      bird.style.transform = `translate3d(0, ${(reduceMotion ? 0 : birdY + idleY).toFixed(1)}px, 0)`;
     }
 
+    // Bucle persistente tras la entrada: integra el resorte hacia su objetivo
+    // y avanza la fase de flotación (el vaivén exige frames continuos).
     function frame(t) {
-      rafId = null;
       const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
       lastT = t;
 
@@ -213,13 +223,12 @@ const t = useTranslations(lang);
         2 * SPRING_ZETA * SPRING_OMEGA * birdV;
       birdV += accel * dt;
       birdY += birdV * dt;
-
       if (Math.abs(targetBirdY - birdY) < 0.3 && Math.abs(birdV) < 8) {
         birdY = targetBirdY;
         birdV = 0;
-        render();
-        return; // converge: se detiene el bucle hasta el próximo scroll
       }
+
+      idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
       render();
       rafId = requestAnimationFrame(frame);
     }
