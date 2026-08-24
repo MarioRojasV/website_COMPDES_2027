@@ -1,0 +1,28 @@
+---
+import { useTranslations } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+---
+
+<!-- Banda de cabecera del cronograma (misma receta que las demás páginas). -->
+<section class="relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue text-compdes-cream">
+  <div class="scanlines"></div>
+  <div class="relative mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <p class="mb-4 text-[11px] uppercase tracking-[0.3em] text-compdes-yellow">
+      [ mod.04 ] //
+      <span data-i18n="pageheader.tag.cronograma">{t('pageheader.tag.cronograma')}</span>
+    </p>
+    <h1 class="font-display text-4xl font-bold leading-tight md:text-5xl">
+      <span class="text-compdes-yellow">&gt;_</span>{' '}
+      <span data-i18n="nav.cronograma">{t('nav.cronograma')}</span>
+    </h1>
+    <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
+    <p
+      class="mt-6 max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-[1.05rem]"
+      data-i18n="pageheader.desc.cronograma"
+    >
+      {t('pageheader.desc.cronograma')}
+    </p>
+  </div>
+</section>

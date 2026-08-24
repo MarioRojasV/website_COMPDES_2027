@@ -107,62 +107,72 @@ const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
             <span class="hidden sm:inline">geo</span>
           </div>
 
-          <!-- Lienzo del mapa: rejilla + rutas + río + pin con pulso -->
-          <div class="map-art relative aspect-[4/3] overflow-hidden" aria-hidden="true">
-            <svg
-              class="absolute inset-0 h-full w-full"
-              viewBox="0 0 400 300"
-              preserveAspectRatio="none"
-              fill="none"
-            >
-              <path
-              d="M-10 252 C 80 215, 140 262, 225 218 S 355 150, 420 172"
-              stroke="#0284c7"
-              stroke-opacity="0.38"
-              stroke-width="10"
-              stroke-linecap="round"
-            ></path>
-              <path d="M-10 62 L 175 118 L 420 88" stroke="#152d63" stroke-width="5"></path>
-              <path d="M305 -10 L 272 142 L 332 310" stroke="#152d63" stroke-width="4"></path>
-              <path d="M60 120 L 200 128 M200 128 L 240 260" stroke="#152d63" stroke-width="3"></path>
-              <path
-              class="map-route"
-              d="M20 292 C 90 250, 150 190, 197 138"
-              stroke="var(--color-compdes-yellow)"
-              stroke-opacity="0.75"
-              stroke-width="2"
-              stroke-dasharray="7 7"
-            ></path>
-            </svg>
-
-            <!-- Pin del campus + anillos de pulso -->
-            <div class="map-pin absolute left-1/2 top-[42%]">
-              <span class="map-pin__ring"></span>
-              <span class="map-pin__ring map-pin__ring--late"></span>
-              <svg
-                width="34"
-                height="34"
-                viewBox="0 0 24 24"
-                class="relative transition-transform duration-300 ease-out group-hover:-translate-y-1.5"
-                fill="var(--color-compdes-yellow)"
-                stroke="var(--color-compdes-blue-900)"
-                stroke-width="1.4"
-              >
-                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path>
-                <circle cx="12" cy="10" r="3" fill="var(--color-compdes-blue-900)"></circle>
+          <!-- Lienzo del mapa: mapa real (Leaflet/OSM) sobre arte de respaldo;
+               ambas capas comparten el mismo punto central: el campus. -->
+          <div class="map-art relative aspect-[4/3] overflow-hidden">
+            <!-- Respaldo decorativo (sin JS / sin red): rejilla + rutas + río -->
+            <div class="absolute inset-0 z-0" aria-hidden="true">
+              <svg class="h-full w-full" viewBox="0 0 400 300" preserveAspectRatio="none" fill="none">
+                <path
+                  d="M-10 252 C 80 215, 140 262, 225 218 S 355 150, 420 172"
+                  stroke="#0284c7"
+                  stroke-opacity="0.38"
+                  stroke-width="10"
+                  stroke-linecap="round"
+                ></path>
+                <path d="M-10 62 L 175 118 L 420 88" stroke="#152d63" stroke-width="5"></path>
+                <path d="M305 -10 L 272 142 L 332 310" stroke="#152d63" stroke-width="4"></path>
+                <path d="M60 120 L 200 128 M200 128 L 240 260" stroke="#152d63" stroke-width="3"></path>
+                <path
+                  class="map-route"
+                  d="M20 292 C 90 250, 150 190, 197 138"
+                  stroke="var(--color-compdes-yellow)"
+                  stroke-opacity="0.75"
+                  stroke-width="2"
+                  stroke-dasharray="7 7"
+                ></path>
               </svg>
             </div>
 
-            <!-- Etiqueta flotante junto al pin -->
-            <span
-              class="absolute left-1/2 top-[42%] z-10 -translate-x-1/2 -translate-y-[calc(100%+34px)] whitespace-nowrap border border-compdes-blue-600 bg-compdes-blue px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-compdes-cream/90"
-              data-i18n="home.location.body.tec.title"
-            >
-              {t('home.location.body.tec.title')}
-            </span>
+            <!-- Mapa real: los tiles cargan por debajo del pin; pointer-events
+                 none deja que el clic llegue siempre al enlace de Google Maps. -->
+            <div class="map-live absolute inset-0 z-[1]" data-map aria-hidden="true"></div>
 
-            <span class="absolute right-3 top-2.5 font-mono text-[11px] text-compdes-yellow/90">N ↑</span>
-            <span class="absolute bottom-2.5 left-3 font-mono text-[10px] tracking-wide text-compdes-cream/50">
+            <!-- Pin del campus + anillos de pulso (punta anclada al centro) -->
+            <div class="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-full" aria-hidden="true">
+              <div class="relative">
+                <span class="map-pin__ring"></span>
+                <span class="map-pin__ring map-pin__ring--late"></span>
+                <svg
+                  width="34"
+                  height="34"
+                  viewBox="0 0 24 24"
+                  class="relative block transition-transform duration-300 ease-out group-hover:-translate-y-1.5"
+                  fill="var(--color-compdes-yellow)"
+                  stroke="var(--color-compdes-blue-900)"
+                  stroke-width="1.4"
+                >
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path>
+                  <circle cx="12" cy="10" r="3" fill="var(--color-compdes-blue-900)"></circle>
+                </svg>
+
+                <span
+                  class="absolute bottom-full left-1/2 mb-2.5 -translate-x-1/2 whitespace-nowrap border border-compdes-blue-600 bg-compdes-blue px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-compdes-cream/90"
+                  data-i18n="home.location.body.tec.title"
+                >
+                  {t('home.location.body.tec.title')}
+                </span>
+              </div>
+            </div>
+
+            <span
+              class="pointer-events-none absolute right-3 top-2.5 z-10 font-mono text-[11px] text-compdes-yellow/90"
+              aria-hidden="true">N ↑</span
+            >
+            <span
+              class="pointer-events-none absolute bottom-2.5 left-3 z-10 font-mono text-[10px] tracking-wide text-compdes-cream/50"
+              aria-hidden="true"
+            >
               10.36594° N · 84.51155° W
             </span>
           </div>
@@ -249,3 +259,73 @@ const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
     }
   }
 </style>
+
+<!-- Los internos de Leaflet se inyectan en runtime: necesitan selectores globales. -->
+<style is:global>
+  .map-live {
+    pointer-events: none;
+    background-color: var(--color-compdes-blue-900);
+  }
+
+  .map-live .leaflet-container {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    font-family: inherit;
+  }
+
+  /* Teñido de los tiles OSM hacia la paleta azul del sitio: invertido y
+     rotado a azul, con desaturación parcial para mantener legibilidad. */
+  .map-live .leaflet-tile {
+    filter:
+      grayscale(0.45) invert(0.93) hue-rotate(185deg) saturate(2.1)
+      brightness(0.92) contrast(1.02);
+  }
+
+  .map-live .leaflet-control-attribution {
+    background: rgb(0 10 35 / 0.72);
+    color: rgb(246 241 231 / 0.55);
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+
+  .map-live .leaflet-control-attribution a {
+    color: var(--color-compdes-yellow-400);
+  }
+</style>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  // Coordenadas oficiales del campus (OpenStreetMap way 351554216).
+  const CAMPUS: [number, number] = [10.36159, -84.50950]; //10.361290391054697, -84.50980771599849
+
+  const holder = document.querySelector<HTMLElement>('[data-map]');
+  if (holder && L) {
+    // Mapa de solo lectura: sin gestos ni controles; el contenedor además es
+    // pointer-events:none (CSS), así el clic siempre abre Google Maps.
+    const map = L.map(holder, {
+      zoomControl: false,
+      attributionControl: true,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      touchZoom: false,
+      zoomSnap: 0.25,
+      fadeAnimation: true,
+    });
+
+    map.setView(CAMPUS, 15.75);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    // El tamaño depende del layout; un repaso tras el load evita cortes.
+    window.addEventListener('load', () => map.invalidateSize());
+  }
+</script>

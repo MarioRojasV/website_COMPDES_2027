@@ -1,8 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHeader from '../components/PageHeader.astro';
+import CronogramaHeader from '../components/cronograma/CronogramaHeader.astro';
+import KeyDates from '../components/cronograma/KeyDates.astro';
+import DailyProgram from '../components/cronograma/DailyProgram.astro';
+import TalksAgenda from '../components/cronograma/TalksAgenda.astro';
 ---
 
 <BaseLayout titleKey="page.title.cronograma" descriptionKey="meta.desc.cronograma">
-  <PageHeader titleKey="nav.cronograma" index="04" tagKey="pageheader.tag.cronograma" />
+  <CronogramaHeader />
+  <KeyDates />
+  <DailyProgram />
+  <TalksAgenda />
 </BaseLayout>

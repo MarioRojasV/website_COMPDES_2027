@@ -336,3 +336,16 @@
     opacity: 0;
   }
 }
+
+/* ==========================================================================
+   Texto bilingüe embebido (componente LangText): ambas variantes viajan en
+   el HTML y el idioma activo se resuelve por <html lang>, así el toggle
+   instantáneo cubre también el contenido cargado desde src/data.
+   ========================================================================== */
+html[lang='en'] .lt--es {
+  display: none;
+}
+
+html:not([lang='en']) .lt--en {
+  display: none;
+}

@@ -1,0 +1,163 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import LangText from '../ui/LangText.astro';
+import { useTranslations } from '../../i18n/ui';
+import { normalizeForSearch, talks, type DayId, type TalkType } from '../../data/schedule';
+import type { LocalText } from '../../data/schedule';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+
+/* Etiqueta corta del día para la meta de cada tarjeta. */
+const DAY_SHORT: Record<DayId, LocalText> = {
+  miercoles: { es: 'Mié 21 jul', en: 'Wed 21 Jul' },
+  jueves: { es: 'Jue 22 jul', en: 'Thu 22 Jul' },
+  viernes: { es: 'Vie 23 jul', en: 'Fri 23 Jul' },
+};
+
+/* Chip por tipo de ponencia: la magistral se destaca sólida. */
+const TYPE_CHIP: Record<TalkType, string> = {
+  keynote: 'border-compdes-yellow bg-compdes-yellow text-compdes-blue',
+  talk: 'border-compdes-yellow/60 text-compdes-yellow',
+  workshop: 'border-compdes-cream/50 text-compdes-cream',
+};
+
+/* Índice de búsqueda pre-normalizado (título en ambos idiomas + autores). */
+const searchIndex = new Map(
+  talks.map((talk) => [
+    talk.id,
+    normalizeForSearch(
+      [talk.title.es, talk.title.en, ...talk.authors].join(' '),
+    ),
+  ]),
+);
+---
+
+<!-- [ sec.03 ] Agenda de ponencias — buscador cliente + tarjetas -->
+<section id="agenda" class="bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
+  <div class="mx-auto max-w-5xl px-6">
+    <SectionHeading
+      sectionNumber={3}
+      eyebrowKey="cron.agenda.eyebrow"
+      titleKey="cron.agenda.title"
+      introKey="cron.agenda.intro"
+      align="center"
+      dark
+    />
+
+    <div class="mt-12 md:mt-16" data-talks>
+      <!-- Barra de búsqueda -->
+      <div class="terminal-window corner mx-auto max-w-2xl">
+        <div class="term-titlebar">
+          <span class="term-dots"><i></i><i></i><i></i></span>
+          <span data-i18n="cron.search.label">{t('cron.search.label')}</span>
+          <span class="hidden sm:inline">filter</span>
+        </div>
+        <div class="flex bg-compdes-blue items-center gap-3 px-5 py-3.5">
+          <span class="font-mono text-sm text-compdes-yellow">&gt;</span>
+          <input
+            type="search"
+            data-talk-search
+            placeholder={t('cron.search.placeholder')}
+            aria-label={t('cron.search.placeholder')}
+            autocomplete="off"
+            class="w-full bg-compdes-blue font-mono text-sm text-compdes-cream outline-none placeholder:text-compdes-cream/35"
+          />
+        </div>
+      </div>
+
+      <p class="mt-4 text-center font-mono text-xs text-compdes-cream/60" aria-live="polite">
+        <span data-results-count>{talks.length} </span>
+        <span data-i18n="cron.search.results">{t('cron.search.results')}</span>
+      </p>
+
+      <!-- Tarjetas -->
+      <ul class="mt-8 grid gap-5 md:grid-cols-2">
+        {
+          talks.map((talk, i) => (
+            <li
+              data-talk
+              data-search={searchIndex.get(talk.id)}
+              class="flex flex-col border-2 border-compdes-blue-600 bg-compdes-blue p-6 transition-colors duration-300 hover:border-compdes-yellow"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <p class="font-mono text-[10px] tracking-[0.2em] text-compdes-cream/45">
+                  [ char.{String(i + 1).padStart(2, '0')} ]
+                </p>
+                <p
+                  class:list={[
+                    'border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em]',
+                    TYPE_CHIP[talk.type],
+                  ]}
+                >
+                  <span data-i18n={`cron.talk.type.${talk.type}`}>
+                    {t(`cron.talk.type.${talk.type}` as const)}
+                  </span>
+                </p>
+              </div>
+
+              <h3 class="mt-4 font-display text-lg leading-snug font-bold">
+                <LangText value={talk.title} />
+              </h3>
+
+              <p class="mt-2.5 text-sm text-compdes-cream/85">{talk.authors.join(', ')}</p>
+              <p class="mt-1 text-xs text-compdes-cream/55">{talk.affiliation}</p>
+
+              <div class="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-5 font-mono text-[11px] text-compdes-cream/60">
+                <span>[ <LangText value={DAY_SHORT[talk.day]} /> ]</span>
+                <span>[ {talk.start}–{talk.end} ]</span>
+                <span>[ {talk.room} ]</span>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Estado vacío del buscador -->
+      <div
+        data-talks-empty
+        hidden
+        class="mt-8 border-2 border-dashed border-compdes-blue-600 px-6 py-12 text-center"
+      >
+        <h3 class="font-display text-lg font-bold" data-i18n="cron.search.emptyTitle">
+          {t('cron.search.emptyTitle')}
+        </h3>
+        <p class="mt-2 text-sm text-compdes-cream/60" data-i18n="cron.search.emptyHint">
+          {t('cron.search.emptyHint')}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Filtro cliente: normaliza la consulta igual que el índice construido en
+  // build (minúsculas, sin tildes) y busca sobre el atributo data-search.
+  const wrap = document.querySelector<HTMLElement>('[data-talks]');
+  if (wrap) {
+    const input = wrap.querySelector<HTMLInputElement>('[data-talk-search]');
+    const items = Array.from(wrap.querySelectorAll<HTMLElement>('[data-talk]'));
+    const counter = wrap.querySelector<HTMLElement>('[data-results-count]');
+    const empty = wrap.querySelector<HTMLElement>('[data-talks-empty]');
+
+    const norm = (text: string) =>
+      text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    if (input && counter && empty) {
+      input.addEventListener('input', () => {
+        const query = norm(input.value.trim());
+        let visible = 0;
+
+        items.forEach((item) => {
+          const haystack = item.dataset.search ?? '';
+          const show = query === '' || haystack.includes(query);
+          item.classList.toggle('hidden', !show);
+          if (show) visible += 1;
+        });
+
+        counter.textContent = String(visible);
+        empty.toggleAttribute('hidden', visible !== 0);
+      });
+    }
+  }
+</script>

@@ -1,0 +1,96 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import LangText from '../ui/LangText.astro';
+import { useTranslations } from '../../i18n/ui';
+import { keyDates } from '../../data/schedule';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+---
+
+<!-- [ sec.01 ] Fechas clave — registro estilo consola dentro de una terminal -->
+<section id="fechas" class="bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
+  <div class="mx-auto max-w-4xl px-6">
+    <SectionHeading
+      sectionNumber={1}
+      eyebrowKey="cron.dates.eyebrow"
+      titleKey="cron.dates.title"
+      introKey="cron.dates.intro"
+      align="center"
+      dark
+    />
+
+    <div class="terminal-window corner mt-12 md:mt-16">
+      <div class="term-titlebar">
+        <span class="term-dots"><i></i><i></i><i></i></span>
+        <span data-i18n="cron.dates.term">{t('cron.dates.term')}</span>
+        <span class="hidden sm:inline">v2027</span>
+      </div>
+      <div class="scanlines"></div>
+
+      <ul class="divide-y divide-dashed divide-compdes-blue-600">
+        {
+          keyDates.map((item) => {
+            const confirmed = Boolean(item.date);
+            return (
+              <li
+                class:list={[
+                  'grid gap-x-6 gap-y-2 px-6 py-5 sm:grid-cols-[210px_1fr_auto] sm:items-center',
+                  confirmed && 'bg-compdes-blue-900/40',
+                ]}
+              >
+                {/* Fecha (o hueco por anunciar) */}
+                <p
+                  class:list={[
+                    'font-mono text-xs tracking-wide',
+                    confirmed ? 'text-compdes-yellow' : 'text-compdes-cream/35',
+                  ]}
+                >
+                  [
+                  {item.date ? (
+                    <LangText value={item.date} />
+                  ) : (
+                    <span>?? ??? ???? </span>
+                  )}
+                  ]
+                </p>
+
+                {/* Concepto + nota */}
+                <div class="min-w-0">
+                  <h3 class="font-display text-base leading-snug font-bold md:text-lg">
+                    <LangText value={item.label} />
+                  </h3>
+                  {item.note && (
+                    <p class="mt-1 text-xs leading-relaxed text-compdes-cream/60">
+                      <LangText value={item.note} />
+                    </p>
+                  )}
+                </div>
+
+                {/* Estado */}
+                <p
+                  class:list={[
+                    'flex items-center gap-2 justify-self-start border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.2em] sm:justify-self-end',
+                    confirmed
+                      ? 'border-compdes-yellow bg-compdes-yellow text-compdes-blue'
+                      : 'border-compdes-cream/30 text-compdes-cream/60',
+                  ]}
+                >
+                  <i
+                    class:list={[
+                      'status-led',
+                      confirmed ? 'bg-compdes-yellow' : 'bg-compdes-cream/50',
+                    ]}
+                  ></i>
+                  <span data-i18n={confirmed ? 'cron.status.confirmed' : 'cron.status.tbd'}>
+                    {confirmed ? t('cron.status.confirmed') : t('cron.status.tbd')}
+                  </span>
+                </p>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+</section>

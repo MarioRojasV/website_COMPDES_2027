@@ -44,6 +44,41 @@ export const ui = {
       "Forma parte de COMPDES y participa como espectador, ponente o tallerista, compartiendo experiencias, conocimientos e ideas.",
     "pageheader.desc.turismo":
       "Explora la riqueza natural de Costa Rica y descubre paisajes llenos de vida, flora y fauna.",
+    "pageheader.desc.cronograma":
+      "Fechas clave, programa académico por día y agenda detallada de ponencias del XX Congreso COMPDES.",
+
+    // Cronograma
+    "cron.dates.eyebrow": "fechas clave",
+    "cron.dates.title": "Fechas importantes",
+    "cron.dates.intro":
+      "El calendario oficial del congreso. Las fechas aún no definidas se anunciarán por este medio y en las redes oficiales de la red COMPDES.",
+    "cron.dates.term": "[ fechas_clave ]",
+    "cron.status.confirmed": "confirmado",
+    "cron.status.tbd": "por anunciar",
+    "cron.program.eyebrow": "programa",
+    "cron.program.title": "Programa por día",
+    "cron.program.intro":
+      "Tres días de actividades: ponencias magistrales, sesiones técnicas, talleres, pausas y ceremonias. Selecciona un día para ver su programación.",
+    "cron.program.tabsAria": "Seleccionar día del congreso",
+    "cron.agenda.eyebrow": "ponencias",
+    "cron.agenda.title": "Agenda de ponencias",
+    "cron.agenda.intro":
+      "Detalle de cada presentación: título, autoría, horario y sala. Usa el buscador para filtrar por nombre de la ponencia o de sus autores.",
+    "cron.search.label": "grep_ponencias",
+    "cron.search.placeholder": "Buscar por título o autor…",
+    "cron.search.results": "ponencia(s) encontrada(s)",
+    "cron.search.emptyTitle": "Sin resultados",
+    "cron.search.emptyHint": "Intenta con otro término o revisa la ortografía.",
+    "cron.kind.keynote": "magistral",
+    "cron.kind.session": "sesión técnica",
+    "cron.kind.workshop": "taller",
+    "cron.kind.break": "pausa café",
+    "cron.kind.lunch": "almuerzo",
+    "cron.kind.ceremony": "ceremonia",
+    "cron.kind.activity": "actividad",
+    "cron.talk.type.keynote": "magistral",
+    "cron.talk.type.talk": "ponencia",
+    "cron.talk.type.workshop": "taller",
 
     // Navigation
     "nav.home": "Inicio",
@@ -203,6 +238,41 @@ export const ui = {
       "Be part of COMPDES and participate as an attendee, speaker, or workshop facilitator, sharing experiences, knowledge, and ideas.",
     "pageheader.desc.turismo":
       "Explore Costa Rica's natural wealth and discover landscapes full of life, flora and fauna.",
+    "pageheader.desc.cronograma":
+      "Key dates, daily academic program, and detailed talk agenda of the 20th COMPDES Conference.",
+
+    // Schedule
+    "cron.dates.eyebrow": "key dates",
+    "cron.dates.title": "Important dates",
+    "cron.dates.intro":
+      "The official conference calendar. Dates that are not yet defined will be announced here and on the official COMPDES network social media.",
+    "cron.dates.term": "[ key_dates ]",
+    "cron.status.confirmed": "confirmed",
+    "cron.status.tbd": "to be announced",
+    "cron.program.eyebrow": "program",
+    "cron.program.title": "Day-by-day program",
+    "cron.program.intro":
+      "Three days of activities: keynotes, technical sessions, workshops, breaks, and ceremonies. Select a day to view its schedule.",
+    "cron.program.tabsAria": "Select conference day",
+    "cron.agenda.eyebrow": "talks",
+    "cron.agenda.title": "Talk agenda",
+    "cron.agenda.intro":
+      "Details for each presentation: title, authors, time, and room. Use the search box to filter by talk title or author names.",
+    "cron.search.label": "grep_talks",
+    "cron.search.placeholder": "Search by title or author…",
+    "cron.search.results": "talk(s) found",
+    "cron.search.emptyTitle": "No results",
+    "cron.search.emptyHint": "Try another term or check the spelling.",
+    "cron.kind.keynote": "keynote",
+    "cron.kind.session": "technical session",
+    "cron.kind.workshop": "workshop",
+    "cron.kind.break": "coffee break",
+    "cron.kind.lunch": "lunch",
+    "cron.kind.ceremony": "ceremony",
+    "cron.kind.activity": "activity",
+    "cron.talk.type.keynote": "keynote",
+    "cron.talk.type.talk": "talk",
+    "cron.talk.type.workshop": "workshop",
 
     // Navigation
     "nav.home": "Home",

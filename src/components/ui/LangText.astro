@@ -1,0 +1,19 @@
+---
+import type { LocalText } from '../../data/schedule';
+
+export interface Props {
+  value: LocalText;
+  class?: string;
+}
+
+/**
+ * Texto bilingüe para contenido data-driven (schedule.ts y futuros datasets).
+ * Renderiza AMBAS variantes; global.css muestra la que corresponde según
+ * `<html lang>`, de modo que el toggle de idioma instantáneo también funciona
+ * con este contenido (sin claves en el diccionario).
+ */
+const { value, class: className } = Astro.props;
+---
+
+<span class:list={['lt lt--es', className]}>{value.es}</span>
+<span class:list={['lt lt--en', className]}>{value.en}</span>
