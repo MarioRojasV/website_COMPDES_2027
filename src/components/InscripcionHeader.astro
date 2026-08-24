@@ -71,7 +71,7 @@ const t = useTranslations(lang);
     right: 0;
     transform: translateY(-50%);
     height: 100%;
-    width: min(42vw, 580px);
+    width: min(46vw, 640px);
     overflow: hidden;
     pointer-events: none;
     user-select: none;
@@ -158,11 +158,13 @@ const t = useTranslations(lang);
   .inscripcion-art__bird {
     /* El img es un elemento REEMPLAZADO: se dimensiona por ANCHO (= ventana
        visible) para que contain dibuje la lapa completa, anclada al borde
-       derecho y centrada en vertical. Sin máscara ni filtros: conserva su
-       recorte alfa original, nítido y opaco. */
+       derecho y centrada en vertical. max-height la protege cuando la
+       ventana crece más que la banda (contain letterboxea sin distorsión).
+       Sin máscara ni filtros: conserva su recorte alfa original, nítido. */
     inset: 0 0 0 auto;
     width: 100%;
     height: auto;
+    max-height: 100%;
     margin-block: auto;
     object-fit: contain;
     object-position: right center;
@@ -190,8 +192,10 @@ const t = useTranslations(lang);
     // banda) y "aterriza" con este mismo resorte la primera vez que la
     // sección asoma en pantalla.
     const ENTER_OFFSET = 460;
-    // Flotación idle: oscilación senoidal continua que suma vida al ave
-    // cuando no hay scroll. Amplitud y ciclo sutil por diseño.
+    // Flotación idle: oscilación senoidal continua que suma vida a la lapa
+    // cuando no hay scroll. Es HORIZONTAL porque el recorte alfa de la lapa
+    // casi toca el borde inferior de su lienzo (1px de holgura): cualquier
+    // vaivén vertical marcaría cortes; lateralmente sobran >100px por lado.
     const IDLE_AMP = 8; // px
     const IDLE_PERIOD = 3.2; // s
 
@@ -217,8 +221,8 @@ const t = useTranslations(lang);
 
     function render() {
       bg.style.transform = `translate3d(0, ${targetBgY.toFixed(1)}px, 0)`;
-      const idleY = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
-      bird.style.transform = `translate3d(0, ${(reduceMotion ? 0 : birdY + idleY).toFixed(1)}px, 0)`;
+      const idleX = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
+      bird.style.transform = `translate3d(${idleX.toFixed(1)}px, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
     }
 
     // Bucle persistente tras la entrada: integra el resorte hacia su objetivo
@@ -243,10 +247,14 @@ const t = useTranslations(lang);
     }
 
     function wake() {
-      if (!entered || rafId !== null) return; // el bucle ya corre tras entrar
+      if (!entered) return; // antes de la entrada no hay nada que mover
+      // Con bucle persistente los objetivos SIEMPRE se actualizan al hacer
+      // scroll; el guard de rafId solo decide si hay que arrancar el bucle.
       computeTargets();
-      lastT = performance.now();
-      rafId = requestAnimationFrame(frame);
+      if (rafId === null) {
+        lastT = performance.now();
+        rafId = requestAnimationFrame(frame);
+      }
     }
 
     // Revelado de la selva: tween de opacity conducido por rAF (easeOutCubic).

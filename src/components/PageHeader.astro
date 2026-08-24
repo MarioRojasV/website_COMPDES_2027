@@ -11,23 +11,36 @@ export interface Props {
   descKey?: UiKey;
   /** Muestra el recuadro terminal "en preparación" bajo el encabezado. */
   placeholder?: boolean;
+  /** Arte opcional de dos capas: fondo selvático que se funde con la banda
+      más un animal recortado con alfa (flotación idle + entrada escénica). */
+  artBgSrc?: string;
+  artBirdSrc?: string;
 }
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
-const { titleKey, index, id, tagKey, descKey, placeholder = true } = Astro.props;
+const { titleKey, index, id, tagKey, descKey, placeholder = true, artBgSrc, artBirdSrc } = Astro.props;
 const tagLabel = tagKey ? t(tagKey) : t('common.section');
+const hasArt = Boolean(artBgSrc && artBirdSrc);
 ---
 
 <section class="relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue text-compdes-cream">
+  {
+    hasArt && (
+      <div class="pageheader-art" aria-hidden="true">
+        <img class="pageheader-art__bg" src={artBgSrc} alt="" decoding="async" draggable="false" />
+        <img class="pageheader-art__bird" src={artBirdSrc} alt="" decoding="async" draggable="false" />
+      </div>
+    )
+  }
   <div class="scanlines"></div>
-  <div class="relative mx-auto max-w-5xl px-6 py-16 md:py-24">
+  <div class="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-24">
     <p class="mb-4 text-[11px] uppercase tracking-[0.3em] text-compdes-yellow">
       [ mod.{index} ] // <span data-i18n={tagKey}>{tagLabel}</span>
     </p>
-    <h1 id={id} class="font-display text-4xl font-bold leading-tight md:text-5xl" data-i18n={titleKey}>
-      <span class="text-compdes-yellow">&gt;_</span>
-      {t(titleKey)}
+    <h1 id={id} class="font-display text-4xl font-bold leading-tight md:text-5xl">
+      <span class="text-compdes-yellow">&gt;_</span>{' '}
+      <span data-i18n={titleKey}>{t(titleKey)}</span>
     </h1>
     <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
     {
@@ -60,3 +73,227 @@ const tagLabel = tagKey ? t(tagKey) : t('common.section');
   </div>
 </section>
 )}
+
+<style>
+  /* Composición de dos capas anclada al borde derecho de la banda (misma
+     receta validada en TurismoHeader e InscripcionHeader). Solo se activa
+     cuando la página pasa artBgSrc + artBirdSrc; las clases llevan prefijo
+     propio para no colisionar con los querySelector de otros componentes. */
+  .pageheader-art {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    height: 100%;
+    width: min(46vw, 640px);
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .pageheader-art {
+      display: block;
+    }
+  }
+
+  /* Ambas capas sobredimensionadas (bleed) para que ningún desplazamiento
+     deje bordes descubiertos. El sangrado extra por la derecha recorta fuera
+     de pantalla cualquier margen transparente interno de las imágenes →
+     pegado total al borde del viewport.
+     max-width:none anula el `img { max-width: 100% }` del preflight de
+     Tailwind, que si no colapsa las capas al ancho del contenedor. */
+  .pageheader-art__bg,
+  .pageheader-art__bird {
+    position: absolute;
+    inset: -9% -18% -9% -9%;
+    width: auto;
+    max-width: none;
+    height: 118%;
+    will-change: transform;
+  }
+
+  .pageheader-art__bg {
+    object-fit: cover;
+    object-position: right center;
+    /* Disolución alfa EXCLUSIVA de esta capa (selva): rampa larga de 7
+       paradas con crecimiento casi exponencial — disolución progresiva y
+       orgánica hacia el azul de la página, sin velo adicional. El borde
+       derecho llega SÓLIDO hasta el viewport, sin fundido de salida. */
+    -webkit-mask-image:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.03) 15%,
+        rgb(0 0 0 / 0.1) 28%,
+        rgb(0 0 0 / 0.22) 40%,
+        rgb(0 0 0 / 0.42) 52%,
+        rgb(0 0 0 / 0.65) 64%,
+        rgb(0 0 0 / 0.85) 76%,
+        #000 90%,
+        #000 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 14%,
+        #000 34%,
+        #000 68%,
+        rgb(0 0 0 / 0.35) 86%,
+        transparent 100%
+      );
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.03) 15%,
+        rgb(0 0 0 / 0.1) 28%,
+        rgb(0 0 0 / 0.22) 40%,
+        rgb(0 0 0 / 0.42) 52%,
+        rgb(0 0 0 / 0.65) 64%,
+        rgb(0 0 0 / 0.85) 76%,
+        #000 90%,
+        #000 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 14%,
+        #000 34%,
+        #000 68%,
+        rgb(0 0 0 / 0.35) 86%,
+        transparent 100%
+      );
+    mask-composite: intersect;
+  }
+
+  .pageheader-art__bird {
+    /* La rana es un lienzo HORIZONTAL con transparencia lateral (1672×941;
+       el animal ocupa x[613..1318] y TOCA los bordes superior e inferior):
+       se dimensiona por ALTURA para llenar todo el panel. El desborde
+       lateral del lienzo cae en zona transparente y el contenedor lo
+       recorta sin cortes visibles; sobran >150px de holgura por lado. */
+    inset: 0 0 0 auto;
+    width: auto;
+    max-width: none;
+    height: 100%;
+  }
+</style>
+
+<script>
+  // Entrada escénica + flotación idle del arte de PageHeader (si existe).
+  // Sin parallax de scroll: tras aterrizar, el animal únicamente flota y el
+  // fondo permanece revelado y estático.
+  const art = document.querySelector('.pageheader-art');
+  const bg = document.querySelector('.pageheader-art__bg');
+  const bird = document.querySelector('.pageheader-art__bird');
+
+  if (art && bg && bird) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Resorte subamortiguado: ω fija el periodo del aterrizaje (2π/ω ≈ 0.52 s)
+    // y ζ < 1 hace que sobrepase su posición una vez y rebote antes de
+    // asentarse. Solo alimenta la entrada escénica.
+    const SPRING_OMEGA = 12; // rad/s
+    const SPRING_ZETA = 0.5; // razón de amortiguación (<1 = subamortiguado)
+    // Entrada escénica: el animal arranca fuera del encuadre (por arriba de
+    // la banda) y "aterriza" la primera vez que esta asoma en pantalla.
+    const ENTER_OFFSET = 460;
+    // Flotación idle HORIZONTAL: el recorte alfa toca arriba y abajo del
+    // lienzo (cero holgura vertical), pero sobran >150px a cada lado.
+    const IDLE_AMP = 8; // px
+    const IDLE_PERIOD = 3.2; // s
+
+    let birdY = 0;
+    let birdV = 0;
+    let idlePhase = 0;
+    let rafId = null;
+    let lastT = 0;
+    // Con motion reducido no hay puesta en escena ni flotación: estático.
+    let entered = reduceMotion;
+
+    function render() {
+      const idleX = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
+      bird.style.transform = `translate3d(${idleX.toFixed(1)}px, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
+    }
+
+    // Bucle persistente tras la entrada: integra el resorte hacia el reposo
+    // y avanza la fase de flotación. Coste por frame ínfimo (un transform).
+    function frame(t) {
+      const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
+      lastT = t;
+
+      const accel = -SPRING_OMEGA * SPRING_OMEGA * birdY - 2 * SPRING_ZETA * SPRING_OMEGA * birdV;
+      birdV += accel * dt;
+      birdY += birdV * dt;
+      if (Math.abs(birdY) < 0.3 && Math.abs(birdV) < 8) {
+        birdY = 0;
+        birdV = 0;
+      }
+
+      idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
+      render();
+      rafId = requestAnimationFrame(frame);
+    }
+
+    // Revelado de la selva: tween de opacity conducido por rAF (easeOutCubic).
+    // No depende del reloj de transiciones CSS, que en algunos entornos no
+    // avanza; así el fundido es idéntico en cualquier navegador.
+    const BG_FADE_MS = 900;
+    let fadeRaf = null;
+
+    function startBgFade() {
+      if (reduceMotion || fadeRaf !== null) return;
+      const t0 = performance.now();
+      function step(t) {
+        const k = Math.min((t - t0) / BG_FADE_MS, 1);
+        bg.style.opacity = (1 - Math.pow(1 - k, 3)).toFixed(3);
+        fadeRaf = k < 1 ? requestAnimationFrame(step) : null;
+      }
+      fadeRaf = requestAnimationFrame(step);
+    }
+
+    function startEntrance() {
+      entered = true;
+      // Un frame de respiro para que el estado oculto llegue a pintarse
+      // antes de arrancar el revelado y el aterrizaje.
+      requestAnimationFrame(() => {
+        void bg.offsetWidth;
+        startBgFade();
+        if (rafId === null) {
+          lastT = performance.now();
+          rafId = requestAnimationFrame(frame);
+        }
+      });
+    }
+
+    // Estado inicial: sin motion reducido el animal se coloca fuera del
+    // encuadre y la selva en opacity 0, a la espera del IntersectionObserver.
+    // El contenedor de arte comparte geometría con la banda (top 50% +
+    // height 100%), así que observarlo equivale a observar la sección.
+    render();
+
+    if (!reduceMotion) {
+      birdY = -ENTER_OFFSET;
+      render();
+      bg.style.opacity = '0';
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              io.disconnect();
+              startEntrance();
+            }
+          },
+          { threshold: 0.25 }
+        );
+        io.observe(art);
+      } else {
+        startEntrance();
+      }
+    }
+  }
+</script>

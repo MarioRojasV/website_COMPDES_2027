@@ -62,7 +62,7 @@ export const actividades: Activity[] = [
   },
   {
     id: 'pn-volcan-arenal',
-    image: '/assets/images/actividades/mistico_park.webp',
+    image: '/assets/images/actividades/volcan_arenal.webp',
     name: 'Parque Nacional del Volcán Arenal',
     category: {
       es: 'Aventura y caminatas por la naturaleza',
@@ -84,7 +84,7 @@ export const actividades: Activity[] = [
   },
   {
     id: 'termales-laureles',
-    image: '/assets/images/actividades/mistico_park.webp',
+    image: '/assets/images/actividades/laureles.webp',
     name: 'Termales Los Laureles',
     category: { es: 'Piscinas termales', en: 'Thermal pools' },
     description: {
@@ -103,7 +103,7 @@ export const actividades: Activity[] = [
   },
   {
     id: 'termales-kalambu',
-    image: '/assets/images/actividades/mistico_park.webp',
+    image: '/assets/images/actividades/kalambu.webp',
     name: 'Termales Kalambu',
     category: { es: 'Toboganes acuáticos', en: 'Water slides' },
     description: { es: 'Piscinas y canopy.', en: 'Pools and zipline.' },
@@ -120,7 +120,7 @@ export const actividades: Activity[] = [
   },
   {
     id: 'termalitas-el-arenal',
-    image: '/assets/images/actividades/mistico_park.webp',
+    image: '/assets/images/actividades/termales_del_arenal.webp',
     name: 'Termalitas El Arenal',
     category: {
       es: 'Piscinas con vista al volcán',
