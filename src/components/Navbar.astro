@@ -56,8 +56,13 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
   </div>
 
   <div class="px-6 lg:px-10">
-    <div class="flex items-center justify-between gap-3 py-4 xl:justify-start xl:gap-8">
-      <a href={localizedUrl('/', lang)} class="flex items-center gap-2 font-display text-lg font-bold">
+    <!-- flex-wrap: con el menú abierto (< xl), la ul w-full salta a su propia
+        línea debajo de la marca en vez de exprimirse junto a logo y botones. -->
+    <div class="flex flex-wrap items-center justify-between gap-3 py-4 xl:justify-start xl:gap-8">
+      <a
+        href={localizedUrl('/', lang)}
+        class="flex shrink-0 items-center gap-2 font-mono text-lg font-bold"
+      >
         <Image src={logo} alt="" height={72} loading="eager" class="h-8 w-auto xl:h-9" />
         {/* El texto vive en un solo span: como items flex separados, el gap-2
             del enlace metía un hueco entre "COMPDES_" y "2027". */}
@@ -66,7 +71,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
         </span>
       </a>
 
-      <div class="flex items-center gap-3 xl:hidden">
+      <div class="flex shrink-0 items-center gap-3 xl:hidden">
         <LangToggle lang={lang} />
         <button
           id="menu-btn"
@@ -82,7 +87,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
 
       <ul
         id="menu"
-        class="hidden w-full flex-col gap-y-1 pb-4 xl:flex xl:w-auto xl:flex-row xl:items-center xl:gap-x-4 xl:pb-0"
+        class="hidden w-full basis-full flex-col gap-y-1 border-t border-compdes-cream/10 pt-3 pb-4 xl:flex xl:w-auto xl:basis-auto xl:flex-row xl:items-center xl:gap-x-4 xl:border-t-0 xl:pt-0 xl:pb-0"
       >
         {links.map((link, i) => {
           const href = localizedUrl(link.href, lang);
@@ -94,7 +99,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
                 aria-current={isActive ? 'page' : undefined}
                 data-i18n={link.key}
                 class:list={[
-                  'flex w-full items-baseline gap-1.5 rounded px-1 py-2 text-xs leading-relaxed transition-colors xl:inline-flex xl:w-auto xl:whitespace-nowrap xl:px-0 xl:py-0',
+                  'flex w-full items-baseline gap-1.5 rounded px-1 py-2.5 text-xs leading-relaxed transition-colors xl:inline-flex xl:w-auto xl:whitespace-nowrap xl:px-0 xl:py-0',
                   isActive
                     ? 'text-compdes-yellow'
                     : 'text-compdes-cream/80 hover:text-compdes-yellow',

@@ -6,12 +6,19 @@ const t = useTranslations(lang);
 ---
 
 <section class="hero" aria-label={t('hero.title')}>
-  <img class="hero-bg" src="/fondos/principal.webp" alt="" />
-  <img id="hero-logo" class="hero-logo" src="/fondos/volcano.webp" alt="" />
-  <div class="hero-scrim"></div>
+  <div class="hero-art" aria-hidden="true">
+    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/principal.webp`} alt="" />
+    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" />
+    <img class="hero-ctec" src={`${import.meta.env.BASE_URL}/fondos/ctec.webp`} alt="" />
+    <img class="hero-deer" src={`${import.meta.env.BASE_URL}/fondos/deer.webp`} alt="" />
+  </div>
+
+  <!-- Velo inferior de integración: funde la base de la viñeta con el azul
+       plano y con la sección siguiente (mismo color, nunca negro). -->
+  <div class="hero-scrim" aria-hidden="true"></div>
 
   <div class="hero-inner">
-    <h1 class="hero-title font-display font-bold" data-i18n="hero.title">
+    <h1 class="hero-title font-mono font-bold" data-i18n="hero.title">
       <span class="block">COMPDES</span>
       <span class="block text-compdes-yellow">2027</span>
     </h1>
@@ -21,99 +28,202 @@ const t = useTranslations(lang);
 <style>
   .hero {
     position: relative;
-    height: 100vh;
+    /* Altura = viewport disponible (100svh menos la navbar sticky ≈ 72px):
+       todo el hero cabe en el primer vistazo sin scroll. Piso de 560px para
+       pantallas angostas. Full-bleed: las capas recortan solo cielo arriba. */
+    height: calc(100vh - 4.5rem);
+    height: calc(100svh - 4.5rem);
     min-height: 560px;
     overflow: hidden;
-    background-color: var(--color-compdes-blue);
+    background-color: var(--color-compdes-blue-900);
+  }
+
+  /* Contenedor de capas a sangre completa: abarca todo el panel, de borde
+     a borde de la página. Sin centrado ni elevación — los 4 fondos son
+     16:9 exacto igual que el panel, así que el llenado es píxel-perfecto. */
+  .hero-art {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    user-select: none;
   }
 
   .hero-bg,
-  .hero-logo {
+  .hero-logo,
+  .hero-ctec,
+  .hero-deer {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Anclaje inferior: el recorte vertical se come el cielo superior,
+       nunca la escena (rocas, deer, CTEC). */
+    object-position: center bottom;
+  }
+
+  /* Solo las capas animadas declaran will-change; principal queda fija. */
+  .hero-logo,
+  .hero-ctec,
+  .hero-deer {
     will-change: transform;
   }
 
-  .hero-bg {
-    transform: scale(1.15);
+  /* Profundidad: el título queda UNA CAPA POR DETRÁS del deer (z 2 > 1),
+     pero por encima de volcano/ctec/principal (sin z-index). */
+  .hero-deer {
+    z-index: 2;
   }
 
-  .hero-logo {
-    transform: scale(1.2);
-  }
-
+  /* Velo inferior de integración: funde la base de TODAS las capas (deer
+     incluido, va por encima con z 3) con el azul plano y con la sección
+     siguiente — degradado del color del panel, nunca negro. */
   .hero-scrim {
     position: absolute;
     inset: 0;
-    z-index: 1;
-    background:
-      linear-gradient(to bottom, rgb(0 49 83 / 0.35), transparent 35%),
-      linear-gradient(to top, rgb(0 49 83 / 0.45), transparent 40%);
+    z-index: 3;
+    background: linear-gradient(to top, var(--color-compdes-blue-900), transparent 25%);
     pointer-events: none;
   }
 
   .hero-inner {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 0 max(1.5rem, 6vw);
+    padding: 0 max(1.5rem, 6vw) max(10rem, 46svh) max(3rem, 9vw);
     text-align: left;
     will-change: transform;
   }
 
   .hero-title {
     color: var(--color-compdes-cream);
-    font-size: clamp(3.5rem, 11vw, 8.5rem);
+    font-size: clamp(2.75rem, 8.75vw, 6.75rem);
     line-height: 1.05;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
+    /* Sombra suave: difuminados amplios y poca opacidad para separar el
+       texto del fondo sin dureza. */
     text-shadow:
-      0 2px 6px rgb(0 0 0 / 0.55),
-      0 10px 40px rgb(0 0 0 / 0.45);
+      0 2px 14px rgb(0 0 0 / 0.35),
+      0 10px 56px rgb(0 0 0 / 0.3);
     will-change: transform, opacity;
   }
 </style>
 
 <script>
   const hero = document.querySelector('.hero');
-  const bg = document.querySelector('.hero-bg');
   const logo = document.querySelector('#hero-logo');
+  const ctec = document.querySelector('.hero-ctec');
   const title = document.querySelector('.hero-title');
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let ticking = false;
+  // Capas con alfa, de fondo a frente: recorrido creciente con respuesta cada
+  // vez más lenta (ω bajo). A escala 1 (sin sangrado) la amortiguación debe
+  // ser casi crítica (ζ 0.9): ningún rebote descubre bordes al moverse.
+  // El fondo principal y el deer quedan fijos, sin parallax. El título
+  // conserva rebote propio porque es texto y no cubre bordes.
+  const layers = [
+    { el: logo, amp: 95, omega: 13, zeta: 0.9 },
+    { el: ctec, amp: 150, omega: 11, zeta: 0.9 },
+    { el: title, amp: 180, omega: 7, zeta: 0.5 },
+  ].filter((l) => l.el);
 
-  function update() {
-    ticking = false;
-    if (reduceMotion || !hero) return;
+  for (const l of layers) {
+    l.pos = 0;
+    l.vel = 0;
+  }
 
+  let progress = 0;
+  let rafId = null;
+  let lastT = 0;
+  let inView = false;
+
+  function render() {
+    for (const l of layers) {
+      l.el.style.transform = `translate3d(0, ${l.pos.toFixed(1)}px, 0)`;
+    }
+    if (title) title.style.opacity = String(1 - progress * 0.35);
+  }
+
+  function frame(t) {
+    const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
+    lastT = t;
+
+    let settled = true;
+    for (const l of layers) {
+      const target = progress * l.amp;
+
+      // Resorte hacia el objetivo de scroll (integración semi-implícita).
+      const accel = -l.omega * l.omega * (l.pos - target) - 2 * l.zeta * l.omega * l.vel;
+      l.vel += accel * dt;
+      l.pos += l.vel * dt;
+
+      if (Math.abs(l.pos - target) > 0.3 || Math.abs(l.vel) > 8) {
+        settled = false;
+      } else {
+        l.pos = target;
+        l.vel = 0;
+      }
+    }
+
+    render();
+
+    // Auto-stop: sin animación idle no hace falta bucle persistente; el
+    // siguiente scroll reactiva el bucle vía wake().
+    rafId = settled ? null : requestAnimationFrame(frame);
+  }
+
+  function wake() {
+    if (rafId === null && inView && !reduceMotion && layers.length > 0) {
+      lastT = performance.now();
+      rafId = requestAnimationFrame(frame);
+    }
+  }
+
+  function sleep() {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  function readProgress() {
+    if (!hero) return;
     const max = hero.offsetHeight;
-    if (max === 0) return;
-
-    const y = Math.max(0, window.scrollY);
-    const p = Math.min(y / max, 1);
-
-    if (bg) bg.style.transform = `scale(1.15) translate3d(0, ${p * 40}px, 0)`;
-    if (logo) logo.style.transform = `scale(1.2) translate3d(0, ${p * 95}px, 0)`;
-    if (title) {
-      title.style.transform = `translate3d(0, ${p * 180}px, 0)`;
-      title.style.opacity = String(1 - p * 0.35);
-    }
+    progress = max === 0 ? 0 : Math.min(Math.max(window.scrollY / max, 0), 1);
   }
 
-  function onScroll() {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(update);
-    }
-  }
+  if (!reduceMotion && layers.length > 0) {
+    window.addEventListener(
+      'scroll',
+      () => {
+        readProgress();
+        wake();
+      },
+      { passive: true }
+    );
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  update();
+    if ('IntersectionObserver' in window && hero) {
+      new IntersectionObserver(
+        (entries) => {
+          inView = entries.some((entry) => entry.isIntersecting);
+          if (inView) {
+            wake();
+          } else {
+            sleep();
+          }
+        },
+        { threshold: 0.25 }
+      ).observe(hero);
+    } else {
+      inView = true;
+      wake();
+    }
+
+    readProgress();
+    render();
+  }
 </script>

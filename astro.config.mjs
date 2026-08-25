@@ -6,7 +6,8 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://compdes.example.com', // TODO: replace with the real domain
+  site: 'https://www.compdes.org',
+  base: '/compdes2027',
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],
