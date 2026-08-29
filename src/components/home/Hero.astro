@@ -138,6 +138,7 @@ const t = useTranslations(lang);
 
 <script>
   const hero = document.querySelector('.hero');
+  const bg = document.querySelector('.hero-bg');
   const logo = document.querySelector('#hero-logo');
   const ctec = document.querySelector('.hero-ctec');
   const deer = document.querySelector('.hero-deer');
@@ -167,8 +168,9 @@ const t = useTranslations(lang);
   // panel (con más margen alrededor), no lograrlo con CSS/JS sobre estos
   // archivos tal como están.
   const layers = [
+    { el: bg,    amp: 620,  omega: 13, zeta: 0.9, bleed: 1.0 },
     { el: logo,  amp: 400,  omega: 13, zeta: 0.9, bleed: 1.0 },
-    { el: ctec,  amp: 200, omega: 11, zeta: 0.9, bleed: 1.05, base: 25 },
+    { el: ctec,  amp: 300, omega: 11, zeta: 0.9, bleed: 1.05, base: 25 },
     { el: deer,  amp: 1,   omega: 0,  zeta: 0,   bleed: 1.0, base: 25 },
     { el: title, amp: 50, omega: 7,  zeta: 0.5 },
   ].filter((l) => l.el);
