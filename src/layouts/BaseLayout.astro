@@ -23,14 +23,18 @@ const description = t(descriptionKey);
 const SITE_TITLE = 'COMPDES 2027';
 
 const canonicalPath = Astro.url.pathname;
-const canonicalURL = new URL(canonicalPath, Astro.site ?? 'https://compdes.example.com');
+const canonicalURL = new URL(canonicalPath, Astro.site ?? 'https://www.compdes.org/compdes2027/');
 const alternateLang: 'es' | 'en' = lang === 'es' ? 'en' : 'es';
 const alternateURL = new URL(localizedUrl(canonicalPath, alternateLang), Astro.site);
 
-// localizedUrl(path, 'es') strips any '/en' prefix, so this is true for '/'
-// AND '/en' alike — unlike a raw `canonicalPath === '/'` check, which only
-// ever matched the Spanish home route.
-const isHome = localizedUrl(canonicalPath, 'es') === '/';
+// Con `base` configurado el pathname llega como '/compdes2027/...'. Se quita
+// el prefijo y se prueba la ruta relativa directamente (localizedUrl también
+// antepone el base, así que comparar contra '/' nunca cuadraría).
+const bareBase = import.meta.env.BASE_URL.replace(/\/$/, '');
+const relativePath = canonicalPath.startsWith(bareBase)
+  ? canonicalPath.slice(bareBase.length) || '/'
+  : canonicalPath;
+const isHome = /^\/(en\/?)?$/.test(relativePath);
 ---
 
 <!doctype html>

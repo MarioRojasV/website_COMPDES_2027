@@ -28,19 +28,30 @@ const t = useTranslations(lang);
 <style>
   .hero {
     position: relative;
-    /* Altura = viewport disponible (100svh menos la navbar sticky ≈ 72px):
-       todo el hero cabe en el primer vistazo sin scroll. Piso de 560px para
-       pantallas angostas. Full-bleed: las capas recortan solo cielo arriba. */
-    height: calc(100vh - 4.5rem);
-    height: calc(100svh - 4.5rem);
+    /* Altura = la MAYOR entre la ventana completa y el alto que le
+       correspondería al ancho completo a proporción 16:9 (la proporción
+       real de las 4 imágenes del hero). En pantallas normales o angostas,
+       100svh siempre gana y el comportamiento es igual al original
+       (altura = ventana). En monitores ultra-wide, donde el ancho es
+       desproporcionado respecto al alto, calc(100vw * 9/16) gana y la
+       sección crece más alta que la ventana — el usuario hace un poco
+       más de scroll para pasarla, pero object-fit:cover ya no tiene que
+       agrandar ni recortar la escena, porque en ese punto el contenedor
+       queda con la misma proporción 16:9 que la imagen. La navbar
+       transparente FLOTA sobre el hero (position:absolute), así que no
+       hay que restarle altura. Piso de 560px para pantallas angostas. */
+    height: max(100vh, calc(100vw * 9 / 16));
+    height: max(100svh, calc(100vw * 9 / 16));
     min-height: 560px;
     overflow: hidden;
     background-color: var(--color-compdes-blue-900);
   }
 
   /* Contenedor de capas a sangre completa: abarca todo el panel, de borde
-     a borde de la página. Sin centrado ni elevación — los 4 fondos son
-     16:9 exacto igual que el panel, así que el llenado es píxel-perfecto. */
+     a borde de la página, siempre al 100% del ancho de la ventana (sin
+     letterboxing lateral). Las 4 capas dentro son piezas de una misma
+     escena con parallax, superpuestas y alineadas entre sí porque todas
+     comparten exactamente este mismo tamaño. */
   .hero-art {
     position: absolute;
     inset: 0;
@@ -57,16 +68,29 @@ const t = useTranslations(lang);
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Anclaje inferior: el recorte vertical se come el cielo superior,
-       nunca la escena (rocas, deer, CTEC). */
     object-position: center bottom;
   }
 
-  /* Solo las capas animadas declaran will-change; principal queda fija. */
+  .hero-logo,
+  .hero-ctec,
+  .hero-deer {
+    object-position: center 65%;
+    transform-origin: center bottom;
+  }
+
+  /* Solo las capas animadas declaran will-change; principal queda fija.
+     transform-origin abajo: el sangrado por escala (bleed) crece hacia
+     ARRIBA, anclando la escena a su base y ocultando el borde superior
+     recortado de cada capa aunque el parallax las empuje hacia abajo. */
   .hero-logo,
   .hero-ctec,
   .hero-deer {
     will-change: transform;
+  }
+
+  .hero-logo,
+  .hero-ctec {
+    transform-origin: center bottom;
   }
 
   /* Profundidad: el título queda UNA CAPA POR DETRÁS del deer (z 2 > 1),
@@ -116,19 +140,37 @@ const t = useTranslations(lang);
   const hero = document.querySelector('.hero');
   const logo = document.querySelector('#hero-logo');
   const ctec = document.querySelector('.hero-ctec');
+  const deer = document.querySelector('.hero-deer');
   const title = document.querySelector('.hero-title');
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Capas con alfa, de fondo a frente: recorrido creciente con respuesta cada
-  // vez más lenta (ω bajo). A escala 1 (sin sangrado) la amortiguación debe
-  // ser casi crítica (ζ 0.9): ningún rebote descubre bordes al moverse.
-  // El fondo principal y el deer quedan fijos, sin parallax. El título
-  // conserva rebote propio porque es texto y no cubre bordes.
+  // vez más lenta (ω bajo). Cada capa lleva `bleed`, un factor de escala
+  // que crece la imagen desde su borde inferior (transform-origin bottom)
+  // lo suficiente para que el parallax no pueda descubrir el borde superior
+  // recortado de la capa. `base` es un desplazamiento estático hacia abajo
+  // (en px) que se aplica antes del spring; oculta bordes inferiores
+  // visibles en estado de reposo sin afectar el rango del parallax.
+  // `size` es un factor de escala ADICIONAL para achicar visualmente
+  // ctec/deer dentro de la escena. Como estas capas siguen cubriendo el
+  // 100% del ancho de la ventana (mismo object-fit:cover que las demás),
+  // NOTA IMPORTANTE: ctec.webp y deer.webp NO son recortes sueltos con
+  // fondo transparente — son paneles panorámicos de ancho completo (la
+  // colina/rocas ya ocupan casi todo el ancho del archivo), igual que
+  // hero-bg. Por eso NO llevan `size`: aplicar scale() a estas capas
+  // encoge la colina completa en ambas direcciones, no solo el edificio
+  // o el venado, y deja huecos en los bordes izquierdo/derecho donde se
+  // asoma hero-bg (eso causaba las franjas oscuras en los costados).
+  // Si en el futuro se necesita que el edificio o el venado se vean más
+  // chicos, hay que pedir el asset ya recompuesto más chico dentro del
+  // panel (con más margen alrededor), no lograrlo con CSS/JS sobre estos
+  // archivos tal como están.
   const layers = [
-    { el: logo, amp: 95, omega: 13, zeta: 0.9 },
-    { el: ctec, amp: 150, omega: 11, zeta: 0.9 },
-    { el: title, amp: 180, omega: 7, zeta: 0.5 },
+    { el: logo,  amp: 400,  omega: 13, zeta: 0.9, bleed: 1.0 },
+    { el: ctec,  amp: 200, omega: 11, zeta: 0.9, bleed: 1.05, base: 25 },
+    { el: deer,  amp: 1,   omega: 0,  zeta: 0,   bleed: 1.0, base: 25 },
+    { el: title, amp: 50, omega: 7,  zeta: 0.5 },
   ].filter((l) => l.el);
 
   for (const l of layers) {
@@ -143,7 +185,9 @@ const t = useTranslations(lang);
 
   function render() {
     for (const l of layers) {
-      l.el.style.transform = `translate3d(0, ${l.pos.toFixed(1)}px, 0)`;
+      const scale = (l.bleed ?? 1) * (l.size ?? 1);
+      const offset = (l.base ?? 0) + l.pos;
+      l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(${scale})`;
     }
     if (title) title.style.opacity = String(1 - progress * 0.35);
   }
@@ -154,19 +198,18 @@ const t = useTranslations(lang);
 
     let settled = true;
     for (const l of layers) {
-      const target = progress * l.amp;
+      // Seguimiento directo del objetivo: sin resorte ni rebote. Cada capa
+      // se ubica en su desplazamiento de scroll (progress * amp * speed) de
+      // inmediato, igual que un elemento normal — sin salto ni wobble.
+      const target = progress * l.amp * (l.speed ?? 1);
+      l.pos = Math.min(Math.max(target, -2), (l.amp ?? 0) + 1);
+      l.vel = 0;
+    }
 
-      // Resorte hacia el objetivo de scroll (integración semi-implícita).
-      const accel = -l.omega * l.omega * (l.pos - target) - 2 * l.zeta * l.omega * l.vel;
-      l.vel += accel * dt;
-      l.pos += l.vel * dt;
-
-      if (Math.abs(l.pos - target) > 0.3 || Math.abs(l.vel) > 8) {
-        settled = false;
-      } else {
-        l.pos = target;
-        l.vel = 0;
-      }
+    if (settled) {
+      render();
+      rafId = requestAnimationFrame(frame);
+      return;
     }
 
     render();
