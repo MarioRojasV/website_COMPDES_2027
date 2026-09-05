@@ -32,8 +32,10 @@ export interface AreaGroup {
 }
 
 export interface AreaTrack {
-  /** Slug usado como nombre de carpeta en el árbol. */
+  /** Slug estable usado como clave del árbol (data-attr y carpeta). */
   id: string;
+  /** Nombre breve de carpeta que se muestra en el árbol, bilingüe. */
+  label: LocalText;
   icon: AreaIcon;
   name: LocalText;
   groups: AreaGroup[];
@@ -58,194 +60,170 @@ export const generalFields: LocalText[] = [
 /** Líneas temáticas prioritarias de COMPDES 2027. */
 export const areaTracks: AreaTrack[] = [
   {
-    id: 'tecnologias-emergentes',
+    id: 'ia-ciencia-datos',
+    label: { es: 'ia-ciencia-datos', en: 'ai-data-science' },
     icon: 'cpu',
     name: {
-      es: 'Tecnologías emergentes aplicadas',
-      en: 'Applied emerging technologies',
+      es: 'Inteligencia Artificial y Ciencia de Datos',
+      en: 'Artificial Intelligence and Data Science',
     },
     groups: [
       {
-        title: { es: 'IA Generativa', en: 'Generative AI' },
         items: [
-          { es: 'Creación de nuevo contenido educativo', en: 'Creation of new educational content' },
-          { es: 'Asistentes inteligentes para la ciudadanía', en: 'Intelligent assistants for citizens' },
-          { es: 'Mejora de procesos empresariales y gubernamentales', en: 'Improved business and government processes' },
-          { es: 'Generación automática de código', en: 'Automatic code generation' },
-        ],
-      },
-      {
-        title: { es: 'Blockchain y economía digital', en: 'Blockchain and digital economy' },
-        items: [
-          { es: 'Usos más allá de las criptomonedas', en: 'Uses beyond cryptocurrencies' },
-          { es: 'Trazabilidad de productos en cadenas de suministro', en: 'Product traceability in supply chains' },
-          { es: 'Sistemas de voto seguro', en: 'Secure voting systems' },
-          { es: 'Gestión segura de identidades digitales', en: 'Secure digital identity management' },
-          { es: 'Certificaciones académicas seguras', en: 'Secure academic certifications' },
-        ],
-      },
-      {
-        title: { es: 'Gemelos digitales', en: 'Digital twins' },
-        items: [
-          { es: 'Simulación de ciudades y procesos industriales', en: 'Simulation of cities and industrial processes' },
-          { es: 'Apoyo en la planificación de sistemas de salud', en: 'Healthcare system planning support' },
+          { es: 'Modelos de aprendizaje profundo y generativo.', en: 'Deep and generative learning models.' },
+          { es: 'Aplicaciones de IA en educación, salud, industria y servicios.', en: 'AI applications in education, health, industry and services.' },
+          { es: 'Ética y gobernanza de los algoritmos.', en: 'Ethics and governance of algorithms.' },
+          { es: 'Analítica avanzada de datos, minería de datos y visualización.', en: 'Advanced data analytics, data mining and visualization.' },
         ],
       },
     ],
   },
   {
-    id: 'patrimonio-turismo',
-    icon: 'landmark',
-    name: {
-      es: 'Preservación del patrimonio y promoción turística',
-      en: 'Cultural heritage preservation and tourism promotion',
-    },
-    groups: [
-      {
-        title: { es: 'Digitalización del patrimonio', en: 'Heritage digitalization' },
-        items: [
-          { es: 'Museos virtuales', en: 'Virtual museums' },
-          { es: 'Reconstrucción 3D de sitios arqueológicos', en: '3D reconstruction of archaeological sites' },
-        ],
-      },
-      {
-        title: { es: 'Tecnologías inmersivas para turismo', en: 'Immersive technologies for tourism' },
-        items: [
-          { es: 'Experiencias turísticas con realidad virtual y aumentada', en: 'Tourism experiences with virtual and augmented reality' },
-          { es: 'Aplicaciones móviles para rutas turísticas', en: 'Mobile applications for tourist routes' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'linguistica-computacional',
-    icon: 'languages',
-    name: {
-      es: 'Lingüística computacional y lenguas indígenas',
-      en: 'Computational linguistics and indigenous languages',
-    },
-    groups: [
-      {
-        items: [
-          { es: 'Herramientas para preservar lenguas indígenas', en: 'Tools to preserve indigenous languages' },
-          { es: 'Reconocimiento de voz para lenguas de bajos recursos', en: 'Speech recognition for low-resource languages' },
-          { es: 'Traducción automática y aplicaciones educativas', en: 'Machine translation and educational applications' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'informatica-salud',
-    icon: 'heart',
-    name: {
-      es: 'Informática de la salud y bienestar social',
-      en: 'Health informatics and social wellbeing',
-    },
-    groups: [
-      {
-        title: { es: 'Telemedicina y salud digital', en: 'Telemedicine and digital health' },
-        items: [
-          { es: 'Consultas médicas remotas', en: 'Remote medical consultations' },
-          { es: 'Expedientes electrónicos compartibles', en: 'Shareable electronic health records' },
-          { es: 'Gestión hospitalaria más eficiente', en: 'More efficient hospital management' },
-        ],
-      },
-      {
-        title: { es: 'Biosenales e imágenes médicas', en: 'Biosignal processing and medical imaging' },
-        items: [
-          { es: 'Diagnóstico asistido por computadora y a bajo costo', en: 'Affordable computer-assisted diagnostics' },
-          { es: 'Detección temprana de enfermedades', en: 'Early detection of diseases' },
-        ],
-      },
-      {
-        title: { es: 'Tecnologías para la inclusión', en: 'Technologies for inclusion' },
-        items: [
-          { es: 'Soluciones tecnológicas para personas con discapacidad', en: 'Tech solutions for people with disabilities' },
-          { es: 'Aplicaciones de apoyo a personas adultas mayores', en: 'Applications to assist elderly people' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'sostenibilidad-clima',
+    id: 'computacion-verde',
+    label: { es: 'computacion-verde', en: 'green-computing' },
     icon: 'sprout',
     name: {
-      es: 'Sostenibilidad, riesgo y resiliencia climática',
-      en: 'Sustainability, risk and climate resilience',
+      es: 'Computación Verde y Sostenibilidad Tecnológica',
+      en: 'Green Computing and Technological Sustainability',
     },
     groups: [
       {
-        title: { es: 'Geoinformática para la gestión del riesgo', en: 'Geoinformatics for risk management' },
         items: [
-          { es: 'Sistemas de alerta temprana ante desastres', en: 'Early warning systems for disasters' },
-          { es: 'Modelado de desastres con datos satelitales e IA', en: 'Disaster modeling using satellite data and AI' },
-        ],
-      },
-      {
-        title: { es: 'Adaptación al cambio climático', en: 'Climate change adaptation technologies' },
-        items: [
-          { es: 'Agricultura inteligente con sensores y predicciones', en: 'Smart agriculture using sensors and predictions' },
-          { es: 'Gestión eficiente del agua y la energía', en: 'Efficient management of water and energy' },
+          { es: 'Eficiencia energética en centros de datos y sistemas distribuidos.', en: 'Energy efficiency in data centers and distributed systems.' },
+          { es: 'Impacto ambiental de la tecnología y estrategias de mitigación.', en: 'Environmental impact of technology and mitigation strategies.' },
+          { es: 'Tecnologías emergentes para la sostenibilidad.', en: 'Emerging technologies for sustainability.' },
         ],
       },
     ],
   },
   {
-    id: 'ciudades-inteligentes',
-    icon: 'city',
-    name: {
-      es: 'Ciudades inteligentes y territorios sostenibles',
-      en: 'Smart cities and sustainable territories',
-    },
-    groups: [
-      {
-        items: [
-          { es: 'Movilidad urbana eficiente', en: 'Efficient urban mobility' },
-          { es: 'Gestión de residuos', en: 'Waste management' },
-          { es: 'Monitoreo de la calidad del aire', en: 'Air quality monitoring' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'gobierno-ciberseguridad',
+    id: 'ciberseguridad',
+    label: { es: 'ciberseguridad', en: 'cybersecurity' },
     icon: 'shield',
     name: {
-      es: 'Transformación digital del Estado, gobernanza y ciberseguridad',
-      en: 'Digital transformation of the state, governance and cybersecurity',
+      es: 'Ciberseguridad y Confianza Digital',
+      en: 'Cybersecurity and Digital Trust',
     },
     groups: [
       {
-        title: { es: 'Gobierno abierto y datos abiertos', en: 'Open government and open data' },
         items: [
-          { es: 'Transparencia', en: 'Transparency' },
-          { es: 'Participación ciudadana digital', en: 'Digital citizen participation' },
+          { es: 'Seguridad en la nube y entornos híbridos.', en: 'Security in the cloud and hybrid environments.' },
+          { es: 'Protección de datos personales y privacidad.', en: 'Protection of personal data and privacy.' },
+          { es: 'Ciber resiliencia e inteligencia de amenazas.', en: 'Cyber resilience and threat intelligence.' },
         ],
-      },
-      {
-        title: { es: 'Ciberseguridad nacional', en: 'National cybersecurity' },
-        items: [{ es: 'Protección de infraestructura crítica', en: 'Protection of critical infrastructure' }],
-      },
-      {
-        title: { es: 'Identidad digital y servicios públicos', en: 'Digital identity and public services' },
-        items: [{ es: 'Servicios centrados en la ciudadanía', en: 'Citizen-centric services' }],
       },
     ],
   },
   {
-    id: 'redes-5g',
-    icon: 'antenna',
+    id: 'transformacion-digital',
+    label: { es: 'transformacion-digital', en: 'digital-transformation' },
+    icon: 'city',
     name: {
-      es: 'Despliegue de redes 5G y tendencias futuras',
-      en: '5G network deployment and future trends',
+      es: 'Transformación Digital y Gobierno de TI',
+      en: 'Digital Transformation and IT Governance',
     },
     groups: [
       {
         items: [
-          { es: 'AIoT (inteligencia artificial + IoT)', en: 'AIoT (artificial intelligence + IoT)' },
-          { es: 'Automatización industrial', en: 'Industrial automation' },
-          { es: 'Computación cuántica y acelerada', en: 'Quantum and accelerated computing' },
-          { es: 'Edge computing y sostenibilidad', en: 'Edge computing and sustainability' },
+          { es: 'Estrategias de digitalización empresarial.', en: 'Business digitalization strategies.' },
+          { es: 'Gobernanza de datos, interoperabilidad y gestión del cambio.', en: 'Data governance, interoperability and change management.' },
+          { es: 'Competencias digitales y cultura organizacional.', en: 'Digital skills and organizational culture.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'infraestructura-digital',
+    label: { es: 'infraestructura-digital', en: 'digital-infrastructure' },
+    icon: 'antenna',
+    name: {
+      es: 'Infraestructura Digital Avanzada',
+      en: 'Advanced Digital Infrastructure',
+    },
+    groups: [
+      {
+        items: [
+          { es: 'Redes 5G, 6G y aplicaciones del Internet de las Cosas (IoT).', en: '5G and 6G networks and Internet of Things (IoT) applications.' },
+          { es: 'Edge computing y virtualización de redes.', en: 'Edge computing and network virtualization.' },
+          { es: 'Arquitecturas abiertas y automatización de servicios.', en: 'Open architectures and service automation.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'software-devops',
+    label: { es: 'software-devops', en: 'software-devops' },
+    icon: 'cpu',
+    name: {
+      es: 'Desarrollo de Software, DevOps y Calidad',
+      en: 'Software Development, DevOps and Quality',
+    },
+    groups: [
+      {
+        items: [
+          { es: 'Ingeniería de software basada en IA.', en: 'AI-based software engineering.' },
+          { es: 'Automatización de pruebas, integración continua y despliegue ágil.', en: 'Test automation, continuous integration and agile deployment.' },
+          { es: 'Experiencia del usuario y evaluación de la calidad del software.', en: 'User experience and software quality assessment.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'realidad-extendida',
+    label: { es: 'realidad-extendida', en: 'extended-reality' },
+    icon: 'landmark',
+    name: {
+      es: 'Realidad Extendida y Tecnologías Inmersivas',
+      en: 'Extended Reality and Immersive Technologies',
+    },
+    groups: [
+      {
+        items: [
+          { es: 'Realidad virtual, aumentada y mixta en educación y turismo.', en: 'Virtual, augmented and mixed reality in education and tourism.' },
+          { es: 'Gemelos digitales e interfaces humano-computadora.', en: 'Digital twins and human-computer interfaces.' },
+          { es: 'Experiencias inmersivas para la divulgación científica y cultural.', en: 'Immersive experiences for science and cultural outreach.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'computacion-sociedad',
+    label: { es: 'computacion-sociedad', en: 'computing-society' },
+    icon: 'heart',
+    name: {
+      es: 'Computación Aplicada a la Sociedad',
+      en: 'Computing Applied to Society',
+    },
+    groups: [
+      {
+        items: [
+          { es: 'Tecnología e inclusión digital.', en: 'Technology and digital inclusion.' },
+          { es: 'Innovación social y emprendimiento tecnológico.', en: 'Social innovation and technological entrepreneurship.' },
+          { es: 'Inteligencia artificial para el desarrollo sostenible.', en: 'Artificial intelligence for sustainable development.' },
+          { es: 'Educación digital y transformación del currículo en la era de la IA.', en: 'Digital education and curriculum transformation in the AI era.' },
+          { es: 'Estrategias educativas y competencias digitales para la formación en TIC.', en: 'Educational strategies and digital skills for ICT training.' },
+          { es: 'Acreditación y aseguramiento de la calidad en programas de computación.', en: 'Accreditation and quality assurance in computing programs.' },
+          { es: 'Experiencias y buenas prácticas en enseñanza de la informática y la ingeniería.', en: 'Experiences and good practices in teaching computer science and engineering.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'innovacion-emprendimiento',
+    label: { es: 'innovacion-emprendimiento', en: 'innovation-entrepreneurship' },
+    icon: 'sprout',
+    name: {
+      es: 'Innovación, Emprendimiento y Transferencia Tecnológica',
+      en: 'Innovation, Entrepreneurship and Technology Transfer',
+    },
+    groups: [
+      {
+        items: [
+          { es: 'Startups tecnológicas y ecosistemas de innovación.', en: 'Tech startups and innovation ecosystems.' },
+          { es: 'Emprendimientos digitales en regiones rurales.', en: 'Digital ventures in rural regions.' },
+          { es: 'Vinculación universidad–empresa–sociedad.', en: 'University–industry–society collaboration.' },
+          { es: 'Modelos de incubación de ideas en computación aplicada al desarrollo.', en: 'Idea incubation models in computing for development.' },
+          { es: 'Semilleros de investigación y desarrollo tecnológico.', en: 'Research seedbeds and technological development.' },
         ],
       },
     ],

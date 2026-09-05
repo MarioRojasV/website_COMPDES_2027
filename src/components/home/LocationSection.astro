@@ -33,7 +33,7 @@ const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
 ---
 
 <!--
-  Sección 05 — Ubicación.
+  Sección 06 — Ubicación.
   Dos columnas: contexto de San Carlos + datos del campus TEC a la izquierda;
   tarjeta "mapa" estilizada (rejilla, rutas, río y pin con pulso) que enlaza
   al campus en Google Maps a la derecha. Sin iframes ni API keys: todo CSS/SVG
@@ -42,7 +42,7 @@ const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
 <section id="ubicacion" class="border-y-2 border-compdes-yellow bg-compdes-blue py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-6xl px-6">
     <SectionHeading
-      sectionNumber={5}
+      sectionNumber={6}
       eyebrowKey="home.location.eyebrow"
       titleKey="home.location.title"
       introKey="home.location.intro"
@@ -283,14 +283,22 @@ const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
   }
 
   .map-live .leaflet-control-attribution {
-    background: rgb(0 10 35 / 0.72);
-    color: rgb(246 241 231 / 0.55);
+    background: rgb(0 10 35 / 0.88) !important;
+    color: rgb(246 241 231 / 0.72) !important;
     font-size: 9px;
-    padding: 1px 5px;
+    line-height: 1.4;
+    padding: 2px 6px;
+    border-radius: 4px 0 0 0;
+    box-shadow: none !important;
   }
 
   .map-live .leaflet-control-attribution a {
-    color: var(--color-compdes-yellow-400);
+    color: var(--color-compdes-yellow) !important;
+    text-decoration: none;
+  }
+
+  .map-live .leaflet-control-attribution a:hover {
+    text-decoration: underline;
   }
 </style>
 

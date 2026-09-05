@@ -78,6 +78,10 @@ export const keyDates: KeyDate[] = [
       es: 'Apertura de la recepción de papers y talleres',
       en: 'Opening of paper and workshop submissions',
     },
+    date: {
+      es: '10 de marzo de 2027',
+      en: 'March 10, 2027',
+    },
     note: {
       es: 'Se publicará el formulario y las normas de envío.',
       en: 'The submission form and guidelines will be published.',
@@ -89,6 +93,10 @@ export const keyDates: KeyDate[] = [
       es: 'Fecha límite de recepción de papers y talleres',
       en: 'Deadline for paper and workshop submissions',
     },
+    date: {
+      es: '31 de marzo de 2027',
+      en: 'March 31, 2027',
+    },
   },
   {
     id: 'aceptacion',
@@ -96,12 +104,20 @@ export const keyDates: KeyDate[] = [
       es: 'Notificación de aceptación de papers y talleres',
       en: 'Acceptance notification for papers and workshops',
     },
+    date: {
+      es: '30 de abril de 2027',
+      en: 'April 30, 2027',
+    },
   },
   {
     id: 'version-final',
     label: {
       es: 'Envío de la versión final (camera-ready)',
       en: 'Camera-ready version submission',
+    },
+    date: {
+      es: '10 — 30 de mayo de 2027',
+      en: 'May 10 — 30, 2027',
     },
   },
   {

@@ -5,11 +5,13 @@
  * Para actualizar el contenido NO hay que tocar ningún componente:
  * edita únicamente los arreglos de abajo y vuelve a construir el sitio.
  *
- * ⚠️ LAS LISTAS ACTUALES SON DATOS DE EJEMPLO con la estructura final.
- *    Reemplázalas con las listas oficiales cuando estén confirmadas.
+ * ⚠️ El Comité Científico aún no tiene lista oficial: se muestra "EN
+ *    PREPARACIÓN" (coming soon) hasta que la entregue la organización.
  *
  * Reglas:
- *  - Nombres de personas e instituciones NO se traducen.
+ *  - Nombres de personas NO se traducen.
+ *  - `affiliation` va como par bilingüe { es, en } (el nombre de la
+ *    institución sí se traduce).
  *  - `role` es opcional y va como par bilingüe { es: '...', en: '...' }.
  */
 
@@ -20,8 +22,8 @@ export type CommitteeId = 'cientifico' | 'organizador' | 'comision' | 'represent
 export interface OrgMember {
   /** Nombre completo tal como se publicará. */
   name: string;
-  /** Universidad / institución de origen (sin traducir). */
-  affiliation: string;
+  /** Universidad / institución de origen (bilingüe, el nombre sí se traduce). */
+  affiliation: LocalText;
   /** Cargo dentro del comité o de la red (opcional). */
   role?: LocalText;
 }
@@ -31,79 +33,114 @@ export interface Committee {
   members: OrgMember[];
 }
 
-/* [ com.01 ] Comité Científico — responsable del proceso de arbitraje. */
-const comiteCientifico: OrgMember[] = [
-  {
-    name: 'Dra. María Fernanda Quesada',
-    affiliation: 'Tecnológico de Costa Rica',
-    role: { es: 'Presidencia', en: 'Chair' },
-  },
-  {
-    name: 'Dr. Andrés Navarro',
-    affiliation: 'Universidad Nacional de Costa Rica',
-    role: { es: 'Coordinación de publicaciones', en: 'Publications coordinator' },
-  },
-  { name: 'Dra. Lucía Ramírez', affiliation: 'Universidad de Costa Rica' },
-  { name: 'Dr. Carlos Mendoza', affiliation: 'Tecnológico de Costa Rica' },
-  { name: 'MSc. Valeria Solano', affiliation: 'Universidad Estatal a Distancia' },
-  { name: 'Dr. Jorge Ibáñez', affiliation: 'Universidad de Guayaquil, Ecuador' },
-  { name: 'Dra. Paola Herrera', affiliation: 'Universidad Tecnológica de Panamá' },
-];
+type Affiliation = { es: string; en: string };
+
+const TEC: Affiliation = {
+  es: 'Instituto Tecnológico de Costa Rica (TEC)',
+  en: 'Costa Rica Institute of Technology (TEC)',
+};
+
+const TEC_CR: Affiliation = {
+  es: 'Instituto Tecnológico de Costa Rica (TEC) — Costa Rica',
+  en: 'Costa Rica Institute of Technology (TEC) — Costa Rica',
+};
+
+const UAH_ES: Affiliation = {
+  es: 'Universidad de Alcalá (UAH) — España',
+  en: 'University of Alcalá (UAH) — Spain',
+};
+
+const UCR: Affiliation = {
+  es: 'Universidad de Costa Rica (UCR)',
+  en: 'University of Costa Rica (UCR)',
+};
+
+const UNAN_LEON: Affiliation = {
+  es: 'Universidad Nacional Autónoma de Nicaragua, León (UNAN-León)',
+  en: 'National Autonomous University of Nicaragua, León (UNAN-León)',
+};
+
+const UES: Affiliation = {
+  es: 'Universidad de El Salvador (UES)',
+  en: 'University of El Salvador (UES)',
+};
+
+const CUNOC_USAC: Affiliation = {
+  es: 'Centro Universitario de Occidente, Universidad de San Carlos de Guatemala (CUNOC-USAC)',
+  en: 'Western University Center, University of San Carlos of Guatemala (CUNOC-USAC)',
+};
+
+const UNI: Affiliation = {
+  es: 'Universidad Nacional de Ingeniería (UNI)',
+  en: 'National University of Engineering (UNI)',
+};
+
+const UNAH: Affiliation = {
+  es: 'Universidad Nacional Autónoma de Honduras (UNAH)',
+  en: 'National Autonomous University of Honduras (UNAH)',
+};
+
+const BICU: Affiliation = {
+  es: 'Bluefields Indian & Caribbean University (BICU)',
+  en: 'Bluefields Indian & Caribbean University (BICU)',
+};
+
+const UNAN_MANAGUA: Affiliation = {
+  es: 'Universidad Nacional Autónoma de Nicaragua, Managua (UNAN-Managua)',
+  en: 'National Autonomous University of Nicaragua, Managua (UNAN-Managua)',
+};
+
+/* [ com.01 ] Comité Científico — responsable del proceso de arbitraje.
+   Lista oficial pendiente: la sección se muestra "EN PREPARACIÓN". */
+const comiteCientifico: OrgMember[] = [];
 
 /* [ com.02 ] Comité Organizador — equipo local anfitrión (TEC San Carlos). */
 const comiteOrganizador: OrgMember[] = [
-  {
-    name: 'Dr. Rodrigo Álvarez',
-    affiliation: 'Tecnológico de Costa Rica',
-    role: { es: 'Presidencia del congreso', en: 'Conference chair' },
-  },
-  {
-    name: 'MSc. Gabriela Chaves',
-    affiliation: 'Tecnológico de Costa Rica',
-    role: { es: 'Coordinación general', en: 'General coordination' },
-  },
-  {
-    name: 'Ing. Luis Diego Montero',
-    affiliation: 'Tecnológico de Costa Rica',
-    role: { es: 'Logística y sede', en: 'Logistics and venue' },
-  },
-  {
-    name: 'MSc. Priscilla Araya',
-    affiliation: 'Tecnológico de Costa Rica',
-    role: { es: 'Comunicación y registro', en: 'Communication and registration' },
-  },
-  {
-    name: 'Lic. Kenneth Rojas',
-    affiliation: 'Tecnológico de Costa Rica',
-    role: { es: 'Relación con patrocinadores', en: 'Sponsor relations' },
-  },
+  { name: 'Alfaro Velasco, Jorge', affiliation: TEC },
+  { name: 'Esquivel Vega, Gaudy', affiliation: TEC },
+  { name: 'Jiménez Delgado, Efrén', affiliation: TEC },
+  { name: 'Quirós Oviedo, Rocío', affiliation: TEC },
+  { name: 'Treviño Villalobos, Marlen', affiliation: TEC },
 ];
 
 /* [ com.03 ] Comisión Permanente de la red COMPDES. */
 const comisionPermanente: OrgMember[] = [
-  {
-    name: 'Dra. Elena Vargas',
-    affiliation: 'Universidad de Oriente, Cuba',
-    role: { es: 'Coordinación general de la red', en: 'Network general coordination' },
-  },
-  { name: 'Dr. Miguel Ángel Torres', affiliation: 'Universidad de las Ciencias Informáticas, Cuba' },
-  { name: 'Dra. Carmen Silva', affiliation: 'Universidade Federal de Santa Maria, Brasil' },
-  { name: 'Dr. Pablo Cevallos', affiliation: 'Escuela Superior Politécnica del Litoral, Ecuador' },
-  { name: 'Dra. Ana Belén Ruiz', affiliation: 'Universidad de Jaén, España' },
+  { name: 'López Villegas, Óscar', affiliation: TEC_CR },
+  { name: 'Meziat Luna, Daniel', affiliation: UAH_ES },
+  { name: 'Bengochea Martínez, Luis', affiliation: UAH_ES },
 ];
 
-/* [ com.04 ] Representantes de las universidades de la red COMPDES. */
+/* [ com.04 ] Representantes de las universidades de la red COMPDES (2026). */
 const representantes: OrgMember[] = [
-  { name: 'Dr. Esteban Fonseca', affiliation: 'Tecnológico de Costa Rica, Costa Rica' },
-  { name: 'Dra. Silvia Castro', affiliation: 'Universidad Nacional de Costa Rica, Costa Rica' },
-  { name: 'Dr. Óscar Núñez', affiliation: 'Universidad de Costa Rica, Costa Rica' },
-  { name: 'MSc. Yadira Campos', affiliation: 'Universidad Estatal a Distancia, Costa Rica' },
-  { name: 'Dr. Reinier González', affiliation: 'Universidad de Oriente, Cuba' },
-  { name: 'Dra. Iliana Pérez', affiliation: 'Universidad Tecnológica de La Habana, Cuba' },
-  { name: 'Dr. Marcos Vieira', affiliation: 'Universidade Federal de Santa Maria, Brasil' },
-  { name: 'Dra. Lorena Cabrera', affiliation: 'Universidad Laica Vicente Rocafuerte, Ecuador' },
-  { name: 'Dr. Iván Suárez', affiliation: 'Universidad Tecnológica de Panamá, Panamá' },
-  { name: 'Dra. Marta Ortega', affiliation: 'Universidad de Jaén, España' },
+  {
+    name: 'López Villegas, Óscar',
+    affiliation: TEC_CR,
+    role: { es: 'Presidente', en: 'President' },
+  },
+  {
+    name: 'Meziat Luna, Daniel',
+    affiliation: UAH_ES,
+    role: { es: 'Presidente de Honor', en: 'Honorary President' },
+  },
+  { name: 'Amaya Briceño, Luis Eduardo', affiliation: UCR },
+  { name: 'Bárcenas Lezama, Miguel Ángel', affiliation: UNAN_LEON },
+  { name: 'Barrera Mancía, Luis Salvador', affiliation: UES },
+  { name: 'Bengochea Martínez, Luis', affiliation: UAH_ES },
+  { name: 'Carballo Ruiz, Elmer Arturo', affiliation: UES },
+  { name: 'Carol Hernández, Víctor', affiliation: CUNOC_USAC },
+  { name: 'Chávez Mairena, Luis Eduardo', affiliation: UNI },
+  { name: 'Contreras Mercado, Arnoldo José', affiliation: UNAN_LEON },
+  { name: 'Esquivel Vega, Gaudy', affiliation: TEC_CR },
+  { name: 'González Rodríguez, César Augusto', affiliation: UES },
+  { name: 'Gross, Eduardo', affiliation: UNAH },
+  { name: 'Juárez, Nelson', affiliation: UNI },
+  { name: 'López, Christian', affiliation: CUNOC_USAC },
+  { name: 'López, Roy', affiliation: BICU },
+  { name: 'López Poveda, Anayanci', affiliation: UNI },
+  { name: 'Mejía Quiroz, Álvaro', affiliation: UNAN_MANAGUA },
+  { name: 'Palma Mendoza, Raúl José', affiliation: UNAH },
+  { name: 'Sambola, Dexon-McKensy', affiliation: BICU },
+  { name: 'Sierra Pac, Oliver', affiliation: CUNOC_USAC },
 ];
 
 export const committees: Committee[] = [

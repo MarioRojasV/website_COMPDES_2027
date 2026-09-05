@@ -194,7 +194,13 @@ export const ui = {
     "home.ieee.term.line2": "[ ok ] biblioteca digital .............. IEEE Xplore",
     "home.ieee.term.line3": "[ ok ] alcance ......................... visible y citable a nivel global",
     "home.ieee.term.line4": "[ >> ] estado .......................... hito_historico // primera_vez_en_la_red",
-    // Contacto
+    // Call for Papers — ficha oficial IEEE (el texto solo se traduce con su botón)
+    "home.cfp.eyebrow": "llamada_a_trabajos",
+    "home.cfp.title": "Call for Papers: envía tu trabajo",
+    "home.cfp.intro":
+      "Ficha oficial de publicación e indexación en IEEE Xplore. El texto del aviso se presenta en inglés tal como lo publica la conferencia; puedes traducirlo con el interruptor que aparece al pie de la ficha.",
+    "home.cfp.statement":
+      "Los trabajos aceptados serán sometidos para su inclusión en la <strong>Biblioteca Digital IEEE Xplore</strong>, conforme a la conferencia <span class=\"text-compdes-yellow\">#63158</span> — <strong>2024 6th International Conference on BioInspired Processing (BIP)</strong> —, sujetos a cumplir el alcance y los requisitos de calidad de <strong>IEEE Xplore</strong>.",
     "home.contact.eyebrow": "Contacto",
     "home.contact.title": "Póngase en contacto",
     "home.contact.email": "Correo electrónico",
@@ -444,7 +450,13 @@ export const ui = {
     "home.ieee.term.line2": "[ ok ] digital library ................. IEEE Xplore",
     "home.ieee.term.line3": "[ ok ] reach ........................... visible and citable worldwide",
     "home.ieee.term.line4": "[ >> ] status .......................... historic_milestone // first_time_in_network",
-    // Contact
+    // Call for Papers — official IEEE notice (translated only via its own toggle)
+    "home.cfp.eyebrow": "call_for_papers",
+    "home.cfp.title": "Call for Papers: submit your work",
+    "home.cfp.intro":
+      "Official publication and IEEE Xplore indexing notice. The statement below is shown in English just as the conference publishes it; use the switch at the foot of the record to translate it.",
+    "home.cfp.statement":
+      "Accepted papers will be submitted for inclusion into <strong>IEEE Xplore Digital Library</strong> according to conference <span class=\"text-compdes-yellow\">#63158</span>, <strong>2024 6th International Conference on BioInspired Processing (BIP)</strong>, subject to meeting <strong>IEEE Xplore's</strong> scope and quality requirements.",
     "home.contact.eyebrow": "Contact",
     "home.contact.title": "Get in touch",
     "home.contact.email": "Email",

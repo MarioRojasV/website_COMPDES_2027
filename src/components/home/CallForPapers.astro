@@ -1,0 +1,258 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { ui, useTranslations } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+
+/* El texto del aviso es oficial y el sitio lo muestra SIEMPRE en inglés
+   (independiente del idioma de la página). Solo cambia cuando la persona
+   presiona el botón de traducción de esta ficha (no usa data-i18n, así el
+   toggler global no lo toca). La decisión NO se memoriza. */
+const EN_STATEMENT = ui.en['home.cfp.statement'];
+const ES_STATEMENT = ui.es['home.cfp.statement'];
+---
+
+<!--
+  Sección 04 — Call for Papers.
+  Ficha de archivo / registro con estampilla y código de barras: un motivo
+  distinto a la terminal, pero dentro del mismo lenguaje visual (azul profundo,
+  crema, amarillo, líneas punteadas y sombra dura). El botón "translate" solo
+  alterna esta ficha entre el texto oficial (inglés) y la traducción.
+-->
+<section id="call-for-papers" class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
+  <div class="mx-auto max-w-5xl px-6">
+    <SectionHeading
+      sectionNumber={4}
+      eyebrowKey="home.cfp.eyebrow"
+      titleKey="home.cfp.title"
+      introKey="home.cfp.intro"
+      align="center"
+      dark
+    />
+
+    <div class="relative mx-auto mt-12 max-w-3xl md:mt-16">
+      <span class="cfp-stamp" aria-hidden="true">
+        <span>IEEE</span>
+        <span>Xplore</span>
+        <span>#63158</span>
+      </span>
+
+      <div class="relative border-2 border-compdes-yellow/40 bg-compdes-blue-900 p-6 shadow-[9px_9px_0_0_var(--color-compdes-blue)] sm:p-8">
+        <!-- Cabecera de la ficha: clip + nombre de archivo + sello de índice -->
+        <div class="flex items-center justify-between gap-3 border-b-2 border-dashed border-compdes-blue-600 pb-4">
+          <span class="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.2em] text-compdes-cream/60">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+            cfp_compdes2027.txt
+          </span>
+          <span class="shrink-0 border border-compdes-yellow/50 bg-compdes-yellow/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-compdes-yellow">
+            index
+          </span>
+        </div>
+
+        <!-- Declaración oficial (EN a la vista) + traducción (ES oculta) -->
+        <div class="relative mt-7 pb-1">
+          <span class="cfp-quote" aria-hidden="true">&ldquo;</span>
+          <p
+            data-cfp-text="en"
+            class="relative font-display text-lg leading-relaxed text-compdes-cream/95 md:text-xl"
+            set:html={EN_STATEMENT}
+          ></p>
+          <p
+            data-cfp-text="es"
+            hidden
+            class="relative font-display text-lg leading-relaxed text-compdes-cream/95 md:text-xl"
+            set:html={ES_STATEMENT}
+          ></p>
+        </div>
+
+        <!-- Pie: código de barras + metadatos + interruptor de traducción -->
+        <div class="mt-7 flex flex-wrap items-end justify-between gap-5 border-t-2 border-dashed border-compdes-blue-600 pt-5">
+          <span class="flex items-center gap-3">
+            <span class="cfp-barcode" aria-hidden="true"></span>
+            <span class="font-mono text-[10px] uppercase leading-relaxed tracking-[0.18em] text-compdes-cream/45">
+              <span class="block">conference #63158</span>
+              <span class="block">doi // pending</span>
+            </span>
+          </span>
+
+          <button
+            type="button"
+            data-cfp-btn
+            class="cfp-translate"
+            aria-pressed="false"
+            aria-label="Translate to Spanish"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6" />
+            </svg>
+            <span data-cfp-lbl="en">Español</span>
+            <span data-cfp-lbl="es" hidden>English</span>
+            <span class="cfp-translate__cursor" aria-hidden="true">▌</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Estampilla circulardescarrilada en la esquina superior derecha:
+     sello de "indexación" de la ficha, aparte del motivo de terminal. */
+  .cfp-stamp {
+    position: absolute;
+    top: -2.25rem;
+    right: 0.75rem;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
+    width: 6.5rem;
+    height: 6.5rem;
+    border-radius: 9999px;
+    border: 2px dashed var(--color-compdes-yellow);
+    background-color: rgb(0 10 35 / 0.92);
+    color: var(--color-compdes-yellow);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    line-height: 1.15;
+    text-transform: uppercase;
+    text-align: center;
+    transform: rotate(8deg);
+    opacity: 0.92;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .cfp-stamp span:nth-child(2) {
+    font-size: 0.5rem;
+    opacity: 0.75;
+  }
+
+  .cfp-stamp span:nth-child(3) {
+    color: var(--color-compdes-cream);
+    opacity: 0.9;
+  }
+
+  /* Comilla de apertura gigante, casi como una marca de agua tipográfica. */
+  .cfp-quote {
+    position: absolute;
+    top: -2rem;
+    left: -0.5rem;
+    font-family: var(--font-display);
+    font-size: 6rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--color-compdes-yellow) 28%, transparent);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Código de barras decorativo (CSS puro), la "firma" de pago de la ficha. */
+  .cfp-barcode {
+    width: 7rem;
+    height: 1.75rem;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-compdes-yellow) 0 1px,
+      transparent 1px 2px,
+      var(--color-compdes-yellow) 2px 4px,
+      transparent 4px 6px,
+      var(--color-compdes-yellow) 6px 7px,
+      transparent 7px 10px
+    );
+    opacity: 0.85;
+  }
+
+  /* Botón de traducción exclusivo de esta ficha (estilo del toggle global,
+     pero anclado a la pie del registro). */
+  .cfp-translate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--color-compdes-blue-600);
+    background-color: transparent;
+    color: var(--color-compdes-cream);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      border-color 0.2s var(--ease-out-quart),
+      color 0.2s var(--ease-out-quart),
+      box-shadow 0.2s var(--ease-out-quart),
+      transform 0.2s var(--ease-out-quart);
+  }
+
+  .cfp-translate svg {
+    color: var(--color-compdes-yellow);
+  }
+
+  .cfp-translate:hover {
+    border-color: var(--color-compdes-yellow);
+    color: var(--color-compdes-yellow);
+    box-shadow: 3px 3px 0 0 var(--color-compdes-yellow);
+    transform: translate(-1px, -1px);
+  }
+
+  .cfp-translate:active {
+    box-shadow: 1px 1px 0 0 var(--color-compdes-yellow);
+    transform: translate(0, 0);
+  }
+
+  .cfp-translate:focus-visible {
+    outline: 2px solid var(--color-compdes-yellow);
+    outline-offset: -2px;
+  }
+
+  /* Estado activo: traducción aplicada (texto en español). */
+  .cfp-translate[aria-pressed='true'] {
+    border-color: color-mix(in srgb, var(--color-compdes-yellow) 55%, transparent);
+    color: var(--color-compdes-yellow);
+  }
+
+  .cfp-translate__cursor {
+    color: var(--color-compdes-yellow);
+    animation: cfp-blink 1.1s steps(1) infinite;
+  }
+
+  @keyframes cfp-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-cfp-btn]');
+  const en = document.querySelector<HTMLElement>('[data-cfp-text="en"]');
+  const es = document.querySelector<HTMLElement>('[data-cfp-text="es"]');
+  const lblEn = document.querySelector<HTMLElement>('[data-cfp-lbl="en"]');
+  const lblEs = document.querySelector<HTMLElement>('[data-cfp-lbl="es"]');
+
+  if (btn && en && es && lblEn && lblEs) {
+    // Sin persistencia: cada carga vuelve al texto oficial en inglés.
+    btn.addEventListener('click', () => {
+      const translated = btn.getAttribute('aria-pressed') === 'true';
+      const next = !translated;
+      es.hidden = !next;
+      en.hidden = next;
+      lblEn.hidden = next;
+      lblEs.hidden = !next;
+      btn.setAttribute('aria-pressed', String(next));
+      btn.setAttribute(
+        'aria-label',
+        next ? 'Show original English version' : 'Translate to Spanish'
+      );
+    });
+  }
+</script>

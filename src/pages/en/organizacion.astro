@@ -19,6 +19,7 @@ import { committees } from '../../data/organizacion';
       sectionNumber={i + 1}
       members={committee.members}
       alt={i % 2 === 1}
+      comingSoon={committee.id === 'cientifico'}
     />
   ))}
 </BaseLayout>

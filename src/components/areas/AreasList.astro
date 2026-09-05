@@ -105,7 +105,7 @@ const topicCount = areaTracks.reduce((acc, tr) => acc + tr.groups.reduce((a, g) 
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 shrink-0" aria-hidden="true" set:html={ICONS[track.icon]} />
                   <span class="truncate">
-                    {pad(i + 1)}_{track.id}/
+                    {pad(i + 1)}_{<LangText value={track.label} />}/
                   </span>
                 </button>
               </li>
@@ -123,7 +123,7 @@ const topicCount = areaTracks.reduce((acc, tr) => acc + tr.groups.reduce((a, g) 
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true" set:html={ICONS[track.icon]} />
                   </span>
                   <div class="min-w-0">
-                    <p class="font-mono text-[11px] tracking-widest text-compdes-yellow/70">{pad(areaTracks.indexOf(track) + 1)}_{track.id}/</p>
+                    <p class="font-mono text-[11px] tracking-widest text-compdes-yellow/70">{pad(areaTracks.indexOf(track) + 1)}_{<LangText value={track.label} />}/</p>
                     <h3 class="font-display text-xl font-bold leading-tight text-compdes-cream md:text-2xl">
                       <LangText value={track.name} />
                     </h3>

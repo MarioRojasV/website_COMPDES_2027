@@ -11,11 +11,13 @@ export interface Props {
   members: OrgMember[];
   /** Fondo alterno (blue vs blue-800) para alternar secciones como en Home/Cronograma. */
   alt?: boolean;
+  /** Lista oficial pendiente: muestra el recuadro terminal "EN PREPARACIÓN". */
+  comingSoon?: boolean;
 }
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
-const { committeeId, sectionNumber, members, alt = false } = Astro.props;
+const { committeeId, sectionNumber, members, alt = false, comingSoon = false } = Astro.props;
 
 /* Convención de claves: org.<id>.eyebrow | .title | .intro */
 const eyebrowKey = `org.${committeeId}.eyebrow` as UiKey;
@@ -50,26 +52,38 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </div>
       <div class="scanlines"></div>
 
-      <ul class="divide-y divide-dashed divide-compdes-blue-600">
-        {
-          members.map((member, i) => (
-            <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 px-5 py-4 sm:px-6">
-              <span class="shrink-0 font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
-                [ {pad(i + 1)} ]
-              </span>
-              <span class="font-semibold leading-snug text-compdes-cream">{member.name}</span>
-              <span class="min-w-0 basis-full text-[13px] leading-snug text-compdes-cream/60 sm:basis-auto sm:flex-1">
-                — {member.affiliation}
-              </span>
-              {member.role && (
-                <span class="ml-auto shrink-0 rounded-full border border-compdes-yellow/50 bg-compdes-yellow/10 px-2.5 py-0.5 font-mono text-[11px] leading-relaxed text-compdes-yellow">
-                  <LangText value={member.role} />
+      {comingSoon ? (
+        <div class="px-6 py-10">
+          <p class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-compdes-yellow">
+            <i class="status-led"></i>
+            <span data-i18n="common.inPreparation">{t('common.inPreparation')}</span>
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-compdes-cream/80" data-i18n="common.sectionComingSoon">
+            {t('common.sectionComingSoon')}
+          </p>
+        </div>
+      ) : (
+        <ul class="divide-y divide-dashed divide-compdes-blue-600">
+          {
+            members.map((member, i) => (
+              <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 px-5 py-4 sm:px-6">
+                <span class="shrink-0 font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
+                  [ {pad(i + 1)} ]
                 </span>
-              )}
-            </li>
-          ))
-        }
-      </ul>
+                <span class="font-semibold leading-snug text-compdes-cream">{member.name}</span>
+                <span class="min-w-0 basis-full text-[13px] leading-snug text-compdes-cream/60 sm:basis-auto sm:flex-1">
+                  — <LangText value={member.affiliation} />
+                </span>
+                {member.role && (
+                  <span class="ml-auto shrink-0 rounded-full border border-compdes-yellow/50 bg-compdes-yellow/10 px-2.5 py-0.5 font-mono text-[11px] leading-relaxed text-compdes-yellow">
+                    <LangText value={member.role} />
+                  </span>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      )}
 
       <div class="border-t border-compdes-blue-600 px-5 py-2.5 sm:px-6">
         <p class="font-mono text-[11px] tracking-wide text-compdes-cream/40">

@@ -1,6 +1,7 @@
 ---
 import Hero from './Hero.astro';
 import IeeeSection from './IeeeSection.astro';
+import CallForPapers from './CallForPapers.astro';
 import LocationSection from './LocationSection.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 import { useTranslations } from '../../i18n/ui';
@@ -41,11 +42,14 @@ const t = useTranslations(lang);
 <!-- [ sec.03 ] Indexación IEEE -->
 <IeeeSection />
 
-<!-- [ sec.04 ] Contacto -->
+<!-- [ sec.04 ] Call for Papers -->
+<CallForPapers />
+
+<!-- [ sec.05 ] Contacto -->
 <section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
   <div class="mx-auto max-w-4xl px-6">
     <SectionHeading
-      sectionNumber={4}
+      sectionNumber={5}
       eyebrowKey="home.contact.eyebrow"
       titleKey="home.contact.title"
       align="center"
