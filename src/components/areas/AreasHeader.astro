@@ -1,0 +1,334 @@
+---
+import { useTranslations } from '../../i18n/ui';
+
+const { index = '03' } = Astro.props;
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+---
+
+<!--
+  Cabecera de Áreas de interés — manatí madre con su cría flotando en el agua.
+  Misma receta de InscripcionHeader (fondo con disolución a la izquierda +
+  animal en capa propia), con una sola diferencia: el vaivén idle del manatí es
+  VERTICAL, como si flotara en la corriente del río, no horizontal como la lapa.
+-->
+<section class="areas-hero relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue-900 text-compdes-cream">
+  <div class="areas-art" aria-hidden="true">
+    <img
+      class="areas-art__bg"
+      src={`${import.meta.env.BASE_URL}/elementos/fondo_manati.webp`}
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+    <img
+      class="areas-art__madre"
+      src={`${import.meta.env.BASE_URL}/elementos/manati_madre.webp`}
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+    <img
+      class="areas-art__cria"
+      src={`${import.meta.env.BASE_URL}/elementos/manati_cria.webp`}
+      alt=""
+      decoding="async"
+      draggable="false"
+    />
+  </div>
+  <div class="scanlines"></div>
+  <div class="relative z-10 mx-auto max-w-5xl px-6 py-16 md:py-24">
+    <p class="mb-4 text-[11px] uppercase tracking-[0.3em] text-compdes-yellow">
+      [ mod.{index} ] //
+      <span data-i18n="pageheader.tag.areas">{t('pageheader.tag.areas')}</span>
+    </p>
+    <h1 id="titulo" class="font-display text-4xl font-bold leading-tight md:text-5xl">
+      <span class="text-compdes-yellow">&gt;_</span>{' '}
+      <span data-i18n="nav.areas">{t('nav.areas')}</span>
+    </h1>
+    <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
+    <p
+      class="mt-6 max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-[1.05rem]"
+      data-i18n="pageheader.desc.areas"
+    >
+      {t('pageheader.desc.areas')}
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Composición de dos capas anclada al borde derecho de la banda (misma
+     receta validada en TurismoHeader e InscripcionHeader, con clases propias
+     para que los querySelector de cada página nunca colisionen). */
+  .areas-art {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    height: 100%;
+    width: min(46vw, 640px);
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .areas-art {
+      display: block;
+    }
+  }
+
+  /* El fondo sobredimensionado (bleed) para que el desplazamiento del parallax
+     nunca deje bordes descubiertos. El sangrado extra por la derecha recorta
+     fuera de pantalla cualquier margen transparente interno de la imagen →
+     pegado total al borde del viewport.
+     max-width:none anula el `img { max-width: 100% }` del preflight de
+     Tailwind, que si no colapsa las capas al ancho del contenedor. */
+  .areas-art__bg {
+    position: absolute;
+    inset: -9% -18% -9% -9%;
+    width: auto;
+    max-width: none;
+    height: 118%;
+    will-change: transform;
+  }
+
+  .areas-art__bg {
+    object-fit: cover;
+    object-position: right center;
+    /* Disolución alfa EXCLUSIVA de esta capa (fondo acuático): rampa larga de
+       7 paradas con crecimiento casi exponencial — disolución progresiva y
+       orgánica hacia el azul de la página, sin velo adicional. El borde
+       derecho llega SÓLIDO hasta el viewport, sin fundido de salida. */
+    -webkit-mask-image:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.03) 15%,
+        rgb(0 0 0 / 0.1) 28%,
+        rgb(0 0 0 / 0.22) 40%,
+        rgb(0 0 0 / 0.42) 52%,
+        rgb(0 0 0 / 0.65) 64%,
+        rgb(0 0 0 / 0.85) 76%,
+        #000 90%,
+        #000 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 14%,
+        #000 34%,
+        #000 68%,
+        rgb(0 0 0 / 0.35) 86%,
+        transparent 100%
+      );
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.03) 15%,
+        rgb(0 0 0 / 0.1) 28%,
+        rgb(0 0 0 / 0.22) 40%,
+        rgb(0 0 0 / 0.42) 52%,
+        rgb(0 0 0 / 0.65) 64%,
+        rgb(0 0 0 / 0.85) 76%,
+        #000 90%,
+        #000 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.35) 14%,
+        #000 34%,
+        #000 68%,
+        rgb(0 0 0 / 0.35) 86%,
+        transparent 100%
+      );
+    mask-composite: intersect;
+  }
+
+  .areas-art__madre,
+  .areas-art__cria {
+    /* Dos recortes independientes sobre el MISMO lienzo (1672×940) y con la
+       MISMA posición que tuvo la hoja compuesta: apilados a top:0/right:0 se
+       alinean byte a byte con la composición original, así madre y cría quedan
+       exactamente donde estaban. Se dimensionan por ANCHO (== ancho del
+       panel), nunca por altura: así su borde izquierdo coincide con el del
+       panel y jamás sobresalen por el lado izquierdo (la cría, que vive en ese
+       lado, no se recorta en pantallas normales). El alto deriva de la
+       relación de aspecto; el margen inferior transparente deja ver el agua
+       del fondo (capa __bg), como en la hoja original. Cada capa flota luego
+       con su PROPIO vaivén (ver JS): la madre lenta y pesada, la cría rápida
+       y ligera — flotación descordinada. */
+    position: absolute;
+    inset: auto 0 auto auto;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    will-change: transform;
+  }
+
+  /* Orden de apilado dentro del lienzo: la cría (última en el DOM) queda
+     delante de la madre, como en la hoja compuesta. */
+  .areas-art__cria {
+    z-index: 1;
+  }
+</style>
+
+<script>
+  const section = document.querySelector('.areas-hero');
+  const bg = document.querySelector('.areas-art__bg');
+  const madre = document.querySelector('.areas-art__madre');
+  const cria = document.querySelector('.areas-art__cria');
+
+  if (section && bg && madre && cria) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Velocidades intencionalmente asimétricas: fondo lejano casi estático,
+    // manatí cercano con recorrido amplio y evidente.
+    const BG_SPEED = 30;
+    const BIRD_SPEED = 320;
+    // Resorte subamortiguado del manatí: ω fija el periodo (2π/ω ≈ 0.52 s,
+    // el retraso con que alcanza al fondo) y ζ < 1 hace que sobrepase su
+    // objetivo una vez y rebote antes de asentarse en su lugar.
+    const SPRING_OMEGA = 12; // rad/s
+    const SPRING_ZETA = 0.5; // razón de amortiguación (<1 = subamortiguado)
+    // Entrada escénica: la pareja arranca fuera del encuadre (por arriba de
+    // la banda) y "emerge del agua" con este mismo resorte la primera vez que
+    // la sección asoma en pantalla.
+    const ENTER_OFFSET = 460;
+    // Flotación idle VERTICAL a la MISMA velocidad para ambas (mismo periodo y
+    // misma amplitud, los valores del flote original ±7 px / 4.2 s). La
+    // descordinación viene solo de la fase: la cría nace con un desfase fijo
+    // que se conserva indefinidamente, así las dos se mueven idéntico pero
+    // NUNCA al mismo compás — una sube mientras la otra baja.
+    const IDLE_AMP = 7; // px
+    const IDLE_PERIOD = 4.2; // s
+    // Desfase fijo de la cría respecto a la madre (rad). ~0.8π deja el ritmo
+    // visiblemente descordinado sin llegar a ser un espejo perfecto.
+    const CRIA_PHASE_OFFSET = 2.5;
+
+    let targetBgY = 0;
+    let targetShiftY = 0;
+    let shiftY = 0;
+    let shiftV = 0;
+    let idlePhase = 0;
+    let rafId = null;
+    let lastT = 0;
+    // Con motion reducido no hay puesta en escena ni flotación: estático.
+    let entered = reduceMotion;
+
+    function computeTargets() {
+      const rect = section.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // 0 cuando la sección aún entra por abajo, 1 cuando ya salió por arriba.
+      const p = Math.min(Math.max((vh - rect.top) / (vh + rect.height), 0), 1);
+      const centered = p - 0.5;
+      targetBgY = centered * BG_SPEED;
+      targetShiftY = centered * BIRD_SPEED;
+    }
+
+    function render() {
+      bg.style.transform = `translate3d(0, ${targetBgY.toFixed(1)}px, 0)`;
+      // El resorte (parallax + entrada) es compartido: la pareja viaja junta
+      // en profundidad. La flotación idle se suma por separado a cada una,
+      // desplazada por el desfase constante entre madre y cría.
+      const shift = reduceMotion ? 0 : shiftY;
+      const idle =
+        entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
+      madre.style.transform = `translate3d(0, ${(shift + idle).toFixed(1)}px, 0)`;
+      cria.style.transform = `translate3d(0, ${(shift + Math.sin(idlePhase + CRIA_PHASE_OFFSET) * IDLE_AMP).toFixed(1)}px, 0)`;
+    }
+
+    // Bucle persistente tras la entrada: integra el resorte hacia su objetivo
+    // y avanza la única fase de flotación (ambas comparten el reloj; el
+    // desfase de la cría es constante, nunca se acoplan). Coste por frame
+    // ínfimo (tres transforms).
+    function frame(t) {
+      const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
+      lastT = t;
+
+      const accel =
+        SPRING_OMEGA * SPRING_OMEGA * (targetShiftY - shiftY) -
+        2 * SPRING_ZETA * SPRING_OMEGA * shiftV;
+      shiftV += accel * dt;
+      shiftY += shiftV * dt;
+      if (Math.abs(targetShiftY - shiftY) < 0.3 && Math.abs(shiftV) < 8) {
+        shiftY = targetShiftY;
+        shiftV = 0;
+      }
+
+      idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
+      render();
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function wake() {
+      if (!entered) return; // antes de la entrada no hay nada que mover
+      computeTargets();
+      if (rafId === null) {
+        lastT = performance.now();
+        rafId = requestAnimationFrame(frame);
+      }
+    }
+
+    // Revelado del fondo acuático: tween de opacity conducido por rAF
+    // (easeOutCubic). No depende del reloj de transiciones CSS, que en algunos
+    // entornos no avanza; así el fundido es idéntico en cualquier navegador.
+    const BG_FADE_MS = 900;
+    let fadeRaf = null;
+
+    function startBgFade() {
+      if (reduceMotion || fadeRaf !== null) return;
+      const t0 = performance.now();
+      function step(t) {
+        const k = Math.min((t - t0) / BG_FADE_MS, 1);
+        bg.style.opacity = (1 - Math.pow(1 - k, 3)).toFixed(3);
+        fadeRaf = k < 1 ? requestAnimationFrame(step) : null;
+      }
+      fadeRaf = requestAnimationFrame(step);
+    }
+
+    function startEntrance() {
+      entered = true;
+      requestAnimationFrame(() => {
+        void bg.offsetWidth;
+        startBgFade();
+        wake();
+      });
+    }
+
+    // Estado inicial: sin motion reducido la pareja se coloca fuera del
+    // encuadre y el fondo en opacity 0, a la espera del IntersectionObserver.
+    computeTargets();
+    render();
+
+    if (!reduceMotion) {
+      shiftY = targetShiftY - ENTER_OFFSET;
+      render();
+      bg.style.opacity = '0';
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              io.disconnect();
+              startEntrance();
+            }
+          },
+          { threshold: 0.25 }
+        );
+        io.observe(section);
+      } else {
+        startEntrance();
+      }
+
+      window.addEventListener('scroll', wake, { passive: true });
+      window.addEventListener('resize', wake, { passive: true });
+    }
+  }
+</script>

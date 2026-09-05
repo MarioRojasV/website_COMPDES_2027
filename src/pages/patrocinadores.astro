@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import SponsorsRack from '../components/patrocinadores/SponsorsRack.astro';
 ---
 
 <BaseLayout titleKey="page.title.patrocinadores" descriptionKey="meta.desc.patrocinadores">
-  <PageHeader titleKey="nav.patrocinadores" index="08" tagKey="pageheader.tag.patrocinadores" />
+  <PageHeader titleKey="nav.patrocinadores" index="08" tagKey="pageheader.tag.patrocinadores" placeholder={false} />
+  <SponsorsRack />
 </BaseLayout>

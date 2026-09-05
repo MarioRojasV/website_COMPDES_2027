@@ -271,6 +271,14 @@ export const ui = {
     "meta.desc.organizacion": "Comité organizador del Congreso COMPDES 2027.",
     "meta.desc.patrocinadores":
       "Instituciones patrocinadoras y aliadas del Congreso COMPDES 2027.",
+    "patrocinadores.eyebrow": "co-patrocinio",
+    "patrocinadores.title": "Quiénes nos respaldan",
+    "patrocinadores.intro":
+      "Dos instituciones, un solo compromiso: impulsar la computación en la región. COMPDES 2027 es posible gracias al respaldo de la IEEE y del Instituto Tecnológico de Costa Rica.",
+    "patrocinadores.role.ieee": "co-patrocinador técnico · indización en IEEE Xplore",
+    "patrocinadores.role.tec": "institución anfitriona · Campus Tecnológico Local San Carlos",
+    "patrocinadores.link": "enlace",
+    "patrocinadores.bus": "BUS",
   },
   en: {
     // Common
@@ -528,6 +536,14 @@ export const ui = {
       "Organizing committee of the COMPDES 2027 conference.",
     "meta.desc.patrocinadores":
       "Sponsoring and partner institutions of the COMPDES 2027 conference.",
+    "patrocinadores.eyebrow": "co-sponsorship",
+    "patrocinadores.title": "Who stands behind us",
+    "patrocinadores.intro":
+      "Two institutions, one commitment: advancing computing in the region. COMPDES 2027 is possible thanks to the support of IEEE and the Costa Rica Institute of Technology.",
+    "patrocinadores.role.ieee": "technical co-sponsor · indexed in IEEE Xplore",
+    "patrocinadores.role.tec": "host institution · San Carlos Local Campus",
+    "patrocinadores.link": "link",
+    "patrocinadores.bus": "BUS",
   },
 } as const;
 

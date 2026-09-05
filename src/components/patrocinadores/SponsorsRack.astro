@@ -1,0 +1,274 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
+const t = useTranslations(lang);
+const base = import.meta.env.BASE_URL;
+
+const units = [
+  {
+    id: 'ieee',
+    name: 'IEEE',
+    logo: `${base}/patrocinadores/logo_ieee.webp`,
+    alt: 'IEEE',
+    roleKey: 'patrocinadores.role.ieee',
+    uplink: 'ieee-xplore-uplink:0',
+  },
+  {
+    id: 'tec',
+    name: 'TEC — Instituto Tecnológico de Costa Rica',
+    logo: `${base}/patrocinadores/logo_tec.webp`,
+    alt: 'TEC — Instituto Tecnológico de Costa Rica',
+    roleKey: 'patrocinadores.role.tec',
+    uplink: 'tec-host-uplink:0',
+  },
+] as const;
+---
+
+<!--
+  Backplane de co-patrocinadores: dos "blades" montados en un rack.
+  Las superficies CLAVES son crema (fondo claro) porque ambas marcas vienen en
+  tinta azul marino (IEEE alfa sobre transparente; TEC con fondo blanco que se
+  funde con el crema). El resto — riel, carátula y etiquetas — es el terminal
+  del sitio: tinta crema, acentos celeste, sombras duras, LEDs de estado y
+  textura de tornillos hecha con gradientes (sin imágenes nuevas).
+-->
+<section class="border-y-2 border-compdes-yellow bg-compdes-blue-800 py-16 text-compdes-cream md:py-24">
+  <div class="mx-auto max-w-5xl px-6">
+    <SectionHeading
+      sectionNumber={1}
+      eyebrowKey="patrocinadores.eyebrow"
+      titleKey="patrocinadores.title"
+      introKey="patrocinadores.intro"
+      dark
+    />
+
+    <div class="sponsor-rack">
+      <header class="sponsor-rack__bar">
+        <span class="sponsor-rack__label">&gt;_ backplane // co-sponsors</span>
+        <span class="sponsor-rack__power">
+          <i class="sponsor-led sponsor-led--on" aria-hidden="true"></i>
+          <span data-i18n="patrocinadores.bus">{t('patrocinadores.bus')}</span> 100%
+        </span>
+      </header>
+
+      <div class="sponsor-rack__body">
+        {
+          units.map((u, i) => (
+            <article class="sponsor-blade">
+              <div class="sponsor-blade__rail" aria-hidden="true">
+                <span class="sponsor-blade__slot">U{i}</span>
+              </div>
+
+              <div class="sponsor-blade__face">
+                <img class="sponsor-blade__logo" src={u.logo} alt={u.alt} decoding="async" />
+              </div>
+
+              <div class="sponsor-blade__meta">
+                <div class="sponsor-blade__leds" aria-hidden="true">
+                  <i class="sponsor-led sponsor-led--on"></i>
+                  <i class="sponsor-led sponsor-led--on"></i>
+                  <i class="sponsor-led sponsor-led--blink"></i>
+                </div>
+                <p class="sponsor-blade__role" data-i18n={u.roleKey}>
+                  {t(u.roleKey)}
+                </p>
+                <p class="sponsor-blade__uplink">
+                  <span data-i18n="patrocinadores.link">{t('patrocinadores.link')}</span>
+                  :: {u.uplink}{' '}
+                  <span class="sponsor-blade__status">[LINK]</span>
+                </p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Rack: superficie clara (crema) con tinta azul marino — la única tarjeta
+     clara del sitio, a propósito: aquí es donde la marca se luce. Borde duro
+     + sombra dura en azul profundo; sin radius redondeados, cuadratura total. */
+  .sponsor-rack {
+    margin-top: 3rem;
+    background-color: var(--color-compdes-cream);
+    color: var(--color-compdes-blue-900);
+    border: 2px solid var(--color-compdes-blue-900);
+    box-shadow: 8px 8px 0 0 var(--color-compdes-blue-900);
+  }
+
+  .sponsor-rack__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.875rem;
+    background-color: var(--color-compdes-blue-900);
+    color: var(--color-compdes-cream);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+  }
+
+  .sponsor-rack__label {
+    color: var(--color-compdes-yellow);
+    text-transform: uppercase;
+  }
+
+  .sponsor-rack__power {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  /* LEDs de estado del rack (variante propia, no la .status-led del sistema). */
+  .sponsor-led {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    border: 1.5px solid var(--color-compdes-blue-900);
+    background-color: var(--color-compdes-cream-300);
+    flex-shrink: 0;
+  }
+
+  .sponsor-led--on {
+    background-color: var(--color-compdes-yellow);
+    box-shadow: 0 0 0 3px rgb(56 189 248 / 0.2);
+  }
+
+  .sponsor-led--blink {
+    background-color: var(--color-compdes-yellow);
+    animation: compdes-blink 1.6s steps(1) infinite;
+  }
+
+  .sponsor-rack__body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Cada blade: riel (izq, textura de tornillos) + carátula crema con el logo
+     + etiqueta técnica (der.). El divisor entre unidades es una "costilla" de
+     ventilación hecha de guiones punteados. */
+  .sponsor-blade {
+    display: flex;
+    align-items: stretch;
+    border-top: 2px dashed var(--color-compdes-blue-700);
+  }
+
+  .sponsor-blade:first-child {
+    border-top: none;
+  }
+
+  .sponsor-blade__rail {
+    position: relative;
+    width: 3.25rem;
+    flex-shrink: 0;
+    background-color: var(--color-compdes-blue-900);
+    /* Textura de tornillos: dos columnas de puntos en malla irregular. */
+    background-image:
+      radial-gradient(circle, var(--color-compdes-yellow) 0 1.5px, transparent 1.6px),
+      radial-gradient(circle, rgb(246 241 231 / 0.35) 0 1px, transparent 1.2px);
+    background-size:
+      0.8125rem 1.375rem,
+      0.8125rem 1.375rem;
+    background-position:
+      top 0.5rem left 0.55rem,
+      top 1.25rem right 0.55rem;
+    background-repeat: repeat;
+  }
+
+  .sponsor-blade__slot {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: var(--color-compdes-yellow);
+  }
+
+  .sponsor-blade__face {
+    display: grid;
+    place-items: center;
+    flex: 1 1 0%;
+    padding: 1.25rem 1.5rem;
+    background-color: var(--color-compdes-cream);
+    border-right: 2px solid var(--color-compdes-blue-900);
+  }
+
+  .sponsor-blade__logo {
+    max-width: 100%;
+    max-height: 3.25rem;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .sponsor-blade__meta {
+    width: 16.5rem;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.875rem 1rem;
+    background-color: var(--color-compdes-blue-800);
+    color: var(--color-compdes-cream);
+  }
+
+  .sponsor-blade__leds {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .sponsor-blade__role {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: var(--color-compdes-yellow);
+  }
+
+  .sponsor-blade__uplink {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    color: var(--color-compdes-cream-300);
+    overflow-wrap: anywhere;
+  }
+
+  .sponsor-blade__status {
+    color: var(--color-compdes-yellow);
+  }
+
+  @media (max-width: 767px) {
+    .sponsor-blade {
+      flex-wrap: wrap;
+    }
+
+    .sponsor-blade__rail {
+      width: 2.5rem;
+    }
+
+    .sponsor-blade__face {
+      flex: 1 1 calc(100% - 2.5rem);
+      border-right: none;
+    }
+
+    .sponsor-blade__meta {
+      width: 100%;
+      align-items: flex-start;
+      padding: 0.75rem 1rem;
+    }
+  }
+</style>
