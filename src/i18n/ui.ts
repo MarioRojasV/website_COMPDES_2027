@@ -66,6 +66,7 @@ export const ui = {
     "org.representantes.title": "Representantes de la Red COMPDES",
     "org.representantes.intro":
       "Un representante por cada universidad miembro, enlace entre su institución y la organización del congreso.",
+    "org.more.show": "ver más",
     "tur.list.title": "Actividades disponibles",
     "tur.list.intro":
       "Atractivos turísticos en San Carlos y La Fortuna. Tarifas de referencia: confirma horarios, precios y reservación directamente con cada operador.",
@@ -333,6 +334,7 @@ export const ui = {
     "org.representantes.title": "Representatives of the COMPDES Network",
     "org.representantes.intro":
       "One representative per member university, serving as the liaison between their institution and the conference organization.",
+    "org.more.show": "show more",
     "tur.list.title": "Available activities",
     "tur.list.intro":
       "Tourist attractions in San Carlos and La Fortuna. Rates are reference prices: confirm schedules, pricing and bookings directly with each operator.",

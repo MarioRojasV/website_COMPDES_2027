@@ -24,6 +24,11 @@ const eyebrowKey = `org.${committeeId}.eyebrow` as UiKey;
 const titleKey = `org.${committeeId}.title` as UiKey;
 const introKey = `org.${committeeId}.intro` as UiKey;
 const pad = (n: number) => String(n).padStart(2, '0');
+
+/* Paginado por bloques de 10: solo si hay más de STEP miembros se ocultan
+   los que excedan el primer bloque y se muestra el botón de desplegar más. */
+const STEP = 10;
+const hasMore = members.length > STEP;
 ---
 
 <!-- [ com.NN ] Comité — listado estilo directorio dentro de una terminal -->
@@ -63,26 +68,47 @@ const pad = (n: number) => String(n).padStart(2, '0');
           </p>
         </div>
       ) : (
-        <ul class="divide-y divide-dashed divide-compdes-blue-600">
-          {
-            members.map((member, i) => (
-              <li class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 px-5 py-4 sm:px-6">
-                <span class="shrink-0 font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
-                  [ {pad(i + 1)} ]
-                </span>
-                <span class="font-semibold leading-snug text-compdes-cream">{member.name}</span>
-                <span class="min-w-0 basis-full text-[13px] leading-snug text-compdes-cream/60 sm:basis-auto sm:flex-1">
-                  — <LangText value={member.affiliation} />
-                </span>
-                {member.role && (
-                  <span class="ml-auto shrink-0 rounded-full border border-compdes-yellow/50 bg-compdes-yellow/10 px-2.5 py-0.5 font-mono text-[11px] leading-relaxed text-compdes-yellow">
-                    <LangText value={member.role} />
+        <div data-members-wrap>
+          <ul class="divide-y divide-dashed divide-compdes-blue-600">
+            {
+              members.map((member, i) => (
+                <li
+                  class:list={[
+                    'flex flex-wrap items-baseline gap-x-3 gap-y-1.5 px-5 py-4 sm:px-6',
+                    { hidden: hasMore && i >= STEP },
+                  ]}
+                  data-members-more={hasMore && i >= STEP ? '' : undefined}
+                >
+                  <span class="shrink-0 font-mono text-[11px] font-semibold tracking-widest text-compdes-yellow/70">
+                    [ {pad(i + 1)} ]
                   </span>
-                )}
-              </li>
-            ))
-          }
-        </ul>
+                  <span class="font-semibold leading-snug text-compdes-cream">{member.name}</span>
+                  <span class="min-w-0 basis-full text-[13px] leading-snug text-compdes-cream/60 sm:basis-auto sm:flex-1">
+                    — <LangText value={member.affiliation} />
+                  </span>
+                  {member.role && (
+                    <span class="ml-auto shrink-0 rounded-full border border-compdes-yellow/50 bg-compdes-yellow/10 px-2.5 py-0.5 font-mono text-[11px] leading-relaxed text-compdes-yellow">
+                      <LangText value={member.role} />
+                    </span>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+
+          {hasMore && (
+            <div class="flex justify-center px-5 py-5 sm:px-6">
+              <button
+                type="button"
+                data-members-more-btn
+                class="flex items-center gap-2 border-2 border-compdes-blue-600 bg-compdes-blue px-4 py-2 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-compdes-cream/85 transition-colors duration-300 hover:border-compdes-yellow hover:text-compdes-yellow"
+              >
+                <span data-members-more-count aria-hidden="true">+{Math.min(STEP, members.length - STEP)}</span>
+                <span data-i18n="org.more.show">{t('org.more.show')}</span>
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       <div class="border-t border-compdes-blue-600 px-5 py-2.5 sm:px-6">
@@ -93,3 +119,28 @@ const pad = (n: number) => String(n).padStart(2, '0');
     </div>
   </div>
 </section>
+
+<script>
+  /* Desplegar más miembros en bloques de 10: cada clic revela el siguiente
+     lote y actualiza el contador; al revelar todos, el botón desaparece. */
+  document.querySelectorAll<HTMLElement>('[data-members-wrap]').forEach((wrap) => {
+    const btn = wrap.querySelector<HTMLButtonElement>('[data-members-more-btn]');
+    if (!btn) return;
+    const items = Array.from(wrap.querySelectorAll<HTMLElement>('[data-members-more]'));
+    if (!items.length) return;
+
+    const STEP = 10;
+    const count = wrap.querySelector<HTMLElement>('[data-members-more-count]');
+    let shown = 0;
+
+    btn.addEventListener('click', () => {
+      items.slice(shown, shown + STEP).forEach((el) => el.classList.remove('hidden'));
+      shown += STEP;
+      if (shown >= items.length) {
+        btn.hidden = true;
+        return;
+      }
+      if (count) count.textContent = `+${items.length - shown}`;
+    });
+  });
+</script>
