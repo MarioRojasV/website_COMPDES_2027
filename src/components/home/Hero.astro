@@ -7,7 +7,7 @@ const t = useTranslations(lang);
 
 <section class="hero" aria-label={t('hero.title')}>
   <div class="hero-art" aria-hidden="true">
-    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/principal.webp`} alt="" />
+    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/principal_extendido.webp`} alt="" />
     <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" />
     <img class="hero-ctec" src={`${import.meta.env.BASE_URL}/fondos/ctec.webp`} alt="" />
     <img class="hero-deer" src={`${import.meta.env.BASE_URL}/fondos/deer.webp`} alt="" />
@@ -71,6 +71,7 @@ const t = useTranslations(lang);
     object-position: center bottom;
   }
 
+  .hero-bg,
   .hero-logo,
   .hero-ctec,
   .hero-deer {
@@ -168,11 +169,11 @@ const t = useTranslations(lang);
   // panel (con más margen alrededor), no lograrlo con CSS/JS sobre estos
   // archivos tal como están.
   const layers = [
-    { el: bg,    amp: 620,  omega: 13, zeta: 0.9, bleed: 1.0 },
-    { el: logo,  amp: 400,  omega: 13, zeta: 0.9, bleed: 1.0 },
-    { el: ctec,  amp: 300, omega: 11, zeta: 0.9, bleed: 1.05, base: 25 },
+    { el: bg,    amp: 620,  omega: 13, zeta: 0.9, bleed: 1.07 },
+    { el: logo,  amp: 60,   omega: 13, zeta: 0.9, bleed: 1.0 },
+    { el: ctec,  amp: 160, omega: 11, zeta: 0.9, bleed: 1.05, base: 25 },
     { el: deer,  amp: 1,   omega: 0,  zeta: 0,   bleed: 1.0, base: 25 },
-    { el: title, amp: 50, omega: 7,  zeta: 0.5 },
+    { el: title, amp: 160, omega: 7,  zeta: 0.5 },
   ].filter((l) => l.el);
 
   for (const l of layers) {
