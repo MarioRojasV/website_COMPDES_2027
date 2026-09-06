@@ -15,11 +15,18 @@ export interface Props {
       más un animal recortado con alfa (flotación idle + entrada escénica). */
   artBgSrc?: string;
   artBirdSrc?: string;
+  /** Segunda criatura opcional: un recorte alfa adicional (más pequeño y en
+      el ángulo inferior derecho) que flota desfasado y llega un instante
+      después que el principal, para dar profundidad a la composición. */
+  artBird2Src?: string;
+  /** Dirección de la entrada escénica del animal: 'top' cae desde arriba
+      (por defecto), 'right' llega deslizándose desde el lado derecho. */
+  artEntrance?: 'top' | 'right';
 }
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
-const { titleKey, index, id, tagKey, descKey, placeholder = true, artBgSrc, artBirdSrc } = Astro.props;
+const { titleKey, index, id, tagKey, descKey, placeholder = true, artBgSrc, artBirdSrc, artBird2Src, artEntrance = 'top' } = Astro.props;
 const tagLabel = tagKey ? t(tagKey) : t('common.section');
 const hasArt = Boolean(artBgSrc && artBirdSrc);
 ---
@@ -27,9 +34,12 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
 <section class="relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue-900 text-compdes-cream">
   {
     hasArt && (
-      <div class="pageheader-art" aria-hidden="true">
+      <div class="pageheader-art" data-entrance={artEntrance} aria-hidden="true">
         <img class="pageheader-art__bg" src={artBgSrc} alt="" decoding="async" draggable="false" />
         <img class="pageheader-art__bird" src={artBirdSrc} alt="" decoding="async" draggable="false" />
+        {artBird2Src && (
+          <img class="pageheader-art__bird2" src={artBird2Src} alt="" decoding="async" draggable="false" />
+        )}
       </div>
     )
   }
@@ -179,6 +189,18 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     max-width: none;
     height: 100%;
   }
+
+  /* Segunda criatura: mismo lienzo a altura completa que el principal, en el
+     ángulo inferior derecho del panel (mismo bleed que las demás capas para
+     pegar el borde al viewport). */
+  .pageheader-art__bird2 {
+    position: absolute;
+    inset: auto -18% -9% auto;
+    width: auto;
+    max-width: none;
+    height: 100%;
+    will-change: transform;
+  }
 </style>
 
 <script>
@@ -188,9 +210,15 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
   const art = document.querySelector('.pageheader-art');
   const bg = document.querySelector('.pageheader-art__bg');
   const bird = document.querySelector('.pageheader-art__bird');
+  const bird2 = document.querySelector('.pageheader-art__bird2');
 
   if (art && bg && bird) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Eje de la entrada escénica: 'top' cae desde arriba (desplazamiento
+    // hacia arriba que aterriza en 0), 'right' llega desde la derecha
+    // (desplazamiento hacia la derecha que vuelve a su ancla lateral).
+    const entranceAxis = art.dataset.entrance === 'right' ? 'x' : 'y';
 
     // Resorte subamortiguado: ω fija el periodo del aterrizaje (2π/ω ≈ 0.52 s)
     // y ζ < 1 hace que sobrepase su posición una vez y rebote antes de
@@ -198,16 +226,27 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     const SPRING_OMEGA = 12; // rad/s
     const SPRING_ZETA = 0.5; // razón de amortiguación (<1 = subamortiguado)
     // Entrada escénica: el animal arranca fuera del encuadre (por arriba de
-    // la banda) y "aterriza" la primera vez que esta asoma en pantalla.
-    const ENTER_OFFSET = 460;
+    // la banda, o desplazado a la derecha según el eje) y "aterriza" la
+    // primera vez que esta asoma en pantalla. En 'right' el desplazamiento
+    // es POSITIVO (hacia la derecha, fuera del panel anclado al borde).
+    const ENTER_OFFSET = entranceAxis === 'x' ? 540 : 460;
     // Flotación idle HORIZONTAL: el recorte alfa toca arriba y abajo del
     // lienzo (cero holgura vertical), pero sobran >150px a cada lado.
     const IDLE_AMP = 8; // px
     const IDLE_PERIOD = 3.2; // s
+    // Parámetros de la segunda criatura (si existe): más pequeña, arranca
+    // un poco más lejos para llegar un instante después, y su flotación es
+    // más rápida (batir corto) y DESFASADA para no moverse al unísono.
+    const ENTER_OFFSET2 = entranceAxis === 'x' ? 720 : 560;
+    const IDLE_AMP2 = 12; // px
+    const IDLE_PERIOD2 = 2.6; // s
 
-    let birdY = 0;
-    let birdV = 0;
+    let offset = 0;
+    let vel = 0;
     let idlePhase = 0;
+    let offset2 = 0;
+    let vel2 = 0;
+    let idle2Phase = 1.7;
     let rafId = null;
     let lastT = 0;
     // Con motion reducido no hay puesta en escena ni flotación: estático.
@@ -215,7 +254,18 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
 
     function render() {
       const idleX = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
-      bird.style.transform = `translate3d(${idleX.toFixed(1)}px, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
+      const travel = reduceMotion ? 0 : offset;
+      const x = entranceAxis === 'x' ? travel + idleX : idleX;
+      const y = entranceAxis === 'y' ? travel : 0;
+      bird.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+
+      if (bird2) {
+        const idle2X = entered && !reduceMotion ? Math.sin(idle2Phase) * IDLE_AMP2 : 0;
+        const travel2 = reduceMotion ? 0 : offset2;
+        const x2 = entranceAxis === 'x' ? travel2 + idle2X : idle2X;
+        const y2 = entranceAxis === 'y' ? travel2 : 0;
+        bird2.style.transform = `translate3d(${x2.toFixed(1)}px, ${y2.toFixed(1)}px, 0)`;
+      }
     }
 
     // Bucle persistente tras la entrada: integra el resorte hacia el reposo
@@ -224,12 +274,23 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
       const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
       lastT = t;
 
-      const accel = -SPRING_OMEGA * SPRING_OMEGA * birdY - 2 * SPRING_ZETA * SPRING_OMEGA * birdV;
-      birdV += accel * dt;
-      birdY += birdV * dt;
-      if (Math.abs(birdY) < 0.3 && Math.abs(birdV) < 8) {
-        birdY = 0;
-        birdV = 0;
+      const accel = -SPRING_OMEGA * SPRING_OMEGA * offset - 2 * SPRING_ZETA * SPRING_OMEGA * vel;
+      vel += accel * dt;
+      offset += vel * dt;
+      if (Math.abs(offset) < 0.3 && Math.abs(vel) < 8) {
+        offset = 0;
+        vel = 0;
+      }
+
+      if (bird2) {
+        const accel2 = -SPRING_OMEGA * SPRING_OMEGA * offset2 - 2 * SPRING_ZETA * SPRING_OMEGA * vel2;
+        vel2 += accel2 * dt;
+        offset2 += vel2 * dt;
+        if (Math.abs(offset2) < 0.3 && Math.abs(vel2) < 8) {
+          offset2 = 0;
+          vel2 = 0;
+        }
+        idle2Phase += (dt * 2 * Math.PI) / IDLE_PERIOD2;
       }
 
       idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
@@ -275,7 +336,8 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     render();
 
     if (!reduceMotion) {
-      birdY = -ENTER_OFFSET;
+      offset = entranceAxis === 'x' ? ENTER_OFFSET : -ENTER_OFFSET;
+      if (bird2) offset2 = entranceAxis === 'x' ? ENTER_OFFSET2 : -ENTER_OFFSET2;
       render();
       bg.style.opacity = '0';
 

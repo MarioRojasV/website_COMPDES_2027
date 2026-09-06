@@ -12,6 +12,9 @@ import { committees } from '../../data/organizacion';
     tagKey="pageheader.tag.organizacion"
     descKey="pageheader.desc.organizacion"
     placeholder={false}
+    artBgSrc={`${import.meta.env.BASE_URL}/elementos/fondo_morpho.webp`}
+    artBirdSrc={`${import.meta.env.BASE_URL}/elementos/morpho.webp`}
+    artBird2Src={`${import.meta.env.BASE_URL}/elementos/morpho_2.webp`}
   />
   {committees.map((committee, i) => (
     <CommitteeSection

@@ -187,10 +187,11 @@ const t = useTranslations(lang);
     // objetivo una vez y rebote antes de asentarse en su lugar.
     const SPRING_OMEGA = 12; // rad/s
     const SPRING_ZETA = 0.5; // razón de amortiguación (<1 = subamortiguado)
-    // Entrada escénica: la lapa arranca fuera del encuadre (por arriba de la
-    // banda) y "aterriza" con este mismo resorte la primera vez que la
-    // sección asoma en pantalla.
-    const ENTER_OFFSET = 460;
+    // Entrada escénica: la lapa arranca fuera del encuadre DESPLAZADA hacia
+    // la derecha y "aterriza" con este mismo resorte la primera vez que la
+    // sección asoma en pantalla. El valor inicial es una aproximación segura;
+    // al cargar la imagen se recalcula con el ancho real de su lienzo (abajo).
+    const INITIAL_BIRD_X = 640;
     // Flotación idle: oscilación senoidal continua que suma vida a la lapa
     // cuando no hay scroll. Es HORIZONTAL porque el recorte alfa de la lapa
     // casi toca el borde inferior de su lienzo (1px de holgura): cualquier
@@ -202,6 +203,10 @@ const t = useTranslations(lang);
     let targetBirdY = 0;
     let birdY = 0;
     let birdV = 0;
+    // Desplazamiento horizontal de la entrada: arranca a la derecha del
+    // encuadre y vuelve a 0 con el mismo resorte. No depende del scroll.
+    let birdX = 0;
+    let birdVX = 0;
     let idlePhase = 0;
     let rafId = null;
     let lastT = 0;
@@ -221,7 +226,8 @@ const t = useTranslations(lang);
     function render() {
       bg.style.transform = `translate3d(0, ${targetBgY.toFixed(1)}px, 0)`;
       const idleX = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
-      bird.style.transform = `translate3d(${idleX.toFixed(1)}px, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
+      const travelX = reduceMotion ? 0 : birdX;
+      bird.style.transform = `translate3d(${(idleX + travelX).toFixed(1)}px, ${(reduceMotion ? 0 : birdY).toFixed(1)}px, 0)`;
     }
 
     // Bucle persistente tras la entrada: integra el resorte hacia su objetivo
@@ -238,6 +244,14 @@ const t = useTranslations(lang);
       if (Math.abs(targetBirdY - birdY) < 0.3 && Math.abs(birdV) < 8) {
         birdY = targetBirdY;
         birdV = 0;
+      }
+
+      const accelX = -SPRING_OMEGA * SPRING_OMEGA * birdX - 2 * SPRING_ZETA * SPRING_OMEGA * birdVX;
+      birdVX += accelX * dt;
+      birdX += birdVX * dt;
+      if (Math.abs(birdX) < 0.3 && Math.abs(birdVX) < 8) {
+        birdX = 0;
+        birdVX = 0;
       }
 
       idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
@@ -285,14 +299,36 @@ const t = useTranslations(lang);
     }
 
     // Estado inicial: sin motion reducido la lapa se coloca fuera del
-    // encuadre y la selva en opacity 0, a la espera del IntersectionObserver.
+    // encuadre HACIA LA DERECHA y la selva en opacity 0, a la espera del
+    // IntersectionObserver. El parallax de scroll sigue viviendo en el eje Y.
     computeTargets();
     render();
 
     if (!reduceMotion) {
-      birdY = targetBirdY - ENTER_OFFSET;
+      birdY = targetBirdY;
+      birdX = INITIAL_BIRD_X;
       render();
       bg.style.opacity = '0';
+
+      // Refinamiento del arranque: el lienzo de la lapa (lienzo con alfa)
+      // ocupa un ancho que depende de su proporción; se mide el ancho que
+      // dibuja `object-fit: contain` (ancla derecha) para empujarla
+      // COMPLETAMENTE fuera del encuadre y no dejar un borde a la vista.
+      const probe = new Image();
+      probe.onload = () => {
+        const iw = probe.naturalWidth;
+        const ih = probe.naturalHeight;
+        const boxW = bird.clientWidth;
+        const boxH = bird.clientHeight;
+        // Ancho horizontal que el lienzo realmente dibuja dentro del contenedor.
+        const drawnW = iw / ih >= boxW / boxH ? boxW : (boxH * iw) / ih;
+        const exactOffset = Math.ceil(drawnW) + 96;
+        if (!entered && exactOffset > birdX) {
+          birdX = exactOffset;
+          render();
+        }
+      };
+      probe.src = bird.currentSrc || bird.src;
 
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver(
