@@ -62,10 +62,16 @@ export interface Talk {
 export interface KeyDate {
   id: string;
   label: LocalText;
+  /** Tipo de aviso: define el color en la lista de fechas clave. */
+  type: DateKind;
   /** Fecha en texto libre; omítela mientras no esté definida. */
   date?: LocalText;
   note?: LocalText;
 }
+
+/** Categoría del aviso: apertura (verde), fecha límite (rojo),
+    notificación (amarillo) o congreso (neutro). */
+export type DateKind = 'apertura' | 'limite' | 'notificacion' | 'congreso';
 
 /* =========================================================================
    1) FECHAS CLAVE
@@ -74,6 +80,7 @@ export interface KeyDate {
 export const keyDates: KeyDate[] = [
   {
     id: 'apertura',
+    type: 'apertura',
     label: {
       es: 'Apertura de la recepción de papers y talleres',
       en: 'Opening of paper and workshop submissions',
@@ -89,6 +96,7 @@ export const keyDates: KeyDate[] = [
   },
   {
     id: 'limite',
+    type: 'limite',
     label: {
       es: 'Fecha límite de recepción de papers y talleres',
       en: 'Deadline for paper and workshop submissions',
@@ -100,6 +108,7 @@ export const keyDates: KeyDate[] = [
   },
   {
     id: 'aceptacion',
+    type: 'notificacion',
     label: {
       es: 'Notificación de aceptación de papers y talleres',
       en: 'Acceptance notification for papers and workshops',
@@ -111,6 +120,7 @@ export const keyDates: KeyDate[] = [
   },
   {
     id: 'version-final',
+    type: 'limite',
     label: {
       es: 'Envío de la versión final (camera-ready)',
       en: 'Camera-ready version submission',
@@ -122,6 +132,7 @@ export const keyDates: KeyDate[] = [
   },
   {
     id: 'congreso',
+    type: 'congreso',
     label: {
       es: 'XX Congreso Iberoamericano COMPDES 2027',
       en: '20th Ibero-American COMPDES 2027 Conference',

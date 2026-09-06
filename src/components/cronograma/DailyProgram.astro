@@ -2,10 +2,27 @@
 import SectionHeading from '../ui/SectionHeading.astro';
 import LangText from '../ui/LangText.astro';
 import { useTranslations } from '../../i18n/ui';
-import { scheduleDays, type SlotKind } from '../../data/schedule';
+import { scheduleDays, type DayId, type SlotKind } from '../../data/schedule';
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
+
+/* Color distintivo por día en las pestañas: miércoles electric pink,
+   jueves voltage violet, viernes acid lime. */
+const DAY_THEME: Record<DayId, { hover: string; selected: string }> = {
+  miercoles: {
+    hover: 'hover:border-compdes-pink',
+    selected: 'aria-selected:border-compdes-pink aria-selected:bg-compdes-pink',
+  },
+  jueves: {
+    hover: 'hover:border-compdes-violet',
+    selected: 'aria-selected:border-compdes-violet aria-selected:bg-compdes-violet',
+  },
+  viernes: {
+    hover: 'hover:border-compdes-lime',
+    selected: 'aria-selected:border-compdes-lime aria-selected:bg-compdes-lime',
+  },
+};
 
 /* Estilo del chip por tipo de bloque: la magistral va sólida, las pausas
    quedan como texto tenue sin chip para no saturar la línea de tiempo. */
@@ -50,7 +67,11 @@ const isQuiet = (kind: SlotKind) => kind === 'break' || kind === 'lunch';
               aria-selected={i === 0 ? 'true' : 'false'}
               aria-controls={`panel-${day.id}`}
               data-day-tab={day.id}
-              class="cursor-pointer border-2 border-compdes-blue-600 bg-compdes-blue px-5 py-2.5 text-left transition-colors duration-300 hover:border-compdes-yellow aria-selected:border-compdes-yellow aria-selected:bg-compdes-yellow aria-selected:text-compdes-blue"
+              class:list={[
+                'cursor-pointer border-2 border-compdes-blue-600 bg-compdes-blue px-5 py-2.5 text-left transition-colors duration-300 aria-selected:text-compdes-blue',
+                DAY_THEME[day.id].hover,
+                DAY_THEME[day.id].selected,
+              ]}
             >
               <span class="block font-mono text-xs font-bold uppercase tracking-[0.18em]">
                 <LangText value={day.label} />

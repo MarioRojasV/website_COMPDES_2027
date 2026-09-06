@@ -2,10 +2,33 @@
 import SectionHeading from '../ui/SectionHeading.astro';
 import LangText from '../ui/LangText.astro';
 import { useTranslations } from '../../i18n/ui';
-import { keyDates } from '../../data/schedule';
+import { keyDates, type DateKind } from '../../data/schedule';
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
+
+/* Estilo por tipo de aviso: la apertura va en verde (listo), las fechas
+   límite en rojo (acción urgente), la notificación en amarillo (pendiente
+   de revisión) y el congreso en el azul acento del sitio. El color solo
+   vive en la etiqueta; la fecha siempre va en marfil neutro. */
+const TYPE_THEME: Record<DateKind, { badge: string; led: string }> = {
+  apertura: {
+    badge: 'border-compdes-green bg-compdes-green text-compdes-blue',
+    led: 'bg-compdes-green',
+  },
+  limite: {
+    badge: 'border-compdes-red bg-compdes-red text-compdes-blue',
+    led: 'bg-compdes-red',
+  },
+  notificacion: {
+    badge: 'border-compdes-amber bg-compdes-amber text-compdes-blue',
+    led: 'bg-compdes-amber',
+  },
+  congreso: {
+    badge: 'border-compdes-yellow bg-compdes-yellow text-compdes-blue',
+    led: 'bg-compdes-yellow',
+  },
+};
 ---
 
 <!-- [ sec.01 ] Fechas clave — registro estilo consola dentro de una terminal -->
@@ -32,6 +55,7 @@ const t = useTranslations(lang);
         {
           keyDates.map((item) => {
             const confirmed = Boolean(item.date);
+            const theme = confirmed ? TYPE_THEME[item.type] : null;
             return (
               <li
                 class:list={[
@@ -43,7 +67,7 @@ const t = useTranslations(lang);
                 <p
                   class:list={[
                     'font-mono text-xs tracking-wide',
-                    confirmed ? 'text-compdes-yellow' : 'text-compdes-cream/35',
+                    confirmed ? 'text-compdes-cream/70' : 'text-compdes-cream/35',
                   ]}
                 >
                   [
@@ -57,7 +81,7 @@ const t = useTranslations(lang);
 
                 {/* Concepto + nota */}
                 <div class="min-w-0">
-                  <h3 class="font-display text-base leading-snug font-bold md:text-lg">
+                  <h3 class="font-mono text-base leading-snug font-bold md:text-lg">
                     <LangText value={item.label} />
                   </h3>
                   {item.note && (
@@ -67,23 +91,25 @@ const t = useTranslations(lang);
                   )}
                 </div>
 
-                {/* Estado */}
+                {/* Estado / categoría */}
                 <p
                   class:list={[
-                    'flex items-center gap-2 justify-self-start border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.2em] sm:justify-self-end',
-                    confirmed
-                      ? 'border-compdes-yellow bg-compdes-yellow text-compdes-blue'
-                      : 'border-compdes-cream/30 text-compdes-cream/60',
+                    'flex items-center gap-2 justify-self-start border px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] sm:justify-self-end',
+                    theme ? theme.badge : 'border-compdes-cream/30 text-compdes-cream/60',
                   ]}
                 >
                   <i
                     class:list={[
                       'status-led',
-                      confirmed ? 'bg-compdes-yellow' : 'bg-compdes-cream/50',
+                      theme ? theme.led : 'bg-compdes-cream/50',
                     ]}
                   ></i>
-                  <span data-i18n={confirmed ? 'cron.status.confirmed' : 'cron.status.tbd'}>
-                    {confirmed ? t('cron.status.confirmed') : t('cron.status.tbd')}
+                  <span
+                    data-i18n={
+                      theme ? `cron.type.${item.type}` : 'cron.status.tbd'
+                    }
+                  >
+                    {theme ? t(`cron.type.${item.type}`) : t('cron.status.tbd')}
                   </span>
                 </p>
               </li>

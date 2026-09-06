@@ -97,6 +97,10 @@ export const ui = {
     "cron.dates.term": "[ fechas_clave ]",
     "cron.status.confirmed": "confirmado",
     "cron.status.tbd": "por anunciar",
+    "cron.type.apertura": "apertura",
+    "cron.type.limite": "fecha límite",
+    "cron.type.notificacion": "notificación",
+    "cron.type.congreso": "congreso",
     "cron.program.eyebrow": "programa",
     "cron.program.title": "Programa por día",
     "cron.program.intro":
@@ -206,10 +210,10 @@ export const ui = {
     "home.contact.email": "Correo electrónico",
     "home.contact.phone": "Teléfono",
     "home.contact.social": "Redes sociales",
-    "home.contact.emailValue": "compdes2027@example.com",
-    "home.contact.phoneValue": "+506 9999 9999",
+    "home.contact.emailValue": "",
+    "home.contact.phoneValue": "",
     "home.contact.socialValue":
-      "@compdes2027 en Facebook, X (Twitter) e Instagram",
+      "",
     // Ubicación — San Carlos
     "home.location.eyebrow": "Ubicación",
     "home.location.title": "San Carlos, Costa Rica",
@@ -360,6 +364,10 @@ export const ui = {
     "cron.dates.term": "[ key_dates ]",
     "cron.status.confirmed": "confirmed",
     "cron.status.tbd": "to be announced",
+    "cron.type.apertura": "opening",
+    "cron.type.limite": "deadline",
+    "cron.type.notificacion": "notification",
+    "cron.type.congreso": "conference",
     "cron.program.eyebrow": "program",
     "cron.program.title": "Day-by-day program",
     "cron.program.intro":
@@ -470,10 +478,10 @@ export const ui = {
     "home.contact.email": "Email",
     "home.contact.phone": "Phone",
     "home.contact.social": "Social media",
-    "home.contact.emailValue": "compdes2027@example.com",
-    "home.contact.phoneValue": "+506 9999 9999",
+    "home.contact.emailValue": "",
+    "home.contact.phoneValue": "",
     "home.contact.socialValue":
-      "@compdes2027 on Facebook, X (Twitter) and Instagram",
+      "",
     // Location — San Carlos
     "home.location.eyebrow": "Location",
     "home.location.title": "San Carlos, Costa Rica",

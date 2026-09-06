@@ -2,10 +2,10 @@
 @import "./tokens.css";
 
 /* ==========================================================================
-   COMPDES 2027 — new "terminal" design system tokens (Navbar/Footer, etc.)
-   These do NOT override --font-display / --font-sans on purpose: Home/Hero
-   still rely on the Fraunces/Inter tokens from tokens.css. Revisit once
-   Home/Hero get the new visual treatment too.
+   COMPDES 2027 — "terminal" design system tokens (Navbar/Footer, etc.)
+   La tipografía del sistema es JetBrains Mono (--font-mono); los títulos
+   h1–h4 heredan esa fuente en @layer base. --font-sans (Inter) conserva el
+   token para el cuerpo si hiciera falta.
    ========================================================================== */
 @theme {
   /* Azul marino profundo, casi negro — fondo principal
@@ -43,6 +43,16 @@
 --color-compdes-yellow: #38bdf8;
 --color-compdes-yellow-400: #7dd3fc;
 --color-compdes-yellow-600: #0284c7;
+
+/* Semáforo de avisos (cronograma — fechas clave) */
+--color-compdes-amber: #fbff12;
+--color-compdes-green: #17f89a;
+--color-compdes-red: #f40f57;
+
+/* Colores distintivos de las pestañas del programa del día */
+--color-compdes-pink: #ff2db0;
+--color-compdes-violet: #8b5cf6;
+--color-compdes-lime: #b4ff39;
 
 /*--color-compdes-yellow: #ff5151;
 --color-compdes-yellow-400: #ff8080;
@@ -85,7 +95,7 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-weight: 600;
     line-height: 1.15;
     letter-spacing: -0.01em;

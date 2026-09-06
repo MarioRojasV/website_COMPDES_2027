@@ -38,9 +38,8 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     <p class="mb-4 text-[11px] uppercase tracking-[0.3em] text-compdes-yellow">
       [ mod.{index} ] // <span data-i18n={tagKey}>{tagLabel}</span>
     </p>
-    <h1 id={id} class="font-display text-4xl font-bold leading-tight md:text-5xl">
-      <span class="text-compdes-yellow">&gt;_</span>{' '}
-      <span data-i18n={titleKey}>{t(titleKey)}</span>
+    <h1 id={id} class="font-mono text-4xl font-bold leading-tight md:text-5xl">
+      <span class="text-compdes-yellow">&gt;_</span><span data-i18n={titleKey}>{t(titleKey)}</span>
     </h1>
     <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
     {

@@ -113,7 +113,6 @@
   --gutter: clamp(1rem, 4vw, 2rem);
 
   /* Typography */
-  --font-display: "Fraunces Variable", "Georgia", serif;
   --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Radii */
@@ -191,7 +190,6 @@
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
 
-  --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 
   --radius-sm: var(--radius-sm);
