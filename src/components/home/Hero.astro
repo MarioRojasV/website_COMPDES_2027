@@ -147,33 +147,37 @@ const t = useTranslations(lang);
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Capas con alfa, de fondo a frente: recorrido creciente con respuesta cada
-  // vez más lenta (ω bajo). Cada capa lleva `bleed`, un factor de escala
-  // que crece la imagen desde su borde inferior (transform-origin bottom)
-  // lo suficiente para que el parallax no pueda descubrir el borde superior
-  // recortado de la capa. `base` es un desplazamiento estático hacia abajo
-  // (en px) que se aplica antes del spring; oculta bordes inferiores
-  // visibles en estado de reposo sin afectar el rango del parallax.
-  // `size` es un factor de escala ADICIONAL para achicar visualmente
-  // ctec/deer dentro de la escena. Como estas capas siguen cubriendo el
-  // 100% del ancho de la ventana (mismo object-fit:cover que las demás),
+  // Capas con alfa, de fondo a frente: recorrido creciente. `amp` es el
+  // desplazamiento total (px) que la capa recorrería de reposo a scroll
+  // máximo; como el parallax es DE UN SOLO SENTIDO (solo al bajar, nunca
+  // rebota al subir), el desplazamiento real se limita a TRAVEL (abajo) y
+  // el sangrado vertical se deriva de ese tope para que el borde superior
+  // de ninguna capa pueda quedar expuesto sin fondo azul.
+  // `base` es un desplazamiento estático hacia abajo (en px) que se aplica
+  // antes del recorrido; oculta bordes inferiores visibles en estado de
+  // reposo sin afectar el rango del parallax.
   // NOTA IMPORTANTE: ctec.webp y deer.webp NO son recortes sueltos con
   // fondo transparente — son paneles panorámicos de ancho completo (la
   // colina/rocas ya ocupan casi todo el ancho del archivo), igual que
-  // hero-bg. Por eso NO llevan `size`: aplicar scale() a estas capas
-  // encoge la colina completa en ambas direcciones, no solo el edificio
-  // o el venado, y deja huecos en los bordes izquierdo/derecho donde se
-  // asoma hero-bg (eso causaba las franjas oscuras en los costados).
-  // Si en el futuro se necesita que el edificio o el venado se vean más
-  // chicos, hay que pedir el asset ya recompuesto más chico dentro del
-  // panel (con más margen alrededor), no lograrlo con CSS/JS sobre estos
-  // archivos tal como están.
+  // hero-bg, así que ninguna capa lleva `size`: encoger una de ellas con
+  // scale() dejaría huecos en los bordes donde se asoma hero-bg. Si el
+  // edificio o el venado deben verse más chicos, hay que pedir el asset ya
+  // recompuesto más chico dentro del panel, no lograrlo con CSS/JS.
+  // Parallax muy sutil con velocidades DIFERENTES por capa: `amp` es el
+  // desplazamiento máximo (px) y su valor distinto también modula la
+  // velocidad (desplazamiento = progress × amp). Todas las capas vuelven a
+  // su posición original al subir el scroll. El venado (deer) NO hace
+  // parallax (amp 0): queda fijo en su posición original. El fondo (bg)
+  // conserva su sangrado dinámico ("auto", sin `sy`) para cubrir su
+  // recorrido sin que asome el azul de la página; el resto conserva su `sy`
+  // original (≈1: tamaño auténtico del asset), pues al desplazarse menos
+  // sus bordes se asoman sobre la escena del fondo, no sobre el azul.
   const layers = [
-    { el: bg,    amp: 620,  omega: 13, zeta: 0.9, bleed: 1.07 },
-    { el: logo,  amp: 60,   omega: 13, zeta: 0.9, bleed: 1.0 },
-    { el: ctec,  amp: 160, omega: 11, zeta: 0.9, bleed: 1.05, base: 25 },
-    { el: deer,  amp: 1,   omega: 0,  zeta: 0,   bleed: 1.0, base: 25 },
-    { el: title, amp: 160, omega: 7,  zeta: 0.5 },
+    { el: bg,    amp: 280,  omega: 13, zeta: 0.9 }, // sy dinámico "auto"
+    { el: logo,  amp: 40,   omega: 13, zeta: 0.9, sy: 1.0 },
+    { el: ctec,  amp: 90,   omega: 9,  zeta: 0.9, base: 25, sy: 1.05 },
+    { el: deer,  amp: 0,    omega: 0,  zeta: 0,   base: 25, sy: 1.0 },
+    { el: title, amp: 60,   omega: 7,  zeta: 0.5, sy: 1.0 },
   ].filter((l) => l.el);
 
   for (const l of layers) {
@@ -188,9 +192,10 @@ const t = useTranslations(lang);
 
   function render() {
     for (const l of layers) {
-      const scale = (l.bleed ?? 1) * (l.size ?? 1);
       const offset = (l.base ?? 0) + l.pos;
-      l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(${scale})`;
+      // scaleY compartido por igual en todas las capas de escena (así la
+      // escena no se descuadra). El título NO se estira (sy 1).
+      l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(1, ${(l.sy ?? 1).toFixed(3)})`;
     }
     if (title) title.style.opacity = String(1 - progress * 0.35);
   }
@@ -199,27 +204,18 @@ const t = useTranslations(lang);
     const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
     lastT = t;
 
-    let settled = true;
+    // Parallax SUAVE de seguimiento directo: cada capa se ubica en su
+    // desplazamiento (progress * amp) y vuelve a su posición original al
+    // subir — sin resorte, sin rebote y sin quedarse desplazada.
     for (const l of layers) {
-      // Seguimiento directo del objetivo: sin resorte ni rebote. Cada capa
-      // se ubica en su desplazamiento de scroll (progress * amp * speed) de
-      // inmediato, igual que un elemento normal — sin salto ni wobble.
       const target = progress * l.amp * (l.speed ?? 1);
-      l.pos = Math.min(Math.max(target, -2), (l.amp ?? 0) + 1);
+      const cap = Math.min(l.amp ?? 0, TRAVEL);
+      l.pos = Math.min(Math.max(target, 0), cap);
       l.vel = 0;
     }
 
-    if (settled) {
-      render();
-      rafId = requestAnimationFrame(frame);
-      return;
-    }
-
     render();
-
-    // Auto-stop: sin animación idle no hace falta bucle persistente; el
-    // siguiente scroll reactiva el bucle vía wake().
-    rafId = settled ? null : requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
   }
 
   function wake() {
@@ -240,6 +236,22 @@ const t = useTranslations(lang);
     if (!hero) return;
     const max = hero.offsetHeight;
     progress = max === 0 ? 0 : Math.min(Math.max(window.scrollY / max, 0), 1);
+  }
+
+  // Tope de recorrido del parallax (px). El sangrado vertical dinámico solo
+  // se aplica a la capa de fondo (bg): crece desde su base y garantiza que
+  // su borde superior quede siempre por encima del panel (SAFETY de sobra)
+  // aun en su desplazamiento máximo, así el fondo azul no puede asomarse.
+  const TRAVEL = 280;
+  const SAFETY = 40;
+
+  function computeBleed() {
+    const h = hero ? hero.clientHeight : 0;
+    if (h <= 0) return;
+    // Solo la capa de fondo (sin `sy` fijo) se estira para cubrir su recorrido.
+    for (const l of layers) {
+      if (l.sy == null) l.sy = 1 + (TRAVEL + SAFETY) / h;
+    }
   }
 
   if (!reduceMotion && layers.length > 0) {
@@ -269,7 +281,18 @@ const t = useTranslations(lang);
       wake();
     }
 
+    computeBleed();
     readProgress();
     render();
+
+    window.addEventListener(
+      'resize',
+      () => {
+        computeBleed();
+        readProgress();
+        wake();
+      },
+      { passive: true }
+    );
   }
 </script>
