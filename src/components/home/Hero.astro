@@ -223,19 +223,25 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
      ===================================================================== */
   const layers = [
     { el: bg,    depth: 0.9, base: 0,   sy: null, omega: 0 },
-    { el: logo,  depth: 0.8, base: 0,   sy: 1.0,  omega: 12 },
-    { el: ctec,  depth: 0.5, base: 25,  sy: 1.05, omega: 18 },
+    { el: logo,  depth: 0.8, base: 0,   sy: 1.0,  omega: 18 },
+    { el: ctec,  depth: 0.5, base: 25,  sy: 1.05, omega: 27 },
     { el: deer,  depth: 0.0, base: 25,  sy: 1.0,  omega: 0 },
-    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 45 },
+    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 64 },
   ].filter((l) => l.el);
 
   // Estado de inercia por capa (solo omega > 0): pos = "slip" (la separación
   // que la capa mantiene con el desplazamiento del scroll), no la posición
-  // final. Al reposo pos = 0 → offset = base, idéntico a hoy. vel = velocidad
-  // del slip (px/s) para el resorte crítico.
+  // final. Al reposo pos = 0 → offset = base, idéntico a hoy. La suavidad es
+  // una CASCADA de dos resortes críticamente amortiguados idénticos (orden 4):
+  // la etapa interna (ipos/ivel) sigue a slipTarget y la externa (pos/vel)
+  // sigue a la interna, lo que convierte el perfil de velocidad de "arranque
+  // brusco + frenado largo" en una campana simétrica (acelera, avanza, frena
+  // con suavidad) sin rebote ni overshoot.
   for (const l of layers) {
     l.pos = 0;
     l.vel = 0;
+    l.ipos = 0;
+    l.ivel = 0;
   }
 
   // Margen extra de seguridad del bleed del cielo (px por encima del tope).
@@ -285,12 +291,14 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
     // Integración de la inercia en el MISMO bucle rAF existente (sin bucles,
     // listeners ni sistemas duplicados). Resorte CRÍTICAMENTE AMORTIGUADO en
     // su forma analítica cerrada por frame sobre el slip: estable y exacto
-    // para cualquier dt (independiente de la tasa de frames), arranca con
-    // velocidad 0 — la capa aguanta el instante inicial del scroll (resiste,
-    // no se arrastra con la página) y luego se precipita a su factor real con
-    // catch-up rápido, sin rebote ni overshoot. Al reposo converge a 0. El
-    // dt se acota solo por higiene: una pausa del tab no debe arrojar
-    // números absurdos.
+    // para cualquier dt (independiente de la tasa de frames). Dos etapas
+    // idénticas encadenadas (orden 4): la ante-última evita el arranque
+    // brusco y la cola larga de frenado del resorte de 2º orden — la capa
+    // aguanta el instante inicial del scroll (resiste, no se arrastra con la
+    // página) y luego acelera, desliza y frena con perfil suave hasta su
+    // factor real, sin rebote ni overshoot. Al reposo converge a 0. El dt se
+    // acota solo por higiene: una pausa del tab no debe arrojar números
+    // absurdos.
     const dt = lastT === null ? 0 : Math.min(Math.max((t - lastT) / 1000, 0), 0.05);
     lastT = t;
     const delta = progress * heroH;
@@ -301,10 +309,16 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
       // desplazamiento del scroll. Se deriva del mismo target (intacto).
       const slipTarget = (l.base ?? 0) + delta - target;
       const w = l.omega;
-      const x0 = l.pos - slipTarget;
-      const c = (l.vel + w * x0) * dt;
       const decay = Math.exp(-w * dt);
-      l.pos = slipTarget + (x0 + c) * decay;
+      // Etapa interna: primero "cocina" la demanda (suaviza el arranque).
+      let x0 = l.ipos - slipTarget;
+      let c = (l.ivel + w * x0) * dt;
+      l.ipos = slipTarget + (x0 + c) * decay;
+      l.ivel = (l.ivel - w * (l.ivel + w * x0) * dt) * decay;
+      // Etapa externa: la visible sigue a la interna (suaviza el frenado).
+      x0 = l.pos - l.ipos;
+      c = (l.vel + w * x0) * dt;
+      l.pos = l.ipos + (x0 + c) * decay;
       l.vel = (l.vel - w * (l.vel + w * x0) * dt) * decay;
     }
     render();
