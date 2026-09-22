@@ -194,24 +194,22 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
      estado de reposo). Cuando el scroll cambia, la capa se queda CLAVADA al
      viewport un instante mínimo — el avance de la página se absorbe en el
      offset (offset = base + delta − slip) — y luego se despega hacia su
-     factor real con un resorte CRÍTICAMENTE AMORTIGUADO (velocidad inicial
-     0, sin rebote ni overshoot), asentándose en 0.2–0.5 s según la capa. El
+     factor real con un "retard acotado": cada capa persigue a
+     slipTarget − ret, donde ret (en px) es proporcional a la velocidad del
+     slip hasta un TECLO duro (maxR) que nunca se supera. Así el lag es
+     pequeño al scroll lento, se satura en maxR al scroll rápido (NUNCA crece
+     sin límite ni obliga a un "catch-up" brusco), colapsa en decenas de ms al
+     soltar el dedo (sin cola larga) y revierte de dirección sin rebote. El
      ensamblaje es idéntico al bajar que al subir, y el objetivo (slip) se
-     recalcula desde el scroll en cada frame. `omega` (rad/s) es la rigidez:
-     cuánto más alta, más "instantánea" es la respuesta.
+     recalcula desde el scroll en cada frame. `omega` se conserva como rigidez
+     (jerarquía de respuesta): cuánto más alta, más "instantánea".
 
-         venado  → sin spring   instantáneo (atado a tu scroll)
-         COMPDES → omega 45     casi instantáneo, imperceptible (~0.13 s)
-         ctec    → omega 18     ligera inercia, catch-up ágil (~0.32 s)
-         volcán  → omega 12     la mayor inercia sutil, se asienta en
-                                 0.4–0.5 s, SIN parecer rezagado ni lento
-         cielo   → sin spring   NO MODIFICAR (idéntico a hoy)
-
-     DIFERENCIA CLAVE con el suavizado exponencial: el exponencial arranca
-     moviéndose al ritmo del scroll y luego decanta (lo que se percibe como
-     "sigue al scroll y se asienta"); el resorte de slip, en cambio, aguanta
-     el golpe del scroll (la capa no salta con la página) y luego se precipita
-     a su posición — inercia física y catch-up rápido.
+         venado  → sin inercia    instantáneo (atado a tu scroll)
+         title   → omega 64       casi instantáneo, lag mínimo (maxR 6 px)
+         ctec    → omega 27       inercia ligera, catch-up ágil (maxR 13 px)
+         logo    → omega 18       la mayor inercia sutil (maxR 20 px), sin
+                                  parecer rezagado ni lento al reposo
+         cielo   → sin inercia    NO MODIFICAR (idéntico a hoy)
 
      Las capas volcán/edificio/venado son paneles ancho-completo con el
      cielo recortado (transparente) POR ENCIMA de su silueta, así que al
@@ -221,27 +219,40 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
      propio recorrido (computeBleed), para que su borde superior jamás se
      descubra ni aparezca el azul de la página.
      ===================================================================== */
+  // eta: px de lag por px/s de velocidad del slip (límite "natural" antes de
+  // tocar maxR). maxR: techo duro del lag en px, sea cual sea la velocidad del
+  // scroll (NO crece con la velocidad → imposible "irse lejos y recuperar de
+  // golpe"). tauf: suavizado al acelerar (a mayor, más se "pega" al arranque).
+  // Los tres heredan la jerarquía: logo (más lag), ctec, title (más ágil).
   const layers = [
     { el: bg,    depth: 0.9, base: 0,   sy: null, omega: 0 },
-    { el: logo,  depth: 0.8, base: 0,   sy: 1.0,  omega: 18 },
-    { el: ctec,  depth: 0.5, base: 25,  sy: 1.05, omega: 27 },
+    { el: logo,  depth: 0.8, base: 0,   sy: 1.0,  omega: 18, eta: 0.04,   maxR: 20, tauf: 0.05 },
+    { el: ctec,  depth: 0.5, base: 25,  sy: 1.05, omega: 27, eta: 0.025,  maxR: 13, tauf: 0.035 },
     { el: deer,  depth: 0.0, base: 25,  sy: 1.0,  omega: 0 },
-    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 64 },
+    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 64, eta: 0.009,  maxR: 6,  tauf: 0.02 },
   ].filter((l) => l.el);
+  // TAUD: al decelerar o cambiar de dirección la velocidad estimada (y por
+  // tanto el retard) colapsa RÁPIDO → sin "velocidad vieja" que provoque
+  // rebote ni cola larga al frenar. TAUREV: al revertir, el retard cruza 0
+  // suavizado (no en un frame) → el giro no "muerde". VELC: tope de higiene.
+  const TAUD = 0.012;
+  const TAUREV = 0.045;
+  const VELC = 3000;
 
-  // Estado de inercia por capa (solo omega > 0): pos = "slip" (la separación
-  // que la capa mantiene con el desplazamiento del scroll), no la posición
-  // final. Al reposo pos = 0 → offset = base, idéntico a hoy. La suavidad es
-  // una CASCADA de dos resortes críticamente amortiguados idénticos (orden 4):
-  // la etapa interna (ipos/ivel) sigue a slipTarget y la externa (pos/vel)
-  // sigue a la interna, lo que convierte el perfil de velocidad de "arranque
-  // brusco + frenado largo" en una campana simétrica (acelera, avanza, frena
-  // con suavidad) sin rebote ni overshoot.
+  // Estado por capa (solo omega > 0): pos = "slip" (la separación que la capa
+  // mantiene con el desplazamiento del scroll), no la posición final. Al
+  // reposo pos = 0 → offset = base, idéntico a hoy.
+  //   vel   → velocidad estimada del slip (EMA asimétrico; alimenta al retard)
+  //   ret   → retard actual en px (que la capa mantiene respecto a su target)
+  //   prev  → slipTarget del frame anterior, para derivar la velocidad
+  // El modelo es "retard acotado": la capa persigue slipTarget − ret, con ret
+  // techado por maxR. El lag NUNCA crece con la velocidad del scroll (techo
+  // fijo) y al soltar el dedo colapsa en unas decenas de ms, sin cola larga.
   for (const l of layers) {
     l.pos = 0;
     l.vel = 0;
-    l.ipos = 0;
-    l.ivel = 0;
+    l.ret = 0;
+    l.prev = null;
   }
 
   // Margen extra de seguridad del bleed del cielo (px por encima del tope).
@@ -288,17 +299,17 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
   }
 
   function frame(t) {
-    // Integración de la inercia en el MISMO bucle rAF existente (sin bucles,
-    // listeners ni sistemas duplicados). Resorte CRÍTICAMENTE AMORTIGUADO en
-    // su forma analítica cerrada por frame sobre el slip: estable y exacto
-    // para cualquier dt (independiente de la tasa de frames). Dos etapas
-    // idénticas encadenadas (orden 4): la ante-última evita el arranque
-    // brusco y la cola larga de frenado del resorte de 2º orden — la capa
-    // aguanta el instante inicial del scroll (resiste, no se arrastra con la
-    // página) y luego acelera, desliza y frena con perfil suave hasta su
-    // factor real, sin rebote ni overshoot. Al reposo converge a 0. El dt se
-    // acota solo por higiene: una pausa del tab no debe arrojar números
-    // absurdos.
+    // Integración del retard acotado en el MISMO bucle rAF existente (sin
+    // bucles, listeners ni sistemas duplicados). Por capa, en cada frame:
+    //   1. vel = EMA asimétrico de la velocidad del slip (acelerar: lento &
+    //      suave; decelerar/revertir: rápido → sin "velocidad vieja").
+    //   2. ret = retard con techo maxR y cruce por cero suavizado; el lag
+    //      queda SIEMPRE ≤ maxR, proporcional a la velocidad hasta el tope.
+    //   3. pos sigue a "slipTarget − ret": por debajo del target exacto y sin
+    //      acumularse (fila: lag fijo), por encima retorna críticamente
+    //      amortiguado (sin rebote). Al reposo ret → 0 → pos → 0 (idéntico a
+    //      hoy). El dt se acota solo por higiene: una pausa del tab no debe
+    //      arrojar números absurdos.
     const dt = lastT === null ? 0 : Math.min(Math.max((t - lastT) / 1000, 0), 0.05);
     lastT = t;
     const delta = progress * heroH;
@@ -308,18 +319,35 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
       // slipTarget = (1 − depth)·delta: cuánto debe separarse la capa del
       // desplazamiento del scroll. Se deriva del mismo target (intacto).
       const slipTarget = (l.base ?? 0) + delta - target;
-      const w = l.omega;
-      const decay = Math.exp(-w * dt);
-      // Etapa interna: primero "cocina" la demanda (suaviza el arranque).
-      let x0 = l.ipos - slipTarget;
-      let c = (l.ivel + w * x0) * dt;
-      l.ipos = slipTarget + (x0 + c) * decay;
-      l.ivel = (l.ivel - w * (l.ivel + w * x0) * dt) * decay;
-      // Etapa externa: la visible sigue a la interna (suaviza el frenado).
-      x0 = l.pos - l.ipos;
-      c = (l.vel + w * x0) * dt;
-      l.pos = l.ipos + (x0 + c) * decay;
-      l.vel = (l.vel - w * (l.vel + w * x0) * dt) * decay;
+      // Velocidad del slip por diferencias finitas (clampada por higiene).
+      const vRaw = l.prev === null || dt <= 0
+        ? 0
+        : Math.min(Math.max((slipTarget - l.prev) / dt, -VELC), VELC);
+      l.prev = slipTarget;
+      // EMA asimétrico: acelerar/ritmo (tauf, suave) vs decelerar/revertir
+      // (TAUD, rápido) → la estimación muere rápido al soltar, no arrastra.
+      const toward = Math.abs(vRaw) >= Math.abs(l.vel) && vRaw * l.vel >= 0;
+      const kVel = toward ? 1 - Math.exp(-dt / l.tauf) : 1 - Math.exp(-dt / TAUD);
+      l.vel += (vRaw - l.vel) * kVel;
+      // Retard objetivo: lag ∝ velocidad, techado por maxR (nunca mayor).
+      const rTarget = Math.min(Math.abs(l.vel) * l.eta, l.maxR) * Math.sign(l.vel);
+      // El retard también se suaviza: crece con tauf, colapsa con TAUD al
+      // soltar, y cruza por cero con TAUREV al revertir (sin salto de frame).
+      let kRet;
+      if (l.ret * rTarget < 0) kRet = 1 - Math.exp(-dt / TAUREV);
+      else if (Math.abs(rTarget) >= Math.abs(l.ret)) kRet = 1 - Math.exp(-dt / l.tauf);
+      else kRet = 1 - Math.exp(-dt / TAUD);
+      l.ret += (rTarget - l.ret) * kRet;
+      // Seguir a slipTarget − ret: por debajo, exacto (lag fijo = ret); por
+      // encima (reversa), retorno críticamente amortiguado — sin rebote.
+      const eff = slipTarget - l.ret;
+      const e = eff - l.pos;
+      if (e >= 0) {
+        l.pos = eff;
+      } else {
+        const np = l.pos + (l.vel + l.omega * e) * dt;
+        l.pos = np > eff ? np : eff;
+      }
     }
     render();
     rafId = requestAnimationFrame(frame);
