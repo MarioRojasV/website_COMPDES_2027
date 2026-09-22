@@ -185,29 +185,33 @@ const t = useTranslations(lang);
      El cielo conserva exactamente su recorrido actual (0.10): un casi-fijo
      con un suspiro mínimo, sin estirar más la escena base.
 
-SUAVIZADO (omega) — inercia INDEPENDIENTE del factor: no altera el
+INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
      recorrido total (la jerarquía de arriba se conserva tal cual), solo la
-     FORMA en que cada capa alcanza su objetivo. Se usa un oscilador
-     subamortiguado crítico (resorte críticamente amortiguado): la capa
-     arranca con velocidad CERO, aguanta intacta un instante mínimo (el
-     repentino cambio del scroll no la arrastra), acelera, y en ~0.5 s
-     alcanza el objetivo sin rebote ni overshoot. El ensamblaje es idéntico
-     al bajar que al subir, y el objetivo se recalcula desde el scroll en
-     cada frame. `omega` (rad/s) es la rigidez: cuánto más alta, más
-     "instantánea" es la respuesta.
+     FORMA en que cada capa responde al cambio del scroll. Cada capa con
+     omega > 0 mantiene un "slip" (pos): la separación con el avance de la
+     página. Al reposo slip = 0 → la capa queda exactamente donde estaba
+     antes (mismo frame que hoy, solo hay que restablecer la escena desde el
+     estado de reposo). Cuando el scroll cambia, la capa se queda CLAVADA al
+     viewport un instante mínimo — el avance de la página se absorbe en el
+     offset (offset = base + delta − slip) — y luego se despega hacia su
+     factor real con un resorte CRÍTICAMENTE AMORTIGUADO (velocidad inicial
+     0, sin rebote ni overshoot), asentándose en 0.2–0.5 s según la capa. El
+     ensamblaje es idéntico al bajar que al subir, y el objetivo (slip) se
+     recalcula desde el scroll en cada frame. `omega` (rad/s) es la rigidez:
+     cuánto más alta, más "instantánea" es la respuesta.
 
          venado  → sin spring   instantáneo (atado a tu scroll)
          COMPDES → omega 45     casi instantáneo, imperceptible (~0.13 s)
          ctec    → omega 18     ligera inercia, catch-up ágil (~0.32 s)
          volcán  → omega 12     la mayor inercia sutil, se asienta en
-                                 ~0.5 s, SIN parecer rezagado ni lento
+                                 0.4–0.5 s, SIN parecer rezagado ni lento
          cielo   → sin spring   NO MODIFICAR (idéntico a hoy)
 
      DIFERENCIA CLAVE con el suavizado exponencial: el exponencial arranca
      moviéndose al ritmo del scroll y luego decanta (lo que se percibe como
-     "sigue al scroll y se asienta"); el resorte crítico, en cambio,
-     resiste el arranque por unos milisegundos y luego se precipita a su
-     posición — inercia física y catch-up rápido.
+     "sigue al scroll y se asienta"); el resorte de slip, en cambio, aguanta
+     el golpe del scroll (la capa no salta con la página) y luego se precipita
+     a su posición — inercia física y catch-up rápido.
 
      Las capas volcán/edificio/venado son paneles ancho-completo con el
      cielo recortado (transparente) POR ENCIMA de su silueta, así que al
@@ -225,10 +229,12 @@ SUAVIZADO (omega) — inercia INDEPENDIENTE del factor: no altera el
     { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 45 },
   ].filter((l) => l.el);
 
-  // Estado de seguimiento por capa: pos = desplazamiento actual aplicado,
-  // vel = velocidad de arrastre (px/s) para el resorte (omega > 0).
+  // Estado de inercia por capa (solo omega > 0): pos = "slip" (la separación
+  // que la capa mantiene con el desplazamiento del scroll), no la posición
+  // final. Al reposo pos = 0 → offset = base, idéntico a hoy. vel = velocidad
+  // del slip (px/s) para el resorte crítico.
   for (const l of layers) {
-    l.pos = l.base ?? 0;
+    l.pos = 0;
     l.vel = 0;
   }
 
@@ -261,9 +267,13 @@ SUAVIZADO (omega) — inercia INDEPENDIENTE del factor: no altera el
     for (const l of layers) {
       const target = (l.base ?? 0) + l.depth * delta;
       // omega 0 → la capa se ubica AL INSTANTE en su objetivo (venado y
-      // cielo: comportamiento idéntico a hoy); omega > 0 → aplica el estado
-      // pos que frame() integra con su resorte de inercia.
-      const offset = l.omega > 0 ? l.pos : target;
+      // cielo: comportamiento idéntico a hoy). omega > 0 → inercia vía slip:
+      // en el instante del scroll la capa se queda CLAVADA al viewport
+      // (offset absorbe el avance de la página, slip ≈ 0) y luego se despega
+      // hacia su factor real, base − (1 − depth)·delta en pantalla.
+      // offset = base + delta − slip, y como screen = −delta + offset,
+      // lo que el ojo ve es screen = base − pos.
+      const offset = l.omega > 0 ? delta - l.pos + (l.base ?? 0) : target;
       // scaleY compartido (sy): es el bleed estático de cada asset, no parte
       // del movimiento. El título no se estira (sy 1).
       l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(1, ${(l.sy ?? 1).toFixed(3)})`;
@@ -274,22 +284,27 @@ SUAVIZADO (omega) — inercia INDEPENDIENTE del factor: no altera el
   function frame(t) {
     // Integración de la inercia en el MISMO bucle rAF existente (sin bucles,
     // listeners ni sistemas duplicados). Resorte CRÍTICAMENTE AMORTIGUADO en
-    // su forma analítica cerrada por frame: estable y exacto para cualquier
-    // dt (independiente de la tasa de frames), arranca con velocidad 0 —
-    // aguanta el instante inicial del scroll y luego se precipita al objetivo
-    // con catch-up rápido, sin rebote. El dt se acota solo por higiene: una
-    // pausa del tab no debe arrojar números absurdos.
+    // su forma analítica cerrada por frame sobre el slip: estable y exacto
+    // para cualquier dt (independiente de la tasa de frames), arranca con
+    // velocidad 0 — la capa aguanta el instante inicial del scroll (resiste,
+    // no se arrastra con la página) y luego se precipita a su factor real con
+    // catch-up rápido, sin rebote ni overshoot. Al reposo converge a 0. El
+    // dt se acota solo por higiene: una pausa del tab no debe arrojar
+    // números absurdos.
     const dt = lastT === null ? 0 : Math.min(Math.max((t - lastT) / 1000, 0), 0.05);
     lastT = t;
     const delta = progress * heroH;
     for (const l of layers) {
       if (l.omega <= 0) continue;
       const target = (l.base ?? 0) + l.depth * delta;
+      // slipTarget = (1 − depth)·delta: cuánto debe separarse la capa del
+      // desplazamiento del scroll. Se deriva del mismo target (intacto).
+      const slipTarget = (l.base ?? 0) + delta - target;
       const w = l.omega;
-      const x0 = l.pos - target;
+      const x0 = l.pos - slipTarget;
       const c = (l.vel + w * x0) * dt;
       const decay = Math.exp(-w * dt);
-      l.pos = target + (x0 + c) * decay;
+      l.pos = slipTarget + (x0 + c) * decay;
       l.vel = (l.vel - w * (l.vel + w * x0) * dt) * decay;
     }
     render();
