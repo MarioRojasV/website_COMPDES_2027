@@ -2,7 +2,13 @@
 import SectionHeading from '../ui/SectionHeading.astro';
 import LangText from '../ui/LangText.astro';
 import { useTranslations } from '../../i18n/ui';
-import { normalizeForSearch, talks, type DayId, type TalkType } from '../../data/schedule';
+import {
+  normalizeForSearch,
+  talks,
+  scheduleDays,
+  type DayId,
+  type TalkType,
+} from '../../data/schedule';
 import type { LocalText } from '../../data/schedule';
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
@@ -20,6 +26,28 @@ const TYPE_CHIP: Record<TalkType, string> = {
   keynote: 'border-compdes-yellow bg-compdes-yellow text-compdes-blue',
   talk: 'border-compdes-yellow/60 text-compdes-yellow',
   workshop: 'border-compdes-cream/50 text-compdes-cream',
+};
+
+/* Tema por día en el filtro — mismas tintas que el programa por día (pestañas
+   de DailyProgram): miércoles electric pink, jueves voltage violet, viernes
+   acid lime. "Todos" usa el acento celeste del sistema. */
+const DAY_FILTER_THEME: Record<string, { hover: string; pressed: string }> = {
+  all: {
+    hover: 'hover:border-compdes-yellow',
+    pressed: 'aria-pressed:border-compdes-yellow aria-pressed:bg-compdes-yellow',
+  },
+  miercoles: {
+    hover: 'hover:border-compdes-pink',
+    pressed: 'aria-pressed:border-compdes-pink aria-pressed:bg-compdes-pink',
+  },
+  jueves: {
+    hover: 'hover:border-compdes-violet',
+    pressed: 'aria-pressed:border-compdes-violet aria-pressed:bg-compdes-violet',
+  },
+  viernes: {
+    hover: 'hover:border-compdes-lime',
+    pressed: 'aria-pressed:border-compdes-lime aria-pressed:bg-compdes-lime',
+  },
 };
 
 /* Índice de búsqueda pre-normalizado (título en ambos idiomas + autores). */
@@ -46,8 +74,55 @@ const searchIndex = new Map(
     />
 
     <div class="mt-12 md:mt-16" data-talks>
+      <!-- Filtro por día: "Todos" + un botón por jornada. Misma receta visual
+           de las pestañas de DailyProgram, con la opción adicional "Todos". -->
+      <div
+        role="group"
+        aria-label={t('cron.filter.tabsAria')}
+        class="flex flex-wrap justify-center gap-2"
+      >
+        <button
+          type="button"
+          data-day-filter="all"
+          aria-pressed="true"
+          class:list={[
+            'cursor-pointer border-2 border-compdes-blue-600 bg-compdes-blue px-5 py-2.5 text-left transition-colors duration-300 aria-pressed:text-compdes-blue',
+            DAY_FILTER_THEME.all.hover,
+            DAY_FILTER_THEME.all.pressed,
+          ]}
+        >
+          <span class="block font-mono text-xs font-bold uppercase tracking-[0.18em]" data-i18n="cron.filter.all">
+            {t('cron.filter.all')}
+          </span>
+          <span class="mt-0.5 block font-mono text-[10px] tracking-wide opacity-70" data-i18n="cron.filter.allSub">
+            {t('cron.filter.allSub')}
+          </span>
+        </button>
+        {
+          scheduleDays.map((day) => (
+            <button
+              type="button"
+              data-day-filter={day.id}
+              aria-pressed="false"
+              class:list={[
+                'cursor-pointer border-2 border-compdes-blue-600 bg-compdes-blue px-5 py-2.5 text-left transition-colors duration-300 aria-pressed:text-compdes-blue',
+                DAY_FILTER_THEME[day.id].hover,
+                DAY_FILTER_THEME[day.id].pressed,
+              ]}
+            >
+              <span class="block font-mono text-xs font-bold uppercase tracking-[0.18em]">
+                <LangText value={day.label} />
+              </span>
+              <span class="mt-0.5 block font-mono text-[10px] tracking-wide opacity-70">
+                <LangText value={day.date} />
+              </span>
+            </button>
+          ))
+        }
+      </div>
+
       <!-- Barra de búsqueda -->
-      <div class="terminal-window corner mx-auto max-w-2xl">
+      <div class="terminal-window corner mx-auto max-w-2xl mt-8">
         <div class="term-titlebar">
           <span class="term-dots"><i></i><i></i><i></i></span>
           <span data-i18n="cron.search.label">{t('cron.search.label')}</span>
@@ -77,6 +152,7 @@ const searchIndex = new Map(
           talks.map((talk, i) => (
             <li
               data-talk
+              data-day={talk.day}
               data-search={searchIndex.get(talk.id)}
               class="flex flex-col border-2 border-compdes-blue-600 bg-compdes-blue p-6 transition-colors duration-300 hover:border-compdes-yellow"
             >
@@ -131,33 +207,50 @@ const searchIndex = new Map(
 </section>
 
 <script>
-  // Filtro cliente: normaliza la consulta igual que el índice construido en
-  // build (minúsculas, sin tildes) y busca sobre el atributo data-search.
+  // Filtro cliente combinado: DÍA (todos / miércoles / jueves / viernes) +
+  // BÚSQUEDA. Normaliza la consulta igual que el índice construido en build
+  // (minúsculas, sin tildes) y busca sobre el atributo data-search.
   const wrap = document.querySelector<HTMLElement>('[data-talks]');
   if (wrap) {
     const input = wrap.querySelector<HTMLInputElement>('[data-talk-search]');
     const items = Array.from(wrap.querySelectorAll<HTMLElement>('[data-talk]'));
     const counter = wrap.querySelector<HTMLElement>('[data-results-count]');
     const empty = wrap.querySelector<HTMLElement>('[data-talks-empty]');
+    const filters = Array.from(wrap.querySelectorAll<HTMLButtonElement>('[data-day-filter]'));
 
     const norm = (text: string) =>
       text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-    if (input && counter && empty) {
-      input.addEventListener('input', () => {
-        const query = norm(input.value.trim());
-        let visible = 0;
+    // Día activo: por defecto "all" (todas las jornadas).
+    let activeDay = 'all';
 
-        items.forEach((item) => {
-          const haystack = item.dataset.search ?? '';
-          const show = query === '' || haystack.includes(query);
-          item.classList.toggle('hidden', !show);
-          if (show) visible += 1;
-        });
+    const apply = () => {
+      const query = norm(input?.value.trim() ?? '');
+      let visible = 0;
 
-        counter.textContent = String(visible);
-        empty.toggleAttribute('hidden', visible !== 0);
+      items.forEach((item) => {
+        const dayOk = activeDay === 'all' || item.dataset.day === activeDay;
+        const haystack = item.dataset.search ?? '';
+        const show = dayOk && (query === '' || haystack.includes(query));
+        item.classList.toggle('hidden', !show);
+        if (show) visible += 1;
       });
-    }
+
+      if (counter) counter.textContent = String(visible);
+      if (empty) empty.toggleAttribute('hidden', visible !== 0);
+    };
+
+    filters.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        activeDay = btn.dataset.dayFilter as string;
+        filters.forEach((b) =>
+          b.setAttribute('aria-pressed', String(b.dataset.dayFilter === activeDay)),
+        );
+        apply();
+      }),
+    );
+
+    if (input) input.addEventListener('input', apply);
+    apply();
   }
 </script>

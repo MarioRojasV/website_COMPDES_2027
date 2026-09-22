@@ -147,80 +147,157 @@ const t = useTranslations(lang);
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Capas con alfa, de fondo a frente: recorrido creciente. `amp` es el
-  // desplazamiento total (px) que la capa recorrería de reposo a scroll
-  // máximo; como el parallax es DE UN SOLO SENTIDO (solo al bajar, nunca
-  // rebota al subir), el desplazamiento real se limita a TRAVEL (abajo) y
-  // el sangrado vertical se deriva de ese tope para que el borde superior
-  // de ninguna capa pueda quedar expuesto sin fondo azul.
-  // `base` es un desplazamiento estático hacia abajo (en px) que se aplica
-  // antes del recorrido; oculta bordes inferiores visibles en estado de
-  // reposo sin afectar el rango del parallax.
-  // NOTA IMPORTANTE: ctec.webp y deer.webp NO son recortes sueltos con
-  // fondo transparente — son paneles panorámicos de ancho completo (la
-  // colina/rocas ya ocupan casi todo el ancho del archivo), igual que
-  // hero-bg, así que ninguna capa lleva `size`: encoger una de ellas con
-  // scale() dejaría huecos en los bordes donde se asoma hero-bg. Si el
-  // edificio o el venado deben verse más chicos, hay que pedir el asset ya
-  // recompuesto más chico dentro del panel, no lograrlo con CSS/JS.
-  // Parallax muy sutil con velocidades DIFERENTES por capa: `amp` es el
-  // desplazamiento máximo (px) y su valor distinto también modula la
-  // velocidad (desplazamiento = progress × amp). Todas las capas vuelven a
-  // su posición original al subir el scroll. El venado (deer) NO hace
-  // parallax (amp 0): queda fijo en su posición original. El fondo (bg)
-  // conserva su sangrado dinámico ("auto", sin `sy`) para cubrir su
-  // recorrido sin que asome el azul de la página; el resto conserva su `sy`
-  // original (≈1: tamaño auténtico del asset), pues al desplazarse menos
-  // sus bordes se asoman sobre la escena del fondo, no sobre el azul.
+  /* =====================================================================
+     PROFUNDIDAD (depth) — fracción de la altura del hero que cada capa se
+     "resiste" a avanzar durante el scroll.
+
+     MECÁNICA: este parallax funciona por RESISTENCIA. Mientras la página
+     sube en el scroll, cada capa se traslada hacia ABAJO (translateY +)
+     respecto de su panel, contrarrestando parte del avance y quedándose
+     "atrás". El movimiento neto que ve el ojo en pantalla es:
+
+         neto = −avance_de_la_página + depth × altura_del_hero
+
+     Por eso el valor NO es una intuición de "qué tan rápido va la capa":
+     lo que el ojo percibe por cada px de scroll es un FACTOR DE PANTALLA:
+
+         factor = 1 − depth      (≈ trazado visual de la capa en pantalla)
+
+     Por 100 px de scroll, la capa se mueve (1 − depth) × 100 px hacia
+     arriba. Solo el venado (factor ≈ 1.0) viaja a la velocidad del scroll;
+     todas las demás capas van MÁS LENTAS que el scroll. De cerca a lejos:
+
+         venado  → depth 0.00  factor ≈ 1.00  → corre con el scroll
+         COMPDES → depth 0.25  factor ≈ 0.75  → fuerte, más lento que el
+                                                venado
+         ctec    → depth 0.50  factor ≈ 0.50  → claramente más lento que
+                                                el scroll y que el texto
+         volcán  → depth 0.80  factor ≈ 0.20  → sutil: cumbre lejana,
+                                                bastante más lento que el
+                                                edificio y apenas más rápido
+                                                que el cielo
+         cielo   → depth 0.90  factor ≈ 0.10  → ya FINAL. NO MODIFICAR.
+
+     RELACIÓN CRÍTICA: ctec > volcán. El edificio + grama está físicamente
+     MÁS CERCA del observador que la cima del volcán, así que su trazado por
+     unidad de scroll DEBE ser mayor (0.50 vs 0.20 en pantalla, es decir el
+     edificio recorre 2.5× lo que recorre el volcán para el mismo scroll).
+     El cielo conserva exactamente su recorrido actual (0.10): un casi-fijo
+     con un suspiro mínimo, sin estirar más la escena base.
+
+SUAVIZADO (omega) — inercia INDEPENDIENTE del factor: no altera el
+     recorrido total (la jerarquía de arriba se conserva tal cual), solo la
+     FORMA en que cada capa alcanza su objetivo. Se usa un oscilador
+     subamortiguado crítico (resorte críticamente amortiguado): la capa
+     arranca con velocidad CERO, aguanta intacta un instante mínimo (el
+     repentino cambio del scroll no la arrastra), acelera, y en ~0.5 s
+     alcanza el objetivo sin rebote ni overshoot. El ensamblaje es idéntico
+     al bajar que al subir, y el objetivo se recalcula desde el scroll en
+     cada frame. `omega` (rad/s) es la rigidez: cuánto más alta, más
+     "instantánea" es la respuesta.
+
+         venado  → sin spring   instantáneo (atado a tu scroll)
+         COMPDES → omega 45     casi instantáneo, imperceptible (~0.13 s)
+         ctec    → omega 18     ligera inercia, catch-up ágil (~0.32 s)
+         volcán  → omega 12     la mayor inercia sutil, se asienta en
+                                 ~0.5 s, SIN parecer rezagado ni lento
+         cielo   → sin spring   NO MODIFICAR (idéntico a hoy)
+
+     DIFERENCIA CLAVE con el suavizado exponencial: el exponencial arranca
+     moviéndose al ritmo del scroll y luego decanta (lo que se percibe como
+     "sigue al scroll y se asienta"); el resorte crítico, en cambio,
+     resiste el arranque por unos milisegundos y luego se precipita a su
+     posición — inercia física y catch-up rápido.
+
+     Las capas volcán/edificio/venado son paneles ancho-completo con el
+     cielo recortado (transparente) POR ENCIMA de su silueta, así que al
+     trasladarse hacia abajo nunca marcan bordes: exponen el cielo de la
+     capa base, que está siempre detrás. La capa base es la única opaca en
+     el cielo: por eso su sobréalto (bleed) se ajusta en runtime según su
+     propio recorrido (computeBleed), para que su borde superior jamás se
+     descubra ni aparezca el azul de la página.
+     ===================================================================== */
   const layers = [
-    { el: bg,    amp: 280,  omega: 13, zeta: 0.9 }, // sy dinámico "auto"
-    { el: logo,  amp: 40,   omega: 13, zeta: 0.9, sy: 1.0 },
-    { el: ctec,  amp: 90,   omega: 9,  zeta: 0.9, base: 25, sy: 1.05 },
-    { el: deer,  amp: 0,    omega: 0,  zeta: 0,   base: 25, sy: 1.0 },
-    { el: title, amp: 60,   omega: 7,  zeta: 0.5, sy: 1.0 },
+    { el: bg,    depth: 0.9, base: 0,   sy: null, omega: 0 },
+    { el: logo,  depth: 0.8, base: 0,   sy: 1.0,  omega: 12 },
+    { el: ctec,  depth: 0.5, base: 25,  sy: 1.05, omega: 18 },
+    { el: deer,  depth: 0.0, base: 25,  sy: 1.0,  omega: 0 },
+    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 45 },
   ].filter((l) => l.el);
 
+  // Estado de seguimiento por capa: pos = desplazamiento actual aplicado,
+  // vel = velocidad de arrastre (px/s) para el resorte (omega > 0).
   for (const l of layers) {
-    l.pos = 0;
+    l.pos = l.base ?? 0;
     l.vel = 0;
   }
 
+  // Margen extra de seguridad del bleed del cielo (px por encima del tope).
+  const SAFETY = 40;
+
   let progress = 0;
+  let heroH = 0;
   let rafId = null;
-  let lastT = 0;
+  let lastT = null;
   let inView = false;
 
+  function measure() {
+    heroH = hero ? hero.clientHeight : 0;
+  }
+
+  /* Progreso 0 → hero recién asomando por arriba (reposo), 1 → hero ya salió
+     entero. Se deriva de la posición real del panel en el viewport, así el
+     rango es robusto a layout y proporcional a lo que el ojo recorre. */
+  function readProgress() {
+    if (!hero || heroH <= 0) return;
+    const rect = hero.getBoundingClientRect();
+    progress = Math.min(Math.max(-rect.top / heroH, 0), 1);
+  }
+
   function render() {
+    // Un solo reloj (progress) para todas las capas: recorridos simultáneos
+    // y proporcionales; ninguna capa anima "por su cuenta".
+    const delta = progress * heroH;
     for (const l of layers) {
-      const offset = (l.base ?? 0) + l.pos;
-      // scaleY compartido por igual en todas las capas de escena (así la
-      // escena no se descuadra). El título NO se estira (sy 1).
+      const target = (l.base ?? 0) + l.depth * delta;
+      // omega 0 → la capa se ubica AL INSTANTE en su objetivo (venado y
+      // cielo: comportamiento idéntico a hoy); omega > 0 → aplica el estado
+      // pos que frame() integra con su resorte de inercia.
+      const offset = l.omega > 0 ? l.pos : target;
+      // scaleY compartido (sy): es el bleed estático de cada asset, no parte
+      // del movimiento. El título no se estira (sy 1).
       l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(1, ${(l.sy ?? 1).toFixed(3)})`;
     }
     if (title) title.style.opacity = String(1 - progress * 0.35);
   }
 
   function frame(t) {
-    const dt = Math.min(Math.max((t - lastT) / 1000, 0), 1 / 30);
+    // Integración de la inercia en el MISMO bucle rAF existente (sin bucles,
+    // listeners ni sistemas duplicados). Resorte CRÍTICAMENTE AMORTIGUADO en
+    // su forma analítica cerrada por frame: estable y exacto para cualquier
+    // dt (independiente de la tasa de frames), arranca con velocidad 0 —
+    // aguanta el instante inicial del scroll y luego se precipita al objetivo
+    // con catch-up rápido, sin rebote. El dt se acota solo por higiene: una
+    // pausa del tab no debe arrojar números absurdos.
+    const dt = lastT === null ? 0 : Math.min(Math.max((t - lastT) / 1000, 0), 0.05);
     lastT = t;
-
-    // Parallax SUAVE de seguimiento directo: cada capa se ubica en su
-    // desplazamiento (progress * amp) y vuelve a su posición original al
-    // subir — sin resorte, sin rebote y sin quedarse desplazada.
+    const delta = progress * heroH;
     for (const l of layers) {
-      const target = progress * l.amp * (l.speed ?? 1);
-      const cap = Math.min(l.amp ?? 0, TRAVEL);
-      l.pos = Math.min(Math.max(target, 0), cap);
-      l.vel = 0;
+      if (l.omega <= 0) continue;
+      const target = (l.base ?? 0) + l.depth * delta;
+      const w = l.omega;
+      const x0 = l.pos - target;
+      const c = (l.vel + w * x0) * dt;
+      const decay = Math.exp(-w * dt);
+      l.pos = target + (x0 + c) * decay;
+      l.vel = (l.vel - w * (l.vel + w * x0) * dt) * decay;
     }
-
     render();
     rafId = requestAnimationFrame(frame);
   }
 
   function wake() {
     if (rafId === null && inView && !reduceMotion && layers.length > 0) {
-      lastT = performance.now();
       rafId = requestAnimationFrame(frame);
     }
   }
@@ -232,25 +309,15 @@ const t = useTranslations(lang);
     }
   }
 
-  function readProgress() {
-    if (!hero) return;
-    const max = hero.offsetHeight;
-    progress = max === 0 ? 0 : Math.min(Math.max(window.scrollY / max, 0), 1);
-  }
-
-  // Tope de recorrido del parallax (px). El sangrado vertical dinámico solo
-  // se aplica a la capa de fondo (bg): crece desde su base y garantiza que
-  // su borde superior quede siempre por encima del panel (SAFETY de sobra)
-  // aun en su desplazamiento máximo, así el fondo azul no puede asomarse.
-  const TRAVEL = 280;
-  const SAFETY = 40;
-
+  /* Bleed vertical del cielo: crece desde su base (origen abajo) para que aun
+     en su recorrido máximo la escena cubra el panel sin mostrar el azul. El
+     área visible de la capa base es un gradiente suave y continuo, así que
+     este estirado es imperceptible en el arte. */
   function computeBleed() {
     const h = hero ? hero.clientHeight : 0;
     if (h <= 0) return;
-    // Solo la capa de fondo (sin `sy` fijo) se estira para cubrir su recorrido.
     for (const l of layers) {
-      if (l.sy == null) l.sy = 1 + (TRAVEL + SAFETY) / h;
+      if (l.sy == null) l.sy = 1 + (l.depth * h + SAFETY) / h;
     }
   }
 
@@ -281,6 +348,7 @@ const t = useTranslations(lang);
       wake();
     }
 
+    measure();
     computeBleed();
     readProgress();
     render();
@@ -288,6 +356,7 @@ const t = useTranslations(lang);
     window.addEventListener(
       'resize',
       () => {
+        measure();
         computeBleed();
         readProgress();
         wake();
