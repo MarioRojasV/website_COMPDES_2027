@@ -7,8 +7,8 @@ const t = useTranslations(lang);
 
 <section class="hero" aria-label={t('hero.title')}>
   <div class="hero-art" aria-hidden="true">
-    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/principal_extendido.webp`} alt="" />
-    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" />
+    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/volcan_arenal.webp`} alt="" />
+    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" hidden />
     <img class="hero-ctec" src={`${import.meta.env.BASE_URL}/fondos/ctec.webp`} alt="" />
     <img class="hero-deer" src={`${import.meta.env.BASE_URL}/fondos/deer.webp`} alt="" />
   </div>
@@ -138,139 +138,53 @@ const t = useTranslations(lang);
 </style>
 
 <script>
-  const hero = document.querySelector('.hero');
-  const bg = document.querySelector('.hero-bg');
-  const logo = document.querySelector('#hero-logo');
-  const ctec = document.querySelector('.hero-ctec');
-  const deer = document.querySelector('.hero-deer');
-  const title = document.querySelector('.hero-title');
+  interface Layer {
+    el: HTMLElement | null;
+    depth: number;
+    base: number;
+    sy: number;
+    omega: number;
+    pos?: number;
+    tau?: number;
+  }
+
+  const hero = document.querySelector('.hero') as HTMLElement | null;
+  const bg = document.querySelector('.hero-bg') as HTMLElement | null;
+  const logo = document.querySelector('#hero-logo') as HTMLElement | null;
+  const ctec = document.querySelector('.hero-ctec') as HTMLElement | null;
+  const deer = document.querySelector('.hero-deer') as HTMLElement | null;
+  const title = document.querySelector('.hero-title') as HTMLElement | null;
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* =====================================================================
-     PROFUNDIDAD (depth) — fracción de la altura del hero que cada capa se
-     "resiste" a avanzar durante el scroll.
-
-     MECÁNICA: este parallax funciona por RESISTENCIA. Mientras la página
-     sube en el scroll, cada capa se traslada hacia ABAJO (translateY +)
-     respecto de su panel, contrarrestando parte del avance y quedándose
-     "atrás". El movimiento neto que ve el ojo en pantalla es:
-
-         neto = −avance_de_la_página + depth × altura_del_hero
-
-     Por eso el valor NO es una intuición de "qué tan rápido va la capa":
-     lo que el ojo percibe por cada px de scroll es un FACTOR DE PANTALLA:
-
-         factor = 1 − depth      (≈ trazado visual de la capa en pantalla)
-
-     Por 100 px de scroll, la capa se mueve (1 − depth) × 100 px hacia
-     arriba. Solo el venado (factor ≈ 1.0) viaja a la velocidad del scroll;
-     todas las demás capas van MÁS LENTAS que el scroll. De cerca a lejos:
-
-         venado  → depth 0.00  factor ≈ 1.00  → corre con el scroll
-         COMPDES → depth 0.25  factor ≈ 0.75  → fuerte, más lento que el
-                                                venado
-         ctec    → depth 0.50  factor ≈ 0.50  → claramente más lento que
-                                                el scroll y que el texto
-         volcán  → depth 0.80  factor ≈ 0.20  → sutil: cumbre lejana,
-                                                bastante más lento que el
-                                                edificio y apenas más rápido
-                                                que el cielo
-         cielo   → depth 0.90  factor ≈ 0.10  → ya FINAL. NO MODIFICAR.
-
-     RELACIÓN CRÍTICA: ctec > volcán. El edificio + grama está físicamente
-     MÁS CERCA del observador que la cima del volcán, así que su trazado por
-     unidad de scroll DEBE ser mayor (0.50 vs 0.20 en pantalla, es decir el
-     edificio recorre 2.5× lo que recorre el volcán para el mismo scroll).
-     El cielo conserva exactamente su recorrido actual (0.10): un casi-fijo
-     con un suspiro mínimo, sin estirar más la escena base.
-
-INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
-     recorrido total (la jerarquía de arriba se conserva tal cual), solo la
-     FORMA en que cada capa responde al cambio del scroll. Cada capa con
-     omega > 0 mantiene un "slip" (pos): la separación con el avance de la
-     página. Al reposo slip = 0 → la capa queda exactamente donde estaba
-     antes (mismo frame que hoy, solo hay que restablecer la escena desde el
-     estado de reposo). Cuando el scroll cambia, la capa se queda CLAVADA al
-     viewport un instante mínimo — el avance de la página se absorbe en el
-     offset (offset = base + delta − slip) — y luego se despega hacia su
-     factor real con un "retard acotado": cada capa persigue a
-     slipTarget − ret, donde ret (en px) es proporcional a la velocidad del
-     slip hasta un TECLO duro (maxR) que nunca se supera. Así el lag es
-     pequeño al scroll lento, se satura en maxR al scroll rápido (NUNCA crece
-     sin límite ni obliga a un "catch-up" brusco), colapsa en decenas de ms al
-     soltar el dedo (sin cola larga) y revierte de dirección sin rebote. El
-     ensamblaje es idéntico al bajar que al subir, y el objetivo (slip) se
-     recalcula desde el scroll en cada frame. `omega` se conserva como rigidez
-     (jerarquía de respuesta): cuánto más alta, más "instantánea".
-
-         venado  → sin inercia    instantáneo (atado a tu scroll)
-         title   → omega 64       casi instantáneo, lag mínimo (maxR 6 px)
-         ctec    → omega 27       inercia ligera, catch-up ágil (maxR 13 px)
-         logo    → omega 18       la mayor inercia sutil (maxR 20 px), sin
-                                  parecer rezagado ni lento al reposo
-         cielo   → sin inercia    NO MODIFICAR (idéntico a hoy)
-
-     Las capas volcán/edificio/venado son paneles ancho-completo con el
-     cielo recortado (transparente) POR ENCIMA de su silueta, así que al
-     trasladarse hacia abajo nunca marcan bordes: exponen el cielo de la
-     capa base, que está siempre detrás. La capa base es la única opaca en
-     el cielo: por eso su sobréalto (bleed) se ajusta en runtime según su
-     propio recorrido (computeBleed), para que su borde superior jamás se
-     descubra ni aparezca el azul de la página.
-     ===================================================================== */
-  // eta: px de lag por px/s de velocidad del slip (límite "natural" antes de
-  // tocar maxR). maxR: techo duro del lag en px, sea cual sea la velocidad del
-  // scroll (NO crece con la velocidad → imposible "irse lejos y recuperar de
-  // golpe"). tauf: suavizado al acelerar (a mayor, más se "pega" al arranque).
-  // Los tres heredan la jerarquía: logo (más lag), ctec, title (más ágil).
-  const layers = [
-    { el: bg,    depth: 0.9, base: 0,   sy: null, omega: 0 },
-    { el: logo,  depth: 0.8, base: 0,   sy: 1.0,  omega: 18, eta: 0.04,   maxR: 20, tauf: 0.05 },
-    { el: ctec,  depth: 0.5, base: 25,  sy: 1.05, omega: 27, eta: 0.025,  maxR: 13, tauf: 0.035 },
-    { el: deer,  depth: 0.0, base: 25,  sy: 1.0,  omega: 0 },
-    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 64, eta: 0.009,  maxR: 6,  tauf: 0.02 },
+  // SOLO las capas CON inercia
+  const layers: Layer[] = [
+    { el: logo,  depth: 0.8, base: 0,  sy: 1.0,  omega: 18 },
+    { el: ctec,  depth: 0.5, base: 25, sy: 1.05, omega: 27 },
+    { el: deer,  depth: 0.0, base: 25, sy: 1.0,  omega: 0 },
+    { el: title, depth: 0.25, base: 0, sy: 1.0,  omega: 64 },
   ].filter((l) => l.el);
-  // TAUD: al decelerar o cambiar de dirección la velocidad estimada (y por
-  // tanto el retard) colapsa RÁPIDO → sin "velocidad vieja" que provoque
-  // rebote ni cola larga al frenar. TAUREV: al revertir, el retard cruza 0
-  // suavizado (no en un frame) → el giro no "muerde". VELC: tope de higiene.
-  const TAUD = 0.012;
-  const TAUREV = 0.045;
-  const VELC = 3000;
 
-  // Estado por capa (solo omega > 0): pos = "slip" (la separación que la capa
-  // mantiene con el desplazamiento del scroll), no la posición final. Al
-  // reposo pos = 0 → offset = base, idéntico a hoy.
-  //   vel   → velocidad estimada del slip (EMA asimétrico; alimenta al retard)
-  //   ret   → retard actual en px (que la capa mantiene respecto a su target)
-  //   prev  → slipTarget del frame anterior, para derivar la velocidad
-  // El modelo es "retard acotado": la capa persigue slipTarget − ret, con ret
-  // techado por maxR. El lag NUNCA crece con la velocidad del scroll (techo
-  // fijo) y al soltar el dedo colapsa en unas decenas de ms, sin cola larga.
-  for (const l of layers) {
-    l.pos = 0;
-    l.vel = 0;
-    l.ret = 0;
-    l.prev = null;
-  }
-
-  // Margen extra de seguridad del bleed del cielo (px por encima del tope).
+  // BG se maneja COMPLETAMENTE aparte, sin inercia
+  const BG_DEPTH = 0.8; // Ajusta aquí: 0.9 = muy lento, 0.5 = más rápido
+  const TAU0 = 0.9;
   const SAFETY = 40;
 
   let progress = 0;
   let heroH = 0;
-  let rafId = null;
-  let lastT = null;
+  let rafId: number | null = null;
+  let lastT: number | null = null;
   let inView = false;
+
+  for (const l of layers) {
+    l.pos = 0;
+    l.tau = TAU0 / (l.omega || 1);
+  }
 
   function measure() {
     heroH = hero ? hero.clientHeight : 0;
   }
 
-  /* Progreso 0 → hero recién asomando por arriba (reposo), 1 → hero ya salió
-     entero. Se deriva de la posición real del panel en el viewport, así el
-     rango es robusto a layout y proporcional a lo que el ojo recorre. */
   function readProgress() {
     if (!hero || heroH <= 0) return;
     const rect = hero.getBoundingClientRect();
@@ -278,77 +192,38 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
   }
 
   function render() {
-    // Un solo reloj (progress) para todas las capas: recorridos simultáneos
-    // y proporcionales; ninguna capa anima "por su cuenta".
     const delta = progress * heroH;
+    
+    // BG: movimiento DIRECTO, sin inercia, sin retrasos
+    if (bg) {
+      const bgOffset = BG_DEPTH * delta;
+      bg.style.transform = `translate3d(0, ${bgOffset.toFixed(1)}px, 0) scale(1, 1)`;
+    }
+    
+    // El resto de capas con inercia
     for (const l of layers) {
+      if (!l.el) continue;
       const target = (l.base ?? 0) + l.depth * delta;
-      // omega 0 → la capa se ubica AL INSTANTE en su objetivo (venado y
-      // cielo: comportamiento idéntico a hoy). omega > 0 → inercia vía slip:
-      // en el instante del scroll la capa se queda CLAVADA al viewport
-      // (offset absorbe el avance de la página, slip ≈ 0) y luego se despega
-      // hacia su factor real, base − (1 − depth)·delta en pantalla.
-      // offset = base + delta − slip, y como screen = −delta + offset,
-      // lo que el ojo ve es screen = base − pos.
-      const offset = l.omega > 0 ? delta - l.pos + (l.base ?? 0) : target;
-      // scaleY compartido (sy): es el bleed estático de cada asset, no parte
-      // del movimiento. El título no se estira (sy 1).
+      const offset = l.omega > 0 ? delta - (l.pos ?? 0) + (l.base ?? 0) : target;
       l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(1, ${(l.sy ?? 1).toFixed(3)})`;
     }
+    
     if (title) title.style.opacity = String(1 - progress * 0.35);
   }
 
-  function frame(t) {
-    // Integración del retard acotado en el MISMO bucle rAF existente (sin
-    // bucles, listeners ni sistemas duplicados). Por capa, en cada frame:
-    //   1. vel = EMA asimétrico de la velocidad del slip (acelerar: lento &
-    //      suave; decelerar/revertir: rápido → sin "velocidad vieja").
-    //   2. ret = retard con techo maxR y cruce por cero suavizado; el lag
-    //      queda SIEMPRE ≤ maxR, proporcional a la velocidad hasta el tope.
-    //   3. pos sigue a "slipTarget − ret": por debajo del target exacto y sin
-    //      acumularse (fila: lag fijo), por encima retorna críticamente
-    //      amortiguado (sin rebote). Al reposo ret → 0 → pos → 0 (idéntico a
-    //      hoy). El dt se acota solo por higiene: una pausa del tab no debe
-    //      arrojar números absurdos.
+  function frame(t: number) {
     const dt = lastT === null ? 0 : Math.min(Math.max((t - lastT) / 1000, 0), 0.05);
     lastT = t;
     const delta = progress * heroH;
+    
+    // SOLO las capas con omega > 0 reciben inercia
     for (const l of layers) {
-      if (l.omega <= 0) continue;
+      if (!l.el || l.omega <= 0) continue;
       const target = (l.base ?? 0) + l.depth * delta;
-      // slipTarget = (1 − depth)·delta: cuánto debe separarse la capa del
-      // desplazamiento del scroll. Se deriva del mismo target (intacto).
       const slipTarget = (l.base ?? 0) + delta - target;
-      // Velocidad del slip por diferencias finitas (clampada por higiene).
-      const vRaw = l.prev === null || dt <= 0
-        ? 0
-        : Math.min(Math.max((slipTarget - l.prev) / dt, -VELC), VELC);
-      l.prev = slipTarget;
-      // EMA asimétrico: acelerar/ritmo (tauf, suave) vs decelerar/revertir
-      // (TAUD, rápido) → la estimación muere rápido al soltar, no arrastra.
-      const toward = Math.abs(vRaw) >= Math.abs(l.vel) && vRaw * l.vel >= 0;
-      const kVel = toward ? 1 - Math.exp(-dt / l.tauf) : 1 - Math.exp(-dt / TAUD);
-      l.vel += (vRaw - l.vel) * kVel;
-      // Retard objetivo: lag ∝ velocidad, techado por maxR (nunca mayor).
-      const rTarget = Math.min(Math.abs(l.vel) * l.eta, l.maxR) * Math.sign(l.vel);
-      // El retard también se suaviza: crece con tauf, colapsa con TAUD al
-      // soltar, y cruza por cero con TAUREV al revertir (sin salto de frame).
-      let kRet;
-      if (l.ret * rTarget < 0) kRet = 1 - Math.exp(-dt / TAUREV);
-      else if (Math.abs(rTarget) >= Math.abs(l.ret)) kRet = 1 - Math.exp(-dt / l.tauf);
-      else kRet = 1 - Math.exp(-dt / TAUD);
-      l.ret += (rTarget - l.ret) * kRet;
-      // Seguir a slipTarget − ret: por debajo, exacto (lag fijo = ret); por
-      // encima (reversa), retorno críticamente amortiguado — sin rebote.
-      const eff = slipTarget - l.ret;
-      const e = eff - l.pos;
-      if (e >= 0) {
-        l.pos = eff;
-      } else {
-        const np = l.pos + (l.vel + l.omega * e) * dt;
-        l.pos = np > eff ? np : eff;
-      }
+      l.pos = (l.pos ?? 0) + (slipTarget - (l.pos ?? 0)) * (1 - Math.exp(-dt / (l.tau ?? TAU0)));
     }
+    
     render();
     rafId = requestAnimationFrame(frame);
   }
@@ -366,10 +241,6 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
     }
   }
 
-  /* Bleed vertical del cielo: crece desde su base (origen abajo) para que aun
-     en su recorrido máximo la escena cubra el panel sin mostrar el azul. El
-     área visible de la capa base es un gradiente suave y continuo, así que
-     este estirado es imperceptible en el arte. */
   function computeBleed() {
     const h = hero ? hero.clientHeight : 0;
     if (h <= 0) return;
