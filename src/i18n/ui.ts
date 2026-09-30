@@ -172,43 +172,46 @@ export const ui = {
       "El <strong>XX Congreso Iberoamericano de Computación para el Desarrollo — COMPDES2027 —</strong> se \
       desarrollará del 21 al 23 de julio de 2027, organizado por el Instituto Tecnológico de Costa Rica (Sede de San Carlos) \
       en el marco de actividades de la RED COMPDES. La sede del evento será el cantón de San Carlos, Costa Rica, en el \
-      distrito de Santa Clara.<br /><br />Además, esta edición marcará un hito histórico: por primera vez, sus \
-      publicaciones estarán indexadas en <strong>IEEE</strong>.",
-    // IEEE — indexación internacional
+      distrito de Santa Clara.<br /><br />Además, esta edición marcará un hito histórico: por primera vez, los \
+      trabajos aceptados serán remitidos para su inclusión en <strong>IEEE Xplore</strong>, sujetos al alcance y a los \
+      requisitos de calidad de <strong>IEEE Xplore</strong>.",
+    // IEEE — envío a IEEE Xplore
     "home.ieee.eyebrow": "Publicaciones",
-    "home.ieee.title": "Por primera vez: indexados en IEEE",
+    "home.ieee.title": "Por primera vez: envío a IEEE Xplore",
     "home.ieee.intro":
       "En su edición 2027, el Congreso COMPDES alcanza un hito histórico: por primera vez en la historia de la red, \
-      los trabajos aceptados contarán con publicación e indexación internacional a través de <strong>IEEE</strong>, \
-      la asociación profesional más grande del mundo en ingeniería y computación.",
+      los trabajos aceptados serán remitidos para su inclusión en <strong>IEEE Xplore</strong>, sujetos al alcance y a \
+      los requisitos de calidad de <strong>IEEE Xplore</strong>. La inclusión en IEEE Xplore no está garantizada y \
+      queda sujeta a la evaluación de IEEE.",
     "home.ieee.badge": "primera vez",
-    "home.ieee.card.what.title": "¿Qué significa estar indexados?",
+    "home.ieee.card.what.title": "¿Cómo funciona el envío a IEEE Xplore?",
     "home.ieee.card.what.body":
-      "Los artículos aceptados se publican en las memorias del congreso y quedan registrados en \
-      <strong>IEEE Xplore</strong>, la biblioteca digital de referencia mundial en ingeniería y computación, donde \
-      pueden ser consultados y citados por investigadores de todo el mundo.",
+      "Los artículos aceptados se publican en las memorias del congreso y serán remitidos para su inclusión en \
+      <strong>IEEE Xplore</strong>, la biblioteca digital de referencia mundial en ingeniería y computación. La \
+      inclusión queda sujeta al alcance y a los requisitos de calidad de <strong>IEEE Xplore</strong>, y no está \
+      garantizada.",
     "home.ieee.card.milestone.title": "Un hito para la red COMPDES",
     "home.ieee.card.milestone.body":
       "Desde sus primeras ediciones, el congreso ha sido un espacio abierto para compartir computación para el \
-      desarrollo. Esta es la primera vez que sus publicaciones alcanzan indexación internacional: un salto de calidad \
-      para autores, instituciones y toda la red.",
+      desarrollo. Esta es la primera vez que sus trabajos se someten al proceso de revisión de IEEE Xplore: un paso \
+      hacia una mayor visibilidad para autores, instituciones y toda la red.",
     "home.ieee.card.authors.title": "¿Qué gana quien publica?",
     "home.ieee.card.authors.body":
-      "Publicar en COMPDES 2027 significa visibilidad internacional, trazabilidad formal del propio trabajo y la \
-      solidez de un proceso editorial respaldado por IEEE. Una oportunidad ideal para estudiantes, docentes e \
-      investigadores de la región.",
+      "Publicar en COMPDES 2027 significa contar con trazabilidad formal del propio trabajo y con la posibilidad de \
+      revisión e indexación internacional, ya que los artículos aceptados se remiten a IEEE Xplore según su alcance y \
+      sus requisitos de calidad. Una oportunidad ideal para estudiantes, docentes e investigadores de la región.",
     "home.ieee.term.cmd": "compdes2027 --estado-publicaciones",
-    "home.ieee.term.line1": "[ ok ] indexación internacional ......... IEEE",
-    "home.ieee.term.line2": "[ ok ] biblioteca digital .............. IEEE Xplore",
-    "home.ieee.term.line3": "[ ok ] alcance ......................... visible y citable a nivel global",
-    "home.ieee.term.line4": "[ >> ] estado .......................... hito_historico // primera_vez_en_la_red",
+    "home.ieee.term.line1": "[ >> ] envio ........................... IEEE Xplore",
+    "home.ieee.term.line2": "[ >> ] inclusion ...................... sujeta a alcance y calidad",
+    "home.ieee.term.line3": "[ >> ] estado ......................... pendiente_de_evaluacion",
+    "home.ieee.term.line4": "[ >> ] hito ........................... primera_vez_en_la_red",
     // Call for Papers — ficha oficial IEEE (el texto solo se traduce con su botón)
     "home.cfp.eyebrow": "llamada_a_trabajos",
     "home.cfp.title": "Call for Papers: envía tu trabajo",
     "home.cfp.intro":
-      "Ficha oficial de publicación e indexación en IEEE Xplore. El texto del aviso se presenta en inglés tal como lo publica la conferencia; puedes traducirlo con el interruptor que aparece al pie de la ficha.",
+      "Ficha oficial de publicación. Los trabajos aceptados se remiten para su inclusión en IEEE Xplore según el alcance y los requisitos de calidad de esa plataforma; la inclusión no está garantizada. El texto del aviso se presenta en inglés tal como lo publica la conferencia; puedes traducirlo con el interruptor que aparece al pie de la ficha.",
     "home.cfp.statement":
-      "Los trabajos aceptados serán sometidos para su inclusión en la <strong>Biblioteca Digital IEEE Xplore</strong>, conforme a la conferencia <span class=\"text-compdes-yellow\">#63158</span> — <strong>2024 6th International Conference on BioInspired Processing (BIP)</strong> —, sujetos a cumplir el alcance y los requisitos de calidad de <strong>IEEE Xplore</strong>.",
+      "Los trabajos aceptados serán remitidos para su inclusión en <strong>IEEE Xplore</strong>, sujetos al alcance y a los requisitos de calidad de <strong>IEEE Xplore</strong>.",
     "home.contact.eyebrow": "Contacto",
     "home.contact.title": "Póngase en contacto",
     "home.contact.email": "Correo electrónico",
@@ -282,8 +285,10 @@ export const ui = {
     "patrocinadores.eyebrow": "co-patrocinio",
     "patrocinadores.title": "Quiénes nos respaldan",
     "patrocinadores.intro":
-      "Dos instituciones, un solo compromiso: impulsar la computación en la región. COMPDES 2027 es posible gracias al respaldo de la IEEE y del Instituto Tecnológico de Costa Rica.",
-    "patrocinadores.role.ieee": "co-patrocinador técnico · indización en IEEE Xplore",
+      "Dos instituciones, un solo compromiso: impulsar la computación en la región. COMPDES 2027 se realiza con el \
+      respaldo del Instituto Tecnológico de Costa Rica y el acompañamiento técnico de IEEE en el proceso editorial de \
+      las memorias.",
+    "patrocinadores.role.ieee": "co-patrocinador técnico · envío a IEEE Xplore",
     "patrocinadores.role.tec": "institución anfitriona · Campus Tecnológico Local San Carlos",
     "patrocinadores.link": "enlace",
     "patrocinadores.bus": "BUS",
@@ -445,42 +450,44 @@ export const ui = {
       take place from July 21 to 23, 2027, organized by the Costa Rica Institute of Technology (San Carlos Campus) \
       as part of the COMPDES NETWORK’s activities. The event will be held in the canton of San Carlos, Costa Rica, in the \
       district of Santa Clara.<br /><br />In addition, this edition will mark a historic milestone: for the first time, \
-      its publications will be indexed in <strong>IEEE</strong>.",
-    // IEEE
+      accepted papers will be submitted for inclusion into <strong>IEEE Xplore</strong> subject to meeting \
+      <strong>IEEE Xplore's</strong> scope and quality requirements.",
+    // IEEE — submission to IEEE Xplore
     "home.ieee.eyebrow": "Publications",
-    "home.ieee.title": "For the first time: indexed in IEEE",
+    "home.ieee.title": "For the first time: submission to IEEE Xplore",
     "home.ieee.intro":
       "In its 2027 edition, the COMPDES Conference reaches a historic milestone: for the first time in the network's \
-      history, accepted papers will receive international publication and indexing through <strong>IEEE</strong>, the \
-      world's largest professional association in engineering and computing.",
+      history, accepted papers will be submitted for inclusion into <strong>IEEE Xplore</strong> subject to meeting \
+      <strong>IEEE Xplore's</strong> scope and quality requirements. Inclusion in IEEE Xplore is not guaranteed and \
+      remains subject to IEEE's evaluation.",
     "home.ieee.badge": "first time",
-    "home.ieee.card.what.title": "What does indexing mean?",
+    "home.ieee.card.what.title": "How does submission to IEEE Xplore work?",
     "home.ieee.card.what.body":
-      "Accepted articles are published in the conference proceedings and registered in <strong>IEEE Xplore</strong>, \
-      the world's reference digital library in engineering and computing, where they can be found and cited by \
-      researchers everywhere.",
+      "Accepted articles are published in the conference proceedings and will be submitted for inclusion into \
+      <strong>IEEE Xplore</strong>, the world's reference digital library in engineering and computing. Inclusion is \
+      subject to <strong>IEEE Xplore's</strong> scope and quality requirements, and is not guaranteed.",
     "home.ieee.card.milestone.title": "A milestone for the COMPDES network",
     "home.ieee.card.milestone.body":
       "Since its earliest editions, the conference has been an open space for computing for development. This is the \
-      first time its publications reach international indexing: a quality leap for authors, institutions, and the \
-      entire network.",
+      first time its papers go through the IEEE Xplore review process: a step toward greater visibility for authors, \
+      institutions, and the entire network.",
     "home.ieee.card.authors.title": "What do authors gain?",
     "home.ieee.card.authors.body":
-      "Publishing at COMPDES 2027 means international visibility, a formal record of your work, and the credibility of \
-      an editorial process backed by IEEE. An ideal opportunity for students, faculty, and researchers across the \
-      region.",
+      "Publishing at COMPDES 2027 means a formal record of your work and the possibility of international review and \
+      indexing, since accepted articles are submitted to IEEE Xplore according to its scope and quality requirements. \
+      An ideal opportunity for students, faculty, and researchers across the region.",
     "home.ieee.term.cmd": "compdes2027 --publication-status",
-    "home.ieee.term.line1": "[ ok ] international indexing .......... IEEE",
-    "home.ieee.term.line2": "[ ok ] digital library ................. IEEE Xplore",
-    "home.ieee.term.line3": "[ ok ] reach ........................... visible and citable worldwide",
-    "home.ieee.term.line4": "[ >> ] status .......................... historic_milestone // first_time_in_network",
+    "home.ieee.term.line1": "[ >> ] submission ........................ IEEE Xplore",
+    "home.ieee.term.line2": "[ >> ] inclusion ......................... subject to scope & quality",
+    "home.ieee.term.line3": "[ >> ] status ............................. pending_evaluation",
+    "home.ieee.term.line4": "[ >> ] milestone .......................... first_time_in_network",
     // Call for Papers — official IEEE notice (translated only via its own toggle)
     "home.cfp.eyebrow": "call_for_papers",
     "home.cfp.title": "Call for Papers: submit your work",
     "home.cfp.intro":
-      "Official publication and IEEE Xplore indexing notice. The statement below is shown in English just as the conference publishes it; use the switch at the foot of the record to translate it.",
+      "Official publication notice. Accepted papers are submitted for inclusion into IEEE Xplore subject to its scope and quality requirements; inclusion is not guaranteed. The statement below is shown in English just as the conference publishes it; use the switch at the foot of the record to translate it.",
     "home.cfp.statement":
-      "Accepted papers will be submitted for inclusion into <strong>IEEE Xplore Digital Library</strong> according to conference <span class=\"text-compdes-yellow\">#63158</span>, <strong>2024 6th International Conference on BioInspired Processing (BIP)</strong>, subject to meeting <strong>IEEE Xplore's</strong> scope and quality requirements.",
+      "Accepted papers will be submitted for inclusion into <strong>IEEE Xplore</strong> subject to meeting <strong>IEEE Xplore's</strong> scope and quality requirements.",
     "home.contact.eyebrow": "Contact",
     "home.contact.title": "Get in touch",
     "home.contact.email": "Email",
@@ -555,8 +562,9 @@ export const ui = {
     "patrocinadores.eyebrow": "co-sponsorship",
     "patrocinadores.title": "Who stands behind us",
     "patrocinadores.intro":
-      "Two institutions, one commitment: advancing computing in the region. COMPDES 2027 is possible thanks to the support of IEEE and the Costa Rica Institute of Technology.",
-    "patrocinadores.role.ieee": "technical co-sponsor · indexed in IEEE Xplore",
+      "Two institutions, one commitment: advancing computing in the region. COMPDES 2027 is made possible by the support \
+      of the Costa Rica Institute of Technology and IEEE's technical support for the proceedings editorial process.",
+    "patrocinadores.role.ieee": "technical co-sponsor · submission to IEEE Xplore",
     "patrocinadores.role.tec": "host institution · San Carlos Local Campus",
     "patrocinadores.link": "link",
     "patrocinadores.bus": "BUS",

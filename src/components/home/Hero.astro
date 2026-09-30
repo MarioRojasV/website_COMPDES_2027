@@ -7,8 +7,8 @@ const t = useTranslations(lang);
 
 <section class="hero" aria-label={t('hero.title')}>
   <div class="hero-art" aria-hidden="true">
-    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/volcan_arenal.webp`} alt="" />
-    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" hidden />
+    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/principal_extendido.webp`} alt="" />
+    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" />
     <img class="hero-ctec" src={`${import.meta.env.BASE_URL}/fondos/ctec.webp`} alt="" />
     <img class="hero-deer" src={`${import.meta.env.BASE_URL}/fondos/deer.webp`} alt="" />
   </div>
@@ -138,53 +138,124 @@ const t = useTranslations(lang);
 </style>
 
 <script>
-  interface Layer {
-    el: HTMLElement | null;
-    depth: number;
-    base: number;
-    sy: number;
-    omega: number;
-    pos?: number;
-    tau?: number;
-  }
-
-  const hero = document.querySelector('.hero') as HTMLElement | null;
-  const bg = document.querySelector('.hero-bg') as HTMLElement | null;
-  const logo = document.querySelector('#hero-logo') as HTMLElement | null;
-  const ctec = document.querySelector('.hero-ctec') as HTMLElement | null;
-  const deer = document.querySelector('.hero-deer') as HTMLElement | null;
-  const title = document.querySelector('.hero-title') as HTMLElement | null;
+  const hero = document.querySelector('.hero');
+  const bg = document.querySelector('.hero-bg');
+  const logo = document.querySelector('#hero-logo');
+  const ctec = document.querySelector('.hero-ctec');
+  const deer = document.querySelector('.hero-deer');
+  const title = document.querySelector('.hero-title');
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // SOLO las capas CON inercia
-  const layers: Layer[] = [
-    { el: logo,  depth: 0.8, base: 0,  sy: 1.0,  omega: 18 },
-    { el: ctec,  depth: 0.5, base: 25, sy: 1.05, omega: 27 },
-    { el: deer,  depth: 0.0, base: 25, sy: 1.0,  omega: 0 },
-    { el: title, depth: 0.25, base: 0, sy: 1.0,  omega: 64 },
+  /* =====================================================================
+     PROFUNDIDAD (depth) — fracción de la altura del hero que cada capa se
+     "resiste" a avanzar durante el scroll.
+
+     MECÁNICA: este parallax funciona por RESISTENCIA. Mientras la página
+     sube en el scroll, cada capa se traslada hacia ABAJO (translateY +)
+     respecto de su panel, contrarrestando parte del avance y quedándose
+     "atrás". El movimiento neto que ve el ojo en pantalla es:
+
+         neto = −avance_de_la_página + depth × altura_del_hero
+
+     Por eso el valor NO es una intuición de "qué tan rápido va la capa":
+     lo que el ojo percibe por cada px de scroll es un FACTOR DE PANTALLA:
+
+         factor = 1 − depth      (≈ trazado visual de la capa en pantalla)
+
+     Por 100 px de scroll, la capa se mueve (1 − depth) × 100 px hacia
+     arriba. Solo el venado (factor ≈ 1.0) viaja a la velocidad del scroll;
+     todas las demás capas van MÁS LENTAS que el scroll. De cerca a lejos:
+
+         venado  → depth 0.00  factor ≈ 1.00  → corre con el scroll
+         COMPDES → depth 0.25  factor ≈ 0.75  → fuerte, más lento que el
+                                                venado
+         ctec    → depth 0.63  factor ≈ 0.37  → medio: más lento que el
+                                                scroll y que el texto, pero
+                                                casi 2.5× el volcán
+         volcán  → depth 0.85  factor ≈ 0.15  → LA MÁS LENTA: cumbre
+                                                lejana, apenas se separa del
+                                                cielo
+         cielo   → depth 0.90  factor ≈ 0.10  → el más quieto. NO MODIFICAR.
+
+     RELACIÓN CRÍTICA: ctec > volcán, siempre. El edificio + grama está
+     físicamente MÁS CERCA del observador que la cima del volcán, así que su
+     trazado por unidad de scroll DEBE ser mayor (0.37 vs 0.15 en pantalla, es
+     decir el edificio recorre ~2.5× lo que recorre el volcán para el mismo
+     scroll). Si depth(ctec) llegara a caer por debajo de depth(volcán) la
+     escena se invertiría y delataría el truco. El cielo es el único con
+     factor 0.10 —un casi-fijo con un suspiro mínimo— y el volcán queda apenas
+     por encima (0.15), así que la cumbre se despega del cielo muy despacio.
+
+INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
+     recorrido total (la jerarquía de arriba se conserva tal cual), solo la
+     FORMA en que cada capa responde al cambio del scroll. Cada capa con
+     omega > 0 mantiene un "slip" (pos): la separación con el avance de la
+     página. Al reposo slip = 0 → la capa queda exactamente donde estaba
+     antes (mismo frame que hoy, solo hay que restablecer la escena desde el
+     estado de reposo). Cuando el scroll cambia, la capa se queda CLAVADA al
+     viewport un instante mínimo — el avance de la página se absorbe en el
+     offset (offset = base + delta − slip) — y luego se despega hacia su
+     factor real con un resorte CRÍTICAMENTE AMORTIGUADO (velocidad inicial
+     0, sin rebote ni overshoot), asentándose en 0.1–0.8 s según la capa. El
+     ensamblaje es idéntico al bajar que al subir, y el objetivo (slip) se
+     recalcula desde el scroll en cada frame. `omega` (rad/s) es la rigidez:
+     cuánto más alta, más "instantánea" es la respuesta.
+
+         venado  → sin spring   instantáneo (atado a tu scroll)
+         COMPDES → omega 45     casi instantáneo, imperceptible (~0.13 s)
+         ctec    → omega 14     inercia suave, se asienta en ~0.43 s
+         volcán  → omega 8      LA MÁS LENTA de todas: se asienta en
+                                 0.7–0.8 s, sin parecer rezagada al reposo
+         cielo   → sin spring   NO MODIFICAR
+
+     DIFERENCIA CLAVE con el suavizado exponencial: el exponencial arranca
+     moviéndose al ritmo del scroll y luego decanta (lo que se percibe como
+     "sigue al scroll y se asienta"); el resorte de slip, en cambio, aguanta
+     el golpe del scroll (la capa no salta con la página) y luego se precipita
+     a su posición — inercia física y catch-up rápido.
+
+     Las capas volcán/edificio/venado son paneles ancho-completo con el
+     cielo recortado (transparente) POR ENCIMA de su silueta, así que al
+     trasladarse hacia abajo nunca marcan bordes: exponen el cielo de la
+     capa base, que está siempre detrás. La capa base es la única opaca en
+     el cielo: por eso su sobréalto (bleed) se ajusta en runtime según su
+     propio recorrido (computeBleed), para que su borde superior jamás se
+     descubra ni aparezca el azul de la página.
+     ===================================================================== */
+  const layers = [
+{ el: bg,    depth: 0.9,  base: 0,   sy: null, omega: 0 },
+    { el: logo,  depth: 0.85, base: 0,   sy: 1.0,  omega: 8 },
+    { el: ctec,  depth: 0.63, base: 25,  sy: 1.05, omega: 14 },
+    { el: deer,  depth: 0.0,  base: 25,  sy: 1.0,  omega: 0 },
+    { el: title, depth: 0.25, base: 0,   sy: 1.0,  omega: 45 },
   ].filter((l) => l.el);
 
-  // BG se maneja COMPLETAMENTE aparte, sin inercia
-  const BG_DEPTH = 0.8; // Ajusta aquí: 0.9 = muy lento, 0.5 = más rápido
-  const TAU0 = 0.9;
+  // Estado de inercia por capa (solo omega > 0): pos = "slip" (la separación
+  // que la capa mantiene con el desplazamiento del scroll), no la posición
+  // final. Al reposo pos = 0 → offset = base, idéntico a hoy. vel = velocidad
+  // del slip (px/s) para el resorte crítico.
+  for (const l of layers) {
+    l.pos = 0;
+    l.vel = 0;
+  }
+
+  // Margen extra de seguridad del bleed del cielo (px por encima del tope).
   const SAFETY = 40;
 
   let progress = 0;
   let heroH = 0;
-  let rafId: number | null = null;
-  let lastT: number | null = null;
+  let rafId = null;
+  let lastT = null;
   let inView = false;
-
-  for (const l of layers) {
-    l.pos = 0;
-    l.tau = TAU0 / (l.omega || 1);
-  }
 
   function measure() {
     heroH = hero ? hero.clientHeight : 0;
   }
 
+  /* Progreso 0 → hero recién asomando por arriba (reposo), 1 → hero ya salió
+     entero. Se deriva de la posición real del panel en el viewport, así el
+     rango es robusto a layout y proporcional a lo que el ojo recorre. */
   function readProgress() {
     if (!hero || heroH <= 0) return;
     const rect = hero.getBoundingClientRect();
@@ -192,38 +263,52 @@ const t = useTranslations(lang);
   }
 
   function render() {
+    // Un solo reloj (progress) para todas las capas: recorridos simultáneos
+    // y proporcionales; ninguna capa anima "por su cuenta".
     const delta = progress * heroH;
-    
-    // BG: movimiento DIRECTO, sin inercia, sin retrasos
-    if (bg) {
-      const bgOffset = BG_DEPTH * delta;
-      bg.style.transform = `translate3d(0, ${bgOffset.toFixed(1)}px, 0) scale(1, 1)`;
-    }
-    
-    // El resto de capas con inercia
     for (const l of layers) {
-      if (!l.el) continue;
       const target = (l.base ?? 0) + l.depth * delta;
-      const offset = l.omega > 0 ? delta - (l.pos ?? 0) + (l.base ?? 0) : target;
+      // omega 0 → la capa se ubica AL INSTANTE en su objetivo (venado y
+      // cielo: comportamiento idéntico a hoy). omega > 0 → inercia vía slip:
+      // en el instante del scroll la capa se queda CLAVADA al viewport
+      // (offset absorbe el avance de la página, slip ≈ 0) y luego se despega
+      // hacia su factor real, base − (1 − depth)·delta en pantalla.
+      // offset = base + delta − slip, y como screen = −delta + offset,
+      // lo que el ojo ve es screen = base − pos.
+      const offset = l.omega > 0 ? delta - l.pos + (l.base ?? 0) : target;
+      // scaleY compartido (sy): es el bleed estático de cada asset, no parte
+      // del movimiento. El título no se estira (sy 1).
       l.el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0) scale(1, ${(l.sy ?? 1).toFixed(3)})`;
     }
-    
     if (title) title.style.opacity = String(1 - progress * 0.35);
   }
 
-  function frame(t: number) {
+  function frame(t) {
+    // Integración de la inercia en el MISMO bucle rAF existente (sin bucles,
+    // listeners ni sistemas duplicados). Resorte CRÍTICAMENTE AMORTIGUADO en
+    // su forma analítica cerrada por frame sobre el slip: estable y exacto
+    // para cualquier dt (independiente de la tasa de frames), arranca con
+    // velocidad 0 — la capa aguanta el instante inicial del scroll (resiste,
+    // no se arrastra con la página) y luego se precipita a su factor real con
+    // catch-up rápido, sin rebote ni overshoot. Al reposo converge a 0. El
+    // dt se acota solo por higiene: una pausa del tab no debe arrojar
+    // números absurdos.
     const dt = lastT === null ? 0 : Math.min(Math.max((t - lastT) / 1000, 0), 0.05);
     lastT = t;
     const delta = progress * heroH;
-    
-    // SOLO las capas con omega > 0 reciben inercia
     for (const l of layers) {
-      if (!l.el || l.omega <= 0) continue;
+      if (l.omega <= 0) continue;
       const target = (l.base ?? 0) + l.depth * delta;
+      // slipTarget = (1 − depth)·delta: cuánto debe separarse la capa del
+      // desplazamiento del scroll. Se deriva del mismo target (intacto).
       const slipTarget = (l.base ?? 0) + delta - target;
-      l.pos = (l.pos ?? 0) + (slipTarget - (l.pos ?? 0)) * (1 - Math.exp(-dt / (l.tau ?? TAU0)));
+      const w = l.omega;
+      const x0 = l.pos - slipTarget;
+      const c = (l.vel + w * x0) * dt;
+      const decay = Math.exp(-w * dt);
+      l.pos = slipTarget + (x0 + c) * decay;
+      l.vel = (l.vel - w * (l.vel + w * x0) * dt) * decay;
     }
-    
     render();
     rafId = requestAnimationFrame(frame);
   }
@@ -241,6 +326,10 @@ const t = useTranslations(lang);
     }
   }
 
+  /* Bleed vertical del cielo: crece desde su base (origen abajo) para que aun
+     en su recorrido máximo la escena cubra el panel sin mostrar el azul. El
+     área visible de la capa base es un gradiente suave y continuo, así que
+     este estirado es imperceptible en el arte. */
   function computeBleed() {
     const h = hero ? hero.clientHeight : 0;
     if (h <= 0) return;
