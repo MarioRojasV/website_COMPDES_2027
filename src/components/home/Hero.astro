@@ -152,62 +152,81 @@ const t = useTranslations(lang);
      "resiste" a avanzar durante el scroll.
 
      MECÁNICA: este parallax funciona por RESISTENCIA. Mientras la página
-     sube en el scroll, cada capa se traslada hacia ABAJO (translateY +)
+sube en el scroll, cada capa se traslada hacia ABAJO (translateY +)
      respecto de su panel, contrarrestando parte del avance y quedándose
-     "atrás". El movimiento neto que ve el ojo en pantalla es:
+     "atrás". OJO: hay DOS magnitudes distintas aquí y son INVERSAS. No
+     confundirlas:
 
-         neto = −avance_de_la_página + depth × altura_del_hero
+         translateY = depth × altura_del_hero      (cuánto baja la CAPA)
+         factor     = 1 − depth                   (qué tan rápido se mueve
+                                                    EN PANTALLA)
 
-     Por eso el valor NO es una intuición de "qué tan rápido va la capa":
-     lo que el ojo percibe por cada px de scroll es un FACTOR DE PANTALLA:
+     • translateY alto = la capa se Translate mucho hacia abajo dentro del
+       panel. Como .hero tiene overflow:hidden, se la come: baja detrás de las
+       capas delanteras y/o sale del recuadro. Es el valor que hace que una
+       capa "desaparezca".
+     • factor alto = la capa se mueve rápido en pantalla, es decir pegada al
+       avance de la página. factor bajo = parallax fuerte contra la página.
 
-         factor = 1 − depth      (≈ trazado visual de la capa en pantalla)
+     depth ALTO = mucho translateY (se oculta) + factor bajo (parallax fuerte).
+     depth BAJO = poco translateY (no se oculta) + factor alto (casi sin
+     parallax). No se pueden tener las dos cosas a la vez en una capa con sy
+     fijo: por eso el cielo, que sí lleva bleed, aguanta depth alto y las
+     capas con sy fijo (volcán, ctec) necesitan depth BAJO.
 
-     Por 100 px de scroll, la capa se mueve (1 − depth) × 100 px hacia
-     arriba. Solo el venado (factor ≈ 1.0) viaja a la velocidad del scroll;
-     todas las demás capas van MÁS LENTAS que el scroll. De cerca a lejos:
+     En un hero de 1080 px (1920×1080), el translateY por capa es:
 
-         venado  → depth 0.00  factor ≈ 1.00  → corre con el scroll
-         COMPDES → depth 0.25  factor ≈ 0.75  → fuerte, más lento que el
-                                                venado
-         ctec    → depth 0.63  factor ≈ 0.37  → medio: más lento que el
-                                                scroll y que el texto, pero
-                                                casi 2.5× el volcán
-         volcán  → depth 0.85  factor ≈ 0.15  → LA MÁS LENTA: cumbre
-                                                lejana, apenas se separa del
-                                                cielo
-         cielo   → depth 0.90  factor ≈ 0.10  → el más quieto. NO MODIFICAR.
+         cielo   → depth 0.32  factor ≈ 0.68  → baja  346 px  (bleed 1.36×)
+         volcán  → depth 0.14  factor ≈ 0.86  → baja  151 px
+         ctec    → depth 0.12  factor ≈ 0.88  → baja  130 px
+         venado  → depth 0.00  factor ≈ 1.00  → baja    0 px  (ancla)
+         COMPDES → depth 0.25  factor ≈ 0.75  → baja  270 px  (solo omega)
 
-     RELACIÓN CRÍTICA: ctec > volcán, siempre. El edificio + grama está
-     físicamente MÁS CERCA del observador que la cima del volcán, así que su
-     trazado por unidad de scroll DEBE ser mayor (0.37 vs 0.15 en pantalla, es
-     decir el edificio recorre ~2.5× lo que recorre el volcán para el mismo
-     scroll). Si depth(ctec) llegara a caer por debajo de depth(volcán) la
-     escena se invertiría y delataría el truco. El cielo es el único con
-     factor 0.10 —un casi-fijo con un suspiro mínimo— y el volcán queda apenas
-     por encima (0.15), así que la cumbre se despega del cielo muy despacio.
+     EltranslateY de una capa NUNCA debe pasar de ~1/3 del alto del hero, o
+     se esconde. Ya se cayó en esto dos veces: con depth 0.96 el volcán bajaba
+     1037 px (casi una pantalla) y la cumbre quedaba tapada por el CTEC; con
+     depth 0.80 el CTEC bajaba 864 px y se tragaba media composición. Los
+     valores de arriba los mantienen bajo 350 px.
+
+     RELACIÓN CRÍTICA (sobre el FACTOR, no sobre el depth): ctec > volcán >
+     cielo, siempre. El edificio + grama está físicamente MÁS CERCA del
+     observador que la cima del volcán, y el cielo es la masa más lejana: su
+     movimiento en pantalla DEBE ser estrictamente decreciente
+     (0.88 > 0.86 > 0.68). O sea, en depth: ctec < volcán < cielo. Si algún
+     factor se cruzara con otro la escena se invertiría y delataría el truco.
 
 INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
      recorrido total (la jerarquía de arriba se conserva tal cual), solo la
      FORMA en que cada capa responde al cambio del scroll. Cada capa con
      omega > 0 mantiene un "slip" (pos): la separación con el avance de la
      página. Al reposo slip = 0 → la capa queda exactamente donde estaba
-     antes (mismo frame que hoy, solo hay que restablecer la escena desde el
-     estado de reposo). Cuando el scroll cambia, la capa se queda CLAVADA al
-     viewport un instante mínimo — el avance de la página se absorbe en el
-     offset (offset = base + delta − slip) — y luego se despega hacia su
-     factor real con un resorte CRÍTICAMENTE AMORTIGUADO (velocidad inicial
-     0, sin rebote ni overshoot), asentándose en 0.1–0.8 s según la capa. El
-     ensamblaje es idéntico al bajar que al subir, y el objetivo (slip) se
-     recalcula desde el scroll en cada frame. `omega` (rad/s) es la rigidez:
-     cuánto más alta, más "instantánea" es la respuesta.
+     antes. Cuando el scroll cambia, la capa se queda CLAVADA al viewport un
+     instante mínimo — el avance de la página se absorbe en el offset
+     (offset = base + delta − slip) — y luego se despega hacia su factor real
+     con un resorte CRÍTICAMENTE AMORTIGUADO (velocidad inicial 0, sin rebote
+     ni overshoot). El ensamblaje es idéntico al bajar que al subir, y el
+     objetivo (slip) se recalcula desde el scroll en cada frame. `omega` (rad/s)
+     es la rigidez: cuánto más alta, más "instantánea" es la respuesta.
 
-         venado  → sin spring   instantáneo (atado a tu scroll)
+         venado  → sin spring   lineal, instantáneo (atado a tu scroll)
          COMPDES → omega 45     casi instantáneo, imperceptible (~0.13 s)
-         ctec    → omega 14     inercia suave, se asienta en ~0.43 s
-         volcán  → omega 8      LA MÁS LENTA de todas: se asienta en
-                                 0.7–0.8 s, sin parecer rezagada al reposo
-         cielo   → sin spring   NO MODIFICAR
+         ctec    → sin spring   lineal
+         volcán  → sin spring   lineal
+         cielo   → sin spring   lineal
+
+     DECISIÓN: LAS IMÁGENES NO LLEVAN RESORTE — omega = 0 en las cuatro. La
+     referencia de la que se copió la composición de esta escena (KRAI, Studio
+     VØR) mueve sus capas con interacciones de scroll puramente LINEALES: el
+     `translate` refleja el scroll 1:1, sin retardo y sin inercia. El resorte
+     se veía gomoso —el volcán llegó a rezagar 250–625 px a velocidad normal de
+     scroll y tardaba 0.75 s en recuperar— y eso era justo lo que alejaba el
+     resultado de la referencia. El resorte se conserva SOLO en el título,
+     donde un poco de rezago sobre el texto sí se lee como intencional.
+
+     OJO: una capa lineal además elimina el tirón del "va y pega". Bajar depth
+     alarga el recorrido pero NO suaviza el movimiento; omega = 0 es lo que
+     hace que la capa quede clavada a tu scroll. Si alguna vez hay que hacer
+     una capa más lenta, se baja depth, no se sube omega.
 
      DIFERENCIA CLAVE con el suavizado exponencial: el exponencial arranca
      moviéndose al ritmo del scroll y luego decanta (lo que se percibe como
@@ -224,11 +243,11 @@ INERCIA (omega) — inercia INDEPENDIENTE del factor: no altera el
      descubra ni aparezca el azul de la página.
      ===================================================================== */
   const layers = [
-{ el: bg,    depth: 0.9,  base: 0,   sy: null, omega: 0 },
-    { el: logo,  depth: 0.85, base: 0,   sy: 1.0,  omega: 8 },
-    { el: ctec,  depth: 0.63, base: 25,  sy: 1.05, omega: 14 },
-    { el: deer,  depth: 0.0,  base: 25,  sy: 1.0,  omega: 0 },
-    { el: title, depth: 0.25, base: 0,   sy: 1.0,  omega: 45 },
+{ el: bg,    depth: 0.32, base: 0,  sy: null, omega: 0 },
+    { el: logo,  depth: 0.14, base: 0,  sy: 1.0,  omega: 0 },
+    { el: ctec,  depth: 0.12, base: 25, sy: 1.05, omega: 0 },
+    { el: deer,  depth: 0.0,  base: 25, sy: 1.0,  omega: 0 },
+    { el: title, depth: 0.25, base: 0,  sy: 1.0,  omega: 45 },
   ].filter((l) => l.el);
 
   // Estado de inercia por capa (solo omega > 0): pos = "slip" (la separación

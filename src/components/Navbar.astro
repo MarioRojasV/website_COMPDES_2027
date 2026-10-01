@@ -130,20 +130,18 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
 </nav>
 
 <style>
-  /* Out of document flow: floats OVER the hero instead of pushing it down. */
+  /* Out of document flow: floats OVER the hero instead of pushing it down.
+     `fixed` (not `absolute`) so the navbar stays pinned and static for the
+     whole scroll instead of sliding away with the hero on the way down. */
   .site-nav--transparent {
-    position: absolute;
+    position: fixed;
     inset: 0 0 auto 0;
     background-color: transparent;
     border-bottom-color: transparent;
   }
 
-  /* Once scrolled past the hero: back into fixed positioning, solid background. */
+  /* Past the hero: same pinned position, only the background goes solid. */
   .site-nav--transparent.is-scrolled {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     background-color: var(--color-compdes-blue);
     border-bottom-color: var(--color-compdes-yellow);
   }
@@ -153,13 +151,9 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
     border-color: rgb(246 241 231 / 0.2);
   }
 
-  /* While the mobile menu is open, force a solid + fixed navbar even before
-     scrolling, so links stay legible and reachable over the hero image. */
+  /* While the mobile menu is open, force a solid background so links stay
+     legible over the hero image. */
   .site-nav--transparent:has(#menu:not(.hidden)) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
     background-color: var(--color-compdes-blue);
     border-bottom-color: var(--color-compdes-yellow);
   }
@@ -177,9 +171,10 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
     btn?.setAttribute('aria-expanded', String(isHidden));
   });
 
-  // Transparent (home) navbar: switch to solid background once the hero has
-  // fully scrolled out of view (not just a few pixels), so the links stay
-  // readable over the hero image for as long as it's on screen.
+  // Transparent (home) navbar: it is always `fixed` (see the CSS above), so the
+  // only thing this toggles is the background — transparent over the hero,
+  // solid once the hero has fully scrolled out of view, which keeps the links
+  // readable over the hero image while it's on screen.
   if (nav?.classList.contains('site-nav--transparent')) {
     const hero = document.querySelector('.hero');
 
