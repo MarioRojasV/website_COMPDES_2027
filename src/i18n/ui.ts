@@ -172,9 +172,7 @@ export const ui = {
       "El <strong>XX Congreso Iberoamericano de Computación para el Desarrollo — COMPDES2027 —</strong> se \
       desarrollará del 21 al 23 de julio de 2027, organizado por el Instituto Tecnológico de Costa Rica (Sede de San Carlos) \
       en el marco de actividades de la RED COMPDES. La sede del evento será el cantón de San Carlos, Costa Rica, en el \
-      distrito de Santa Clara.<br /><br />Además, esta edición marcará un hito histórico: por primera vez, los \
-      trabajos aceptados serán remitidos para su inclusión en <strong>IEEE Xplore</strong>, sujetos al alcance y a los \
-      requisitos de calidad de <strong>IEEE Xplore</strong>.",
+      distrito de Santa Clara.<br /><br />Además, esta edición trae algo <strong>NUEVO</strong>...",
     // IEEE — envío a IEEE Xplore
     "home.ieee.eyebrow": "Publicaciones",
     "home.ieee.title": "Por primera vez: envío a IEEE Xplore",
@@ -449,9 +447,7 @@ export const ui = {
       "The <strong>20th Ibero-American Conference on Computing for Development — COMPDES2027 —</strong> will \
       take place from July 21 to 23, 2027, organized by the Costa Rica Institute of Technology (San Carlos Campus) \
       as part of the COMPDES NETWORK’s activities. The event will be held in the canton of San Carlos, Costa Rica, in the \
-      district of Santa Clara.<br /><br />In addition, this edition will mark a historic milestone: for the first time, \
-      accepted papers will be submitted for inclusion into <strong>IEEE Xplore</strong> subject to meeting \
-      <strong>IEEE Xplore's</strong> scope and quality requirements.",
+      district of Santa Clara.<br /><br />In addition, this edition brings something <strong>NEW</strong>...",
     // IEEE — submission to IEEE Xplore
     "home.ieee.eyebrow": "Publications",
     "home.ieee.title": "For the first time: submission to IEEE Xplore",
