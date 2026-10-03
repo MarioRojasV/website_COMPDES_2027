@@ -7,8 +7,8 @@ const t = useTranslations(lang);
 
 <section class="hero" aria-label={t('hero.title')}>
   <div class="hero-art" aria-hidden="true">
-    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/volcan_arenal.webp`} alt="" />
-    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" hidden />
+    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/sky_2.webp`} alt="" />
+    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" />
     <img class="hero-ctec" src={`${import.meta.env.BASE_URL}/fondos/ctec.webp`} alt="" />
     <img class="hero-deer" src={`${import.meta.env.BASE_URL}/fondos/deer.webp`} alt="" />
   </div>
@@ -44,7 +44,7 @@ const t = useTranslations(lang);
     height: max(100svh, calc(100vw * 9 / 16));
     min-height: 560px;
     overflow: hidden;
-    background-color: var(--color-compdes-blue-900);
+    background-color: var(--color-compdes-blue-hero-background);
   }
 
   /* Contenedor de capas a sangre completa: abarca todo el panel, de borde
@@ -157,12 +157,12 @@ const t = useTranslations(lang);
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // SOLO las capas CON inercia
+  // SOLO las capas CON inercia (el volcán y el cielo se manejan aparte,
+  // exactamente iguales entre sí, sin inercia)
   const layers: Layer[] = [
-    { el: logo,  depth: 0.8, base: 0,  sy: 1.0,  omega: 18 },
     { el: ctec,  depth: 0.5, base: 25, sy: 1.05, omega: 27 },
     { el: deer,  depth: 0.0, base: 25, sy: 1.0,  omega: 0 },
-    { el: title, depth: 0.25, base: 0, sy: 1.0,  omega: 64 },
+    { el: title, depth: 0.55, base: 0, sy: 1.0,  omega: 64 },
   ].filter((l) => l.el);
 
   // BG se maneja COMPLETAMENTE aparte, sin inercia
@@ -195,9 +195,13 @@ const t = useTranslations(lang);
     const delta = progress * heroH;
     
     // BG: movimiento DIRECTO, sin inercia, sin retrasos
+    // El volcán (volcano) usa EXACTAMENTE el mismo movimiento que el cielo:
+    // el mismo offset calculado, mismo factor (BG_DEPTH), mismo scale, directo.
     if (bg) {
       const bgOffset = BG_DEPTH * delta;
-      bg.style.transform = `translate3d(0, ${bgOffset.toFixed(1)}px, 0) scale(1, 1)`;
+      const bgTransform = `translate3d(0, ${bgOffset.toFixed(1)}px, 0) scale(1, 1)`;
+      bg.style.transform = bgTransform;
+      if (logo) logo.style.transform = bgTransform;
     }
     
     // El resto de capas con inercia
