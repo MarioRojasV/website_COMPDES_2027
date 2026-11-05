@@ -8,9 +8,10 @@ const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
 
 /* Estilo por tipo de aviso: la apertura va en verde (listo), las fechas
-   límite en rojo (acción urgente), la notificación en amarillo (pendiente
-   de revisión) y el congreso en el azul acento del sitio. El color solo
-   vive en la etiqueta; la fecha siempre va en marfil neutro. */
+   límite en rojo (acción urgente), la evaluación en violeta (en revisión),
+   la notificación en amarillo (pendiente de respuesta) y el congreso en el
+   azul acento del sitio. El color solo vive en la etiqueta; la fecha
+   siempre va en marfil neutro. */
 const TYPE_THEME: Record<DateKind, { badge: string; led: string }> = {
   apertura: {
     badge: 'border-compdes-green bg-compdes-green text-compdes-blue',
@@ -19,6 +20,10 @@ const TYPE_THEME: Record<DateKind, { badge: string; led: string }> = {
   limite: {
     badge: 'border-compdes-red bg-compdes-red text-compdes-blue',
     led: 'bg-compdes-red',
+  },
+  evaluacion: {
+    badge: 'border-compdes-violet bg-compdes-violet text-compdes-cream',
+    led: 'bg-compdes-violet',
   },
   notificacion: {
     badge: 'border-compdes-amber bg-compdes-amber text-compdes-blue',
