@@ -69,10 +69,13 @@ export const actividades: Activity[] = [
       en: 'Adventure and nature hikes',
     },
     description: {
-      es: 'Caminatas por los senderos y el mirador.',
-      en: 'Hikes along the trails and the viewpoint.',
+      es: 'Caminatas por los senderos y el mirador. Entrada: ₡1 500 para nacionales y $16,95 para extranjeros.',
+      en: 'Hikes along the trails and the viewpoint. Admission: CRC 1,500 for residents and $16.95 for foreign visitors.',
     },
-    price: { es: '₡1 500 por persona', en: 'CRC 1,500 per person' },
+    price: {
+      es: '₡1 500 nacionales · $16,95 extranjeros',
+      en: 'CRC 1,500 residents · $16.95 foreign visitors',
+    },
     hours: { es: '8:00 am a 4:00 pm', en: '8:00 am to 4:00 pm' },
     duration: { es: 'Entre 3 y 4 horas', en: '3 to 4 hours' },
     travelTime: { es: '1 h 10 min', en: '1 h 10 min' },
