@@ -3,6 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import CommitteeSection from '../components/organizacion/CommitteeSection.astro';
 import { committees } from '../data/organizacion';
+import fondoMorpho from '../assets/images/headers/fondo-morpho.webp';
+import morpho from '../assets/images/headers/morpho.webp';
+import morpho2 from '../assets/images/headers/morpho-2.webp';
 ---
 
 <BaseLayout titleKey="page.title.organizacion" descriptionKey="meta.desc.organizacion">
@@ -12,9 +15,9 @@ import { committees } from '../data/organizacion';
     tagKey="pageheader.tag.organizacion"
     descKey="pageheader.desc.organizacion"
     placeholder={false}
-    artBgSrc={`${import.meta.env.BASE_URL}/elementos/fondo_morpho.webp`}
-    artBirdSrc={`${import.meta.env.BASE_URL}/elementos/morpho.webp`}
-    artBird2Src={`${import.meta.env.BASE_URL}/elementos/morpho_2.webp`}
+    artBgSrc={fondoMorpho}
+    artBirdSrc={morpho}
+    artBird2Src={morpho2}
   />
   {committees.map((committee, i) => (
     <CommitteeSection

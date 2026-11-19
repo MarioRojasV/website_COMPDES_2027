@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import HotelsList from '../components/hospedaje/HotelsList.astro';
+import fondoRana from '../assets/images/headers/fondo-rana.webp';
+import rana from '../assets/images/headers/rana.webp';
 ---
 
 <BaseLayout titleKey="page.title.hospedaje" descriptionKey="meta.desc.hospedaje">
@@ -11,8 +13,8 @@ import HotelsList from '../components/hospedaje/HotelsList.astro';
     tagKey="pageheader.tag.hospedaje"
     descKey="pageheader.desc.hospedaje"
     placeholder={false}
-    artBgSrc={`${import.meta.env.BASE_URL}/elementos/fondo_rana.webp`}
-    artBirdSrc={`${import.meta.env.BASE_URL}/elementos/rana.webp`}
+    artBgSrc={fondoRana}
+    artBirdSrc={rana}
     artEntrance="right"
   />
   <HotelsList />

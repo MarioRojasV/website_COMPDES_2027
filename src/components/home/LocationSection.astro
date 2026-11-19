@@ -1,4 +1,4 @@
----
+﻿---
 import SectionHeading from '../ui/SectionHeading.astro';
 import { useTranslations } from '../../i18n/ui';
 
@@ -303,37 +303,71 @@ const facts: { key: 'size' | 'agro' | 'arenal' | 'tec'; icon: string }[] = [
 </style>
 
 <script>
-  import L from 'leaflet';
-  import 'leaflet/dist/leaflet.css';
-
-  // Coordenadas oficiales del campus (OpenStreetMap way 351554216).
-  const CAMPUS: [number, number] = [10.36159, -84.50950]; //10.361290391054697, -84.50980771599849
-
   const holder = document.querySelector<HTMLElement>('[data-map]');
-  if (holder && L) {
-    // Mapa de solo lectura: sin gestos ni controles; el contenedor además es
-    // pointer-events:none (CSS), así el clic siempre abre Google Maps.
-    const map = L.map(holder, {
-      zoomControl: false,
-      attributionControl: true,
-      dragging: false,
-      scrollWheelZoom: false,
-      doubleClickZoom: false,
-      boxZoom: false,
-      keyboard: false,
-      touchZoom: false,
-      zoomSnap: 0.25,
-      fadeAnimation: true,
-    });
 
-    map.setView(CAMPUS, 15.75);
+  if (holder) {
+    let started = false;
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(map);
+    async function loadMap() {
+      if (started) return;
+      started = true;
 
-    // El tamaño depende del layout; un repaso tras el load evita cortes.
-    window.addEventListener('load', () => map.invalidateSize());
+      try {
+        // Leaflet (JS + CSS) se descarga solo cuando la tarjeta se acerca al
+        // viewport. Antes viajaba en el bundle inicial de la home aunque el
+        // mapa estuviera muy por debajo del fold.
+        const [{ default: L }] = await Promise.all([
+          import('leaflet'),
+          import('leaflet/dist/leaflet.css'),
+        ]);
+
+        // Coordenadas oficiales del campus (OpenStreetMap way 351554216).
+        const CAMPUS: [number, number] = [10.36159, -84.50950];
+
+        // Mapa de solo lectura: sin gestos ni controles; el contenedor además es
+        // pointer-events:none (CSS), así el clic siempre abre Google Maps.
+        const map = L.map(holder, {
+          zoomControl: false,
+          attributionControl: true,
+          dragging: false,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          touchZoom: false,
+          zoomSnap: 0.25,
+          fadeAnimation: true,
+        });
+
+        map.setView(CAMPUS, 15.75);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+
+        // El tamaño depende del layout; un frame y un resize evitan cortes.
+        requestAnimationFrame(() => map.invalidateSize());
+        window.addEventListener('resize', () => map.invalidateSize(), { passive: true });
+      } catch (error) {
+        // Si Leaflet no carga, el arte SVG de respaldo sigue visible.
+        console.warn('No se pudo cargar el mapa interactivo.', error);
+      }
+    }
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            io.disconnect();
+            void loadMap();
+          }
+        },
+        { rootMargin: '240px' }
+      );
+      io.observe(holder);
+    } else {
+      void loadMap();
+    }
   }
 </script>

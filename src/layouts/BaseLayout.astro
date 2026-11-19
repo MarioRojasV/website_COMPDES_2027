@@ -1,6 +1,6 @@
 ---
-import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
+import jetbrainsMonoLatin from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
@@ -67,12 +67,10 @@ const isHome = /^\/(en\/?)?$/.test(relativePath);
     <meta name="twitter:description" content={description} />
 
     <title>{title}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
-      rel="stylesheet"
-    />
+    <!-- La tipografía ya viene autoalojada por @fontsource-variable. Se precarga
+         solo el subset latin normal (el que usa el sitio) para evitar el swap
+         tardío sin descargar subsets cirílico/griego/vietnamita. -->
+    <link rel="preload" href={jetbrainsMonoLatin} as="font" type="font/woff2" crossorigin />
   </head>
   <body class="flex min-h-screen flex-col bg-compdes-cream font-mono text-compdes-blue">
     <a class="skip-link" href="#main" data-i18n="common.skipLink">{t('common.skipLink')}</a>
