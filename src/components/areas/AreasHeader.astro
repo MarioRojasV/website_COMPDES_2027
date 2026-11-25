@@ -1,5 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { useTranslations } from '../../i18n/ui';
+import fondoManati from '../../assets/images/headers/fondo-manati.webp';
+import manatiMadre from '../../assets/images/headers/manati-madre.webp';
+import manatiCria from '../../assets/images/headers/manati-cria.webp';
 
 const { index = '03' } = Astro.props;
 
@@ -15,24 +19,39 @@ const t = useTranslations(lang);
 -->
 <section class="areas-hero relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue-900 text-compdes-cream">
   <div class="areas-art" aria-hidden="true">
-    <img
+    <Image
       class="areas-art__bg"
-      src={`${import.meta.env.BASE_URL}/elementos/fondo_manati.webp`}
+      src={fondoManati}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280, 1600]}
+      sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
-    <img
+    <Image
       class="areas-art__madre"
-      src={`${import.meta.env.BASE_URL}/elementos/manati_madre.webp`}
+      src={manatiMadre}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
-    <img
+    <Image
       class="areas-art__cria"
-      src={`${import.meta.env.BASE_URL}/elementos/manati_cria.webp`}
+      src={manatiCria}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
@@ -91,7 +110,6 @@ const t = useTranslations(lang);
     width: auto;
     max-width: none;
     height: 118%;
-    will-change: transform;
   }
 
   .areas-art__bg {
@@ -168,7 +186,6 @@ const t = useTranslations(lang);
     width: 100%;
     max-width: none;
     height: auto;
-    will-change: transform;
   }
 
   /* Orden de apilado dentro del lienzo: la cría (última en el DOM) queda

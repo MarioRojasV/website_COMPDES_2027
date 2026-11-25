@@ -9,12 +9,8 @@
  * server-side, so the initial HTML is always correct and works without JS.
  */
 
-export const languages = {
-  es: "Español",
-  en: "English",
-} as const;
-
-export const defaultLang = "es";
+import { defaultLang } from './routing';
+export { languages, defaultLang, getLangFromUrl, localizedUrl } from './routing';
 
 export const ui = {
   es: {
@@ -94,12 +90,13 @@ export const ui = {
     "cron.dates.eyebrow": "fechas clave",
     "cron.dates.title": "Fechas importantes",
     "cron.dates.intro":
-      "El calendario oficial del congreso. Las fechas aún no definidas se anunciarán por este medio y en las redes oficiales de la red COMPDES.",
+      "El calendario oficial del congreso, desde la publicación del Call for Papers hasta las fechas del evento.",
     "cron.dates.term": "[ fechas_clave ]",
     "cron.status.confirmed": "confirmado",
     "cron.status.tbd": "por anunciar",
     "cron.type.apertura": "apertura",
     "cron.type.limite": "fecha límite",
+    "cron.type.evaluacion": "evaluación",
     "cron.type.notificacion": "notificación",
     "cron.type.congreso": "congreso",
     "cron.program.eyebrow": "programa",
@@ -264,12 +261,14 @@ export const ui = {
       "Opciones de hospedaje para asistentes al Congreso COMPDES 2027 en San Carlos.",
     "hosp.list.title": "Hoteles disponibles",
     "hosp.list.intro":
-      "<strong>En preparación:</strong> esta sección se seguirá actualizando próximamente con más información sobre el hospedaje. Mientras tanto, estos son los hoteles en Ciudad Quesada y alrededores; las tarifas son de referencia por noche, así que confirma disponibilidad y precio final directamente con cada hotel.",
+      "Opciones de hospedaje en Ciudad Quesada, La Fortuna y alrededores, con datos de contacto, servicios, formas de pago y políticas de reserva. Las tarifas son de referencia por noche: confirma disponibilidad y precio final directamente con cada hotel.",
     "hosp.card.travel": "desde el TEC",
     "hosp.card.rooms": "Habitaciones",
+    "hosp.card.map": "Cómo llegar",
     "hosp.price.perNight": "/ noche",
     "hosp.card.details": "+ más información",
     "hosp.label.email": "Correo",
+    "hosp.label.website": "Sitio web o redes",
     "hosp.label.address": "Dirección",
     "hosp.label.amenities": "Servicios",
     "hosp.label.payment": "Formas de pago",
@@ -368,12 +367,13 @@ export const ui = {
     "cron.dates.eyebrow": "key dates",
     "cron.dates.title": "Important dates",
     "cron.dates.intro":
-      "The official conference calendar. Dates that are not yet defined will be announced here and on the official COMPDES network social media.",
+      "The official conference calendar, from the Call for Papers announcement to the conference dates.",
     "cron.dates.term": "[ key_dates ]",
     "cron.status.confirmed": "confirmed",
     "cron.status.tbd": "to be announced",
     "cron.type.apertura": "opening",
     "cron.type.limite": "deadline",
+    "cron.type.evaluacion": "review",
     "cron.type.notificacion": "notification",
     "cron.type.congreso": "conference",
     "cron.program.eyebrow": "program",
@@ -538,12 +538,14 @@ export const ui = {
       "Accommodation options for COMPDES 2027 attendees in San Carlos.",
     "hosp.list.title": "Available hotels",
     "hosp.list.intro":
-      "<strong>In preparation:</strong> this section will keep being updated soon with more accommodation information. In the meantime, these are the hotels in Ciudad Quesada and surroundings; rates are reference prices per night, so confirm availability and final pricing directly with each hotel.",
+      "Accommodation options in Ciudad Quesada, La Fortuna and nearby areas, with contact details, amenities, payment methods and booking policies. Rates are reference prices per night: confirm availability and final pricing directly with each hotel.",
     "hosp.card.travel": "from the TEC",
     "hosp.card.rooms": "Rooms",
+    "hosp.card.map": "Get directions",
     "hosp.price.perNight": "/ night",
     "hosp.card.details": "+ more information",
     "hosp.label.email": "Email",
+    "hosp.label.website": "Website or social media",
     "hosp.label.address": "Address",
     "hosp.label.amenities": "Amenities",
     "hosp.label.payment": "Payment methods",
@@ -578,35 +580,4 @@ export function useTranslations(lang: string) {
   };
 }
 
-/** Base path del despliegue ('/compdes2027' en producción, '/' o '' en local sin base). */
-const BASE = (import.meta.env.BASE_URL ?? "").replace(/\/+$/, "");
 
-function stripBase(pathname: string): string {
-  if (!BASE) return pathname;
-  const bare = pathname.startsWith(BASE) ? pathname.slice(BASE.length) : pathname;
-  return bare === "" ? "/" : bare;
-}
-
-function withBase(path: string): string {
-  return BASE ? `${BASE}${path}` : path;
-}
-
-/** Resolve the current locale from a URL path ('/en/...' -> 'en', else 'es'). */
-export function getLangFromUrl(pathname: string): "es" | "en" {
-  return stripBase(pathname).startsWith("/en") ? "en" : "es";
-}
-
-/**
- * Return the same path in the given language. Works whether the input is the
- * Spanish path (no prefix) or the English path (/en prefix), always including
- * the deployment base (/compdes2027) when one is configured.
- */
-export function localizedUrl(pathname: string, lang: "es" | "en"): string {
-  const p = stripBase(pathname);
-  const normalized =
-    p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p;
-  const stripped = normalized.replace(/^\/en(?=\/|$)/, "");
-  const esUrl = stripped === "" ? "/" : stripped;
-  const out = lang === "es" ? esUrl : esUrl === "/" ? "/en" : `/en${esUrl}`;
-  return withBase(out);
-}

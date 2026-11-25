@@ -1,8 +1,17 @@
 ---
+import { Picture } from 'astro:assets';
 import { useTranslations } from '../../i18n/ui';
+import principal from '../../assets/images/hero/principal.webp';
+import volcano from '../../assets/images/hero/volcano-layer.webp';
+import ctec from '../../assets/images/hero/ctec-layer.webp';
+import deer from '../../assets/images/hero/deer-layer.webp';
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
+
+/* Anchos compartidos por las cuatro capas. El hero ocupa todo el viewport,
+   así que `sizes="100vw"` deja que el navegador elija la resolución real. */
+const heroWidths = [640, 960, 1280, 1600, 1920, 2560];
 ---
 
 <section class="hero" aria-label={t('hero.title')}>
@@ -79,16 +88,11 @@ const t = useTranslations(lang);
     transform-origin: center bottom;
   }
 
-  /* Solo las capas animadas declaran will-change; principal queda fija.
-     transform-origin abajo: el sangrado por escala (bleed) crece hacia
+  /* transform-origin abajo: el sangrado por escala (bleed) crece hacia
      ARRIBA, anclando la escena a su base y ocultando el borde superior
-     recortado de cada capa aunque el parallax las empuje hacia abajo. */
-  .hero-logo,
-  .hero-ctec,
-  .hero-deer {
-    will-change: transform;
-  }
-
+     recortado de cada capa aunque el parallax las empuje hacia abajo.
+     No se declara will-change permanente: translate3d ya promueve las
+     capas y mantenerlas reservadas consume memoria GPU en móvil. */
   .hero-logo,
   .hero-ctec {
     transform-origin: center bottom;
@@ -120,7 +124,6 @@ const t = useTranslations(lang);
     justify-content: flex-start;
     padding: 0 max(1.5rem, 6vw) max(10rem, 46svh) max(3rem, 9vw);
     text-align: left;
-    will-change: transform;
   }
 
   .hero-title {
@@ -133,7 +136,6 @@ const t = useTranslations(lang);
     text-shadow:
       0 2px 14px rgb(0 0 0 / 0.35),
       0 10px 56px rgb(0 0 0 / 0.3);
-    will-change: transform, opacity;
   }
 </style>
 

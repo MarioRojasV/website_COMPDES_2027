@@ -4,6 +4,8 @@ import PageHeader from '../components/PageHeader.astro';
 import KeyDates from '../components/cronograma/KeyDates.astro';
 import DailyProgram from '../components/cronograma/DailyProgram.astro';
 import TalksAgenda from '../components/cronograma/TalksAgenda.astro';
+import fondoPerezoso from '../assets/images/headers/fondo-perezoso.webp';
+import perezoso from '../assets/images/headers/perezoso.webp';
 ---
 
 <BaseLayout titleKey="page.title.cronograma" descriptionKey="meta.desc.cronograma">
@@ -13,8 +15,8 @@ import TalksAgenda from '../components/cronograma/TalksAgenda.astro';
     tagKey="pageheader.tag.cronograma"
     descKey="pageheader.desc.cronograma"
     placeholder={false}
-    artBgSrc={`${import.meta.env.BASE_URL}/elementos/fondo_perezoso.webp`}
-    artBirdSrc={`${import.meta.env.BASE_URL}/elementos/perezoso.webp`}
+    artBgSrc={fondoPerezoso}
+    artBirdSrc={perezoso}
   />
   <KeyDates />
   <DailyProgram />

@@ -70,8 +70,8 @@ export interface KeyDate {
 }
 
 /** Categoría del aviso: apertura (verde), fecha límite (rojo),
-    notificación (amarillo) o congreso (neutro). */
-export type DateKind = 'apertura' | 'limite' | 'notificacion' | 'congreso';
+    evaluación (violeta), notificación (amarillo) o congreso (neutro). */
+export type DateKind = 'apertura' | 'limite' | 'evaluacion' | 'notificacion' | 'congreso';
 
 /* =========================================================================
    1) FECHAS CLAVE
@@ -82,12 +82,12 @@ export const keyDates: KeyDate[] = [
     id: 'apertura',
     type: 'apertura',
     label: {
-      es: 'Apertura de la recepción de papers y talleres',
-      en: 'Opening of paper and workshop submissions',
+      es: 'Publicación del Call for Papers',
+      en: 'Call for Papers announcement',
     },
     date: {
-      es: '10 de marzo de 2027',
-      en: 'March 10, 2027',
+      es: '20 de noviembre de 2026',
+      en: 'November 20, 2026',
     },
     note: {
       es: 'Se publicará el formulario y las normas de envío.',
@@ -95,11 +95,11 @@ export const keyDates: KeyDate[] = [
     },
   },
   {
-    id: 'limite',
+    id: 'recepcion',
     type: 'limite',
     label: {
-      es: 'Fecha límite de recepción de papers y talleres',
-      en: 'Deadline for paper and workshop submissions',
+      es: 'Recepción de Ponencias',
+      en: 'Paper submission',
     },
     date: {
       es: '31 de marzo de 2027',
@@ -107,43 +107,59 @@ export const keyDates: KeyDate[] = [
     },
   },
   {
+    id: 'evaluacion',
+    type: 'evaluacion',
+    label: {
+      es: 'Evaluación de Ponencias',
+      en: 'Paper review',
+    },
+    date: {
+      es: '31 de marzo al 15 de abril de 2027',
+      en: 'March 31 to April 15, 2027',
+    },
+    note: {
+      es: 'Revisión por pares de los trabajos recibidos.',
+      en: 'Peer review of the submitted papers.',
+    },
+  },
+  {
     id: 'aceptacion',
     type: 'notificacion',
     label: {
-      es: 'Notificación de aceptación de papers y talleres',
-      en: 'Acceptance notification for papers and workshops',
+      es: 'Notificación de Aceptación',
+      en: 'Acceptance notification',
     },
     date: {
-      es: '30 de abril de 2027',
-      en: 'April 30, 2027',
+      es: '3 de mayo de 2027',
+      en: 'May 3, 2027',
     },
   },
   {
     id: 'version-final',
     type: 'limite',
     label: {
-      es: 'Envío de la versión final (camera-ready)',
-      en: 'Camera-ready version submission',
+      es: 'Recepción de Versión Final',
+      en: 'Final version submission',
     },
     date: {
-      es: '10 — 30 de mayo de 2027',
-      en: 'May 10 — 30, 2027',
+      es: '10 al 30 de mayo de 2027',
+      en: 'May 10 to 30, 2027',
     },
   },
   {
     id: 'congreso',
     type: 'congreso',
     label: {
-      es: 'XX Congreso Iberoamericano COMPDES 2027',
-      en: '20th Ibero-American COMPDES 2027 Conference',
+      es: 'Fechas del Evento',
+      en: 'Conference dates',
     },
     date: {
-      es: '21 — 23 de julio de 2027',
-      en: 'July 21 — 23, 2027',
+      es: '21 al 23 de julio de 2027',
+      en: 'July 21 to 23, 2027',
     },
     note: {
-      es: 'TEC, Sede San Carlos · Santa Clara, Costa Rica.',
-      en: 'TEC, San Carlos Campus · Santa Clara, Costa Rica.',
+      es: 'XX Congreso Iberoamericano COMPDES 2027 · TEC, Sede San Carlos, Santa Clara, Costa Rica.',
+      en: '20th Ibero-American COMPDES 2027 Conference · TEC, San Carlos Campus, Santa Clara, Costa Rica.',
     },
   },
 ];

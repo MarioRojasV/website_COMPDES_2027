@@ -1,4 +1,5 @@
 ---
+import { Image, type ImageMetadata } from 'astro:assets';
 import { useTranslations } from '../i18n/ui';
 import type { UiKey } from '../i18n/ui';
 
@@ -13,12 +14,12 @@ export interface Props {
   placeholder?: boolean;
   /** Arte opcional de dos capas: fondo selvático que se funde con la banda
       más un animal recortado con alfa (flotación idle + entrada escénica). */
-  artBgSrc?: string;
-  artBirdSrc?: string;
+  artBgSrc?: ImageMetadata;
+  artBirdSrc?: ImageMetadata;
   /** Segunda criatura opcional: un recorte alfa adicional (más pequeño y en
       el ángulo inferior derecho) que flota desfasado y llega un instante
       después que el principal, para dar profundidad a la composición. */
-  artBird2Src?: string;
+  artBird2Src?: ImageMetadata;
   /** Dirección de la entrada escénica del animal: 'top' cae desde arriba
       (por defecto), 'right' llega deslizándose desde el lado derecho. */
   artEntrance?: 'top' | 'right';
@@ -35,10 +36,43 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
   {
     hasArt && (
       <div class="pageheader-art" data-entrance={artEntrance} aria-hidden="true">
-        <img class="pageheader-art__bg" src={artBgSrc} alt="" decoding="async" draggable="false" />
-        <img class="pageheader-art__bird" src={artBirdSrc} alt="" decoding="async" draggable="false" />
+        <Image
+          src={artBgSrc}
+          alt=""
+          class="pageheader-art__bg"
+          format="webp"
+          quality={72}
+          widths={[640, 960, 1280, 1600]}
+          sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+        <Image
+          src={artBirdSrc}
+          alt=""
+          class="pageheader-art__bird"
+          format="webp"
+          quality={72}
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
         {artBird2Src && (
-          <img class="pageheader-art__bird2" src={artBird2Src} alt="" decoding="async" draggable="false" />
+          <Image
+            src={artBird2Src}
+            alt=""
+            class="pageheader-art__bird2"
+            format="webp"
+            quality={72}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+          />
         )}
       </div>
     )
@@ -120,7 +154,6 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     width: auto;
     max-width: none;
     height: 118%;
-    will-change: transform;
   }
 
   .pageheader-art__bg {
@@ -199,7 +232,6 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     width: auto;
     max-width: none;
     height: 100%;
-    will-change: transform;
   }
 </style>
 

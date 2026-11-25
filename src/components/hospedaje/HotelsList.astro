@@ -146,6 +146,22 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   )
                 }
 
+                {
+                  hotel.website && (
+                    <div>
+                      <p class="label-mono" data-i18n="hosp.label.website">{t('hosp.label.website')}</p>
+                      <a
+                        href={hotel.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-sm text-compdes-yellow underline decoration-compdes-yellow/40 underline-offset-2 transition-colors hover:decoration-compdes-yellow"
+                      >
+                        {hotel.websiteLabel ?? t('tur.label.website')}
+                      </a>
+                    </div>
+                  )
+                }
+
                 <div>
                   <p class="label-mono">{t('hosp.label.amenities')}</p>
                   <p class="text-sm leading-relaxed text-compdes-cream/75"><LangText value={hotel.amenities} /></p>
@@ -175,6 +191,22 @@ const pad = (n: number) => String(n).padStart(2, '0');
                       <p class="label-mono">{t('hosp.label.notes')}</p>
                       <p class="text-[13px] leading-relaxed text-compdes-cream/70"><LangText value={hotel.notes} /></p>
                     </div>
+                  )
+                }
+
+                {
+                  hotel.mapsUrl && (
+                    <a
+                      href={hotel.mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-2 rounded bg-compdes-yellow px-4 py-2 font-mono text-xs font-semibold tracking-wide text-compdes-blue transition-colors hover:bg-compdes-yellow-400"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4" aria-hidden="true">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span data-i18n="hosp.card.map">{t('hosp.card.map')}</span>
+                    </a>
                   )
                 }
               </div>

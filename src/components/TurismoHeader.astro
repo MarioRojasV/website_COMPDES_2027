@@ -1,5 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import { useTranslations } from '../i18n/ui';
+import fondoTucan from '../assets/images/headers/fondo-tucan.webp';
+import tucan from '../assets/images/headers/tucan.webp';
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
@@ -7,17 +10,27 @@ const t = useTranslations(lang);
 
 <section class="turismo-hero relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue-900 text-compdes-cream">
   <div class="turismo-art" aria-hidden="true">
-    <img
+    <Image
       class="turismo-art__bg"
-      src={`${import.meta.env.BASE_URL}/elementos/fondo_tucan.webp`}
+      src={fondoTucan}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280, 1600]}
+      sizes="(min-width: 1400px) 580px, (min-width: 768px) 42vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
-    <img
+    <Image
       class="turismo-art__bird"
-      src={`${import.meta.env.BASE_URL}/elementos/tucan.webp`}
+      src={tucan}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 1400px) 580px, (min-width: 768px) 42vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
@@ -74,7 +87,6 @@ const t = useTranslations(lang);
     width: auto;
     max-width: none;
     height: 118%;
-    will-change: transform;
   }
 
   .turismo-art__bg {
@@ -190,6 +202,7 @@ const t = useTranslations(lang);
     let idlePhase = 0;
     let rafId = null;
     let lastT = 0;
+    let inView = false;
     // Con motion reducido no hay puesta en escena: todo visible y estático.
     let entered = reduceMotion;
 
@@ -229,11 +242,24 @@ const t = useTranslations(lang);
 
       idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
       render();
-      rafId = requestAnimationFrame(frame);
+      // Solo mantenemos el bucle si la sección sigue visible y la pestaña
+      // está activa. Fuera del viewport no hay nada que animar.
+      if (inView && !document.hidden) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        rafId = null;
+      }
+    }
+
+    function sleep() {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
     }
 
     function wake() {
-      if (!entered) return; // antes de la entrada, el tucán permanece oculto
+      if (reduceMotion || !entered || !inView || document.hidden) return;
       computeTargets();
       if (rafId === null) {
         lastT = performance.now();
@@ -293,6 +319,27 @@ const t = useTranslations(lang);
       } else {
         startEntrance();
       }
+
+      // Pausa el bucle cuando la banda sale del viewport o la pestaña se
+      // oculta; al volver, retoma exactamente donde estaba.
+      if ('IntersectionObserver' in window) {
+        const visibility = new IntersectionObserver(
+          ([entry]) => {
+            inView = entry.isIntersecting;
+            if (inView) wake();
+            else sleep();
+          },
+          { threshold: 0 }
+        );
+        visibility.observe(section);
+      } else {
+        inView = true;
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) sleep();
+        else wake();
+      });
 
       window.addEventListener('scroll', wake, { passive: true });
       window.addEventListener('resize', wake, { passive: true });

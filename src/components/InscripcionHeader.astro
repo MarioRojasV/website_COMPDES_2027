@@ -1,5 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import { useTranslations } from '../i18n/ui';
+import fondoLapa from '../assets/images/headers/fondo-lapa.webp';
+import lapa from '../assets/images/headers/lapa.webp';
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
@@ -7,17 +10,27 @@ const t = useTranslations(lang);
 
 <section class="inscripcion-hero relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue-900 text-compdes-cream">
   <div class="inscripcion-art" aria-hidden="true">
-    <img
+    <Image
       class="inscripcion-art__bg"
-      src={`${import.meta.env.BASE_URL}/elementos/fondo_lapa.webp`}
+      src={fondoLapa}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280, 1600]}
+      sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
-    <img
+    <Image
       class="inscripcion-art__bird"
-      src={`${import.meta.env.BASE_URL}/elementos/lapa.webp`}
+      src={lapa}
       alt=""
+      format="webp"
+      quality={72}
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+      loading="lazy"
       decoding="async"
       draggable="false"
     />
@@ -96,7 +109,6 @@ const t = useTranslations(lang);
     width: auto;
     max-width: none;
     height: 118%;
-    will-change: transform;
   }
 
   .inscripcion-art__bg {
@@ -205,11 +217,12 @@ const t = useTranslations(lang);
     let birdV = 0;
     // Desplazamiento horizontal de la entrada: arranca a la derecha del
     // encuadre y vuelve a 0 con el mismo resorte. No depende del scroll.
-    let birdX = 0;
+    let birdX = INITIAL_BIRD_X;
     let birdVX = 0;
     let idlePhase = 0;
     let rafId = null;
     let lastT = 0;
+    let inView = false;
     // Con motion reducido no hay puesta en escena ni flotación: estático.
     let entered = reduceMotion;
 
@@ -256,11 +269,24 @@ const t = useTranslations(lang);
 
       idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
       render();
-      rafId = requestAnimationFrame(frame);
+      // Solo mantenemos el bucle si la sección sigue visible y la pestaña
+      // está activa. Fuera del viewport no hay nada que animar.
+      if (inView && !document.hidden) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        rafId = null;
+      }
+    }
+
+    function sleep() {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
     }
 
     function wake() {
-      if (!entered) return; // antes de la entrada no hay nada que mover
+      if (reduceMotion || !entered || !inView || document.hidden) return;
       // Con bucle persistente los objetivos SIEMPRE se actualizan al hacer
       // scroll; el guard de rafId solo decide si hay que arrancar el bucle.
       computeTargets();
@@ -343,6 +369,22 @@ const t = useTranslations(lang);
         io.observe(section);
       } else {
         startEntrance();
+      }
+
+      // Observador de visibilidad: pausa/reanuda el bucle cuando la banda
+      // entra/sale del viewport (igual que en TurismoHeader).
+      if ('IntersectionObserver' in window) {
+        const visibility = new IntersectionObserver(
+          ([entry]) => {
+            inView = entry.isIntersecting;
+            if (inView) wake();
+            else sleep();
+          },
+          { threshold: 0 }
+        );
+        visibility.observe(section);
+      } else {
+        inView = true;
       }
 
       window.addEventListener('scroll', wake, { passive: true });
