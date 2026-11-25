@@ -65,6 +65,46 @@ const UES: Affiliation = {
   en: 'University of El Salvador (UES)',
 };
 
+const USAL: Affiliation = {
+  es: 'Universidad de Salamanca (USAL) — España',
+  en: 'University of Salamanca (USAL) — Spain',
+};
+
+const US: Affiliation = {
+  es: 'Universidad de Sevilla (US) — España',
+  en: 'University of Seville (US) — Spain',
+};
+
+const UPC: Affiliation = {
+  es: 'Universitat Politècnica de Catalunya (UPC) — España',
+  en: 'Polytechnic University of Catalonia (UPC) — Spain',
+};
+
+const ULS: Affiliation = {
+  es: 'Universidad de La Serena (ULS) — Chile',
+  en: 'University of La Serena (ULS) — Chile',
+};
+
+const UVa: Affiliation = {
+  es: 'Universidad de Valladolid (UVa) — España',
+  en: 'University of Valladolid (UVa) — Spain',
+};
+
+const USAC: Affiliation = {
+  es: 'Universidad de San Carlos de Guatemala (USAC) — Guatemala',
+  en: 'University of San Carlos of Guatemala (USAC) — Guatemala',
+};
+
+const UDES: Affiliation = {
+  es: 'Universidad de Santander (UDES) — Colombia',
+  en: 'University of Santander (UDES) — Colombia',
+};
+
+const UCM: Affiliation = {
+  es: 'Universidad Complutense de Madrid (UCM) — España',
+  en: 'Complutense University of Madrid (UCM) — Spain',
+};
+
 const CUNOC_USAC: Affiliation = {
   es: 'Centro Universitario de Occidente, Universidad de San Carlos de Guatemala (CUNOC-USAC)',
   en: 'Western University Center, University of San Carlos of Guatemala (CUNOC-USAC)',
@@ -91,8 +131,54 @@ const UNAN_MANAGUA: Affiliation = {
 };
 
 /* [ com.01 ] Comité Científico — responsable del proceso de arbitraje.
-   Lista oficial pendiente: la sección se muestra "EN PREPARACIÓN". */
-const comiteCientifico: OrgMember[] = [];
+   Lista PRELIMINAR (sujeta a confirmación): la composición del comité puede
+   sufrir cambios antes de la versión final. */
+const comiteCientifico: OrgMember[] = [
+  {
+    name: 'Meziat Luna, Daniel',
+    affiliation: UAH_ES,
+    role: { es: 'Presidente', en: 'President' },
+  },
+  { name: 'Alarcos Alcázar, Bernardo', affiliation: UAH_ES },
+  { name: 'Amaya Briceño, Luis Eduardo', affiliation: UCR },
+  { name: 'Arco Rodríguez, José Manuel', affiliation: UAH_ES },
+  { name: 'Barchino Plata, Roberto', affiliation: UAH_ES },
+  { name: 'Bengochea Martínez, Luis', affiliation: UAH_ES },
+  { name: 'Campo Montalvo, Elena', affiliation: UAH_ES },
+  { name: 'Carballo Ruiz, Elmer Arturo', affiliation: UES },
+  { name: 'Carrasco Acebrón, David', affiliation: UAH_ES },
+  { name: 'de la Mata Moratilla, Sergio', affiliation: UAH_ES },
+  { name: 'del Hoyo Gabaldón, Jesús Ángel', affiliation: UAH_ES },
+  { name: 'Díaz, Bladimir', affiliation: UES },
+  { name: 'Domínguez Alda, Mª José', affiliation: UAH_ES },
+  { name: 'Fernández del Castillo, José Raúl', affiliation: UAH_ES },
+  { name: 'García Astete, Margarita', affiliation: ULS },
+  { name: 'García Herráiz, Antonio', affiliation: UAH_ES },
+  { name: 'García Peñalvo, Francisco José', affiliation: USAL },
+  { name: 'González Enríquez, José', affiliation: US },
+  { name: 'Granados, José', affiliation: CUNOC_USAC },
+  { name: 'Guasch, Daniel', affiliation: UPC },
+  { name: 'Gutiérrez Martínez, José María', affiliation: UAH_ES },
+  { name: 'Gutiérrez de Mesa, José Antonio', affiliation: UAH_ES },
+  { name: 'Hernández Ramírez, Oscar Guillermo', affiliation: UNAH },
+  { name: 'Leal Algara, Elena Katia', affiliation: UAH_ES },
+  { name: 'Llanos, Diego R.', affiliation: UVa },
+  { name: 'Llerena Caña, Juan Pedro', affiliation: UAH_ES },
+  { name: 'López Quiroa, Christian Alberto', affiliation: USAC },
+  { name: 'López Villegas, Óscar', affiliation: TEC },
+  { name: 'Mejía, Guillermo', affiliation: UES },
+  { name: 'Moreno Cediel, Antonio', affiliation: UAH_ES },
+  { name: 'Oyarzo, Jaime', affiliation: UAH_ES },
+  { name: 'Palma Mendoza, Raúl José', affiliation: UNAH },
+  { name: 'Población, Óscar', affiliation: UAH_ES },
+  { name: 'Pocasangre Jiménez, Carlos Osmín', affiliation: UES },
+  { name: 'Restrepo Bustamante, Félix Andrés', affiliation: UDES },
+  { name: 'Sánchez Prieto, Sebastián', affiliation: UAH_ES },
+  { name: 'Sarasa Cabezuelo, Antonio', affiliation: UCM },
+  { name: 'Usero Aragonés, Luis', affiliation: UAH_ES },
+  { name: 'Vegas, Jesús', affiliation: UVa },
+  { name: 'Velasco, Juan Ramón', affiliation: UAH_ES },
+];
 
 /* [ com.02 ] Comité Organizador — equipo local anfitrión (TEC San Carlos). */
 const comiteOrganizador: OrgMember[] = [

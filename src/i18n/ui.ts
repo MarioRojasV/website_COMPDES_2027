@@ -46,10 +46,10 @@ export const ui = {
       "En esta sección encontrarás una variedad de opciones de alojamiento cerca del TEC para tu estadía durante el COMPDES 2027. Explora las opciones disponibles y elige la que mejor se adapte a tus necesidades.",
     "pageheader.desc.organizacion":
       "Las personas detrás del XX Congreso COMPDES: comités científico y organizador, la Comisión Permanente de la red y los representantes de sus universidades miembro.",
-    "org.cientifico.eyebrow": "comite_cientifico",
-    "org.cientifico.title": "Comité Científico",
+    "org.cientifico.eyebrow": "comite_cientifico_preliminar",
+    "org.cientifico.title": "Comité Científico Preliminar",
     "org.cientifico.intro":
-      "Responsable del proceso de arbitraje por pares y de la selección académica de los trabajos recibidos.",
+      "Responsable del proceso de arbitraje por pares y de la selección académica de los trabajos recibidos. <strong>Esta es una lista preliminar sujeta a confirmación; su composición puede sufrir cambios antes de la versión final.</strong>",
     "org.organizador.eyebrow": "comite_organizador",
     "org.organizador.title": "Comité Organizador",
     "org.organizador.intro":
@@ -323,10 +323,10 @@ export const ui = {
       "In this section, you'll find a variety of accommodation options near TEC for your stay during COMPDES 2027. Explore the available options and choose the one that best suits your needs.",
     "pageheader.desc.organizacion":
       "The people behind the 20th COMPDES Conference: scientific and organizing committees, the Network's Permanent Commission, and the representatives of its member universities.",
-    "org.cientifico.eyebrow": "scientific_committee",
-    "org.cientifico.title": "Scientific Committee",
+    "org.cientifico.eyebrow": "preliminary_scientific_committee",
+    "org.cientifico.title": "Preliminary Scientific Committee",
     "org.cientifico.intro":
-      "In charge of the peer-review process and the academic selection of submitted papers.",
+      "In charge of the peer-review process and the academic selection of submitted papers. <strong>This is a preliminary list subject to confirmation; its composition may change before the final version.</strong>",
     "org.organizador.eyebrow": "organizing_committee",
     "org.organizador.title": "Organizing Committee",
     "org.organizador.intro":
