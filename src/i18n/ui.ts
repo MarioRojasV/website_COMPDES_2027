@@ -29,6 +29,8 @@ export const ui = {
 
     // PageHeader tags
     "pageheader.tag.areas": "temática",
+    "pageheader.tag.cfp": "convocatoria",
+    "pageheader.desc.cfp": "Artículos técnicos y pósteres: fechas, requisitos de envío, presentación y publicación de COMPDES 2027.",
     "pageheader.tag.cronograma": "agenda",
     "pageheader.tag.hospedaje": "alojamiento",
     "pageheader.tag.inscripcion": "participación",
@@ -130,6 +132,9 @@ export const ui = {
     // Navigation
     "nav.home": "Inicio",
     "nav.inscripcion": "Inscripción",
+    "nav.cfp": "Llamado a contribuciones",
+    "nav.cfp.line1": "Llamado a",
+    "nav.cfp.line2": "contribuciones",
     "nav.areas": "Áreas de interés",
     "nav.cronograma": "Cronograma",
     "nav.hospedaje": "Hospedaje",
@@ -200,13 +205,6 @@ export const ui = {
     "home.ieee.term.line2": "[ >> ] inclusion ...................... sujeta a alcance y calidad",
     "home.ieee.term.line3": "[ >> ] estado ......................... pendiente_de_evaluacion",
     "home.ieee.term.line4": "[ >> ] hito ........................... primera_vez_en_la_red",
-    // Call for Papers — ficha oficial IEEE (el texto solo se traduce con su botón)
-    "home.cfp.eyebrow": "llamada_a_trabajos",
-    "home.cfp.title": "Call for Papers: envía tu trabajo",
-    "home.cfp.intro":
-      "Ficha oficial de publicación. Los trabajos aceptados se remiten para su inclusión en IEEE Xplore según el alcance y los requisitos de calidad de esa plataforma; la inclusión no está garantizada. El texto del aviso se presenta en inglés tal como lo publica la conferencia; puedes traducirlo con el interruptor que aparece al pie de la ficha.",
-    "home.cfp.statement":
-      "Los trabajos aceptados serán remitidos para su inclusión en <strong>IEEE Xplore</strong>, sujetos al alcance y a los requisitos de calidad de <strong>IEEE Xplore</strong>.",
     "home.contact.eyebrow": "Contacto",
     "home.contact.title": "Póngase en contacto",
     "home.contact.email": "Correo electrónico",
@@ -241,6 +239,7 @@ export const ui = {
     // Page titles
     "page.title.home": "COMPDES 2027 — Inicio",
     "page.title.inscripcion": "COMPDES 2027 — Inscripción y participación",
+    "page.title.cfp": "COMPDES 2027 — Llamado a contribuciones",
     "page.title.areas": "COMPDES 2027 — Áreas de interés",
     "page.title.cronograma": "COMPDES 2027 — Cronograma",
     "page.title.hospedaje": "COMPDES 2027 — Hospedaje",
@@ -253,6 +252,7 @@ export const ui = {
       "Congreso COMPDES 2027 del Instituto Tecnológico de Costa Rica, Sede San Carlos: ciencia, tecnología y academia.",
     "meta.desc.inscripcion":
       "Modalidades de inscripción y participación en el Congreso COMPDES 2027.",
+    "meta.desc.cfp": "Fechas, modalidades y requisitos para enviar artículos técnicos y pósteres a COMPDES 2027.",
     "meta.desc.areas":
       "Áreas de interés y líneas temáticas del Congreso COMPDES 2027.",
     "meta.desc.cronograma":
@@ -306,6 +306,8 @@ export const ui = {
 
     // PageHeader tags
     "pageheader.tag.areas": "thematic area",
+    "pageheader.tag.cfp": "submissions",
+    "pageheader.desc.cfp": "Technical Papers and Posters: dates, submission, presentation, and publication requirements for COMPDES 2027.",
     "pageheader.tag.cronograma": "schedule",
     "pageheader.tag.hospedaje": "accommodation",
     "pageheader.tag.inscripcion": "participation",
@@ -407,6 +409,9 @@ export const ui = {
     // Navigation
     "nav.home": "Home",
     "nav.inscripcion": "Registration",
+    "nav.cfp": "Call for Papers",
+    "nav.cfp.line1": "Call for",
+    "nav.cfp.line2": "Papers",
     "nav.areas": "Areas of interest",
     "nav.cronograma": "Schedule",
     "nav.hospedaje": "Accommodation",
@@ -477,13 +482,6 @@ export const ui = {
     "home.ieee.term.line2": "[ >> ] inclusion ......................... subject to scope & quality",
     "home.ieee.term.line3": "[ >> ] status ............................. pending_evaluation",
     "home.ieee.term.line4": "[ >> ] milestone .......................... first_time_in_network",
-    // Call for Papers — official IEEE notice (translated only via its own toggle)
-    "home.cfp.eyebrow": "call_for_papers",
-    "home.cfp.title": "Call for Papers: submit your work",
-    "home.cfp.intro":
-      "Official publication notice. Accepted papers are submitted for inclusion into IEEE Xplore subject to its scope and quality requirements; inclusion is not guaranteed. The statement below is shown in English just as the conference publishes it; use the switch at the foot of the record to translate it.",
-    "home.cfp.statement":
-      "Accepted papers will be submitted for inclusion into <strong>IEEE Xplore</strong> subject to meeting <strong>IEEE Xplore's</strong> scope and quality requirements.",
     "home.contact.eyebrow": "Contact",
     "home.contact.title": "Get in touch",
     "home.contact.email": "Email",
@@ -518,6 +516,7 @@ export const ui = {
     // Page titles
     "page.title.home": "COMPDES 2027 — Home",
     "page.title.inscripcion": "COMPDES 2027 — Registration and participation",
+    "page.title.cfp": "COMPDES 2027 — Call for Papers",
     "page.title.areas": "COMPDES 2027 — Areas of interest",
     "page.title.cronograma": "COMPDES 2027 — Schedule",
     "page.title.hospedaje": "COMPDES 2027 — Accommodation",
@@ -530,6 +529,7 @@ export const ui = {
       "COMPDES 2027 conference at Costa Rica Institute of Technology, San Carlos Campus: science, technology and academia.",
     "meta.desc.inscripcion":
       "Registration and participation options for the COMPDES 2027 conference.",
+    "meta.desc.cfp": "Dates, tracks and submission requirements for Technical Papers and Posters at COMPDES 2027.",
     "meta.desc.areas":
       "Areas of interest and thematic tracks of the COMPDES 2027 conference.",
     "meta.desc.cronograma":

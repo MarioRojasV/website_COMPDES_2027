@@ -63,6 +63,12 @@ const label = languages[targetLang];
     root.lang = lang;
     localStorage.setItem('compdes-lang', lang);
     updateToggle(lang);
+    // Navigation links follow the selected locale even when the language is
+    // changed without a full page load.
+    root.querySelectorAll<HTMLAnchorElement>('[data-localized-path]').forEach((link) => {
+      const path = link.dataset.localizedPath;
+      if (path) link.href = localizedUrl(path, lang);
+    });
 
     const dicts = await loadDicts();
     const dict = dicts[lang];
