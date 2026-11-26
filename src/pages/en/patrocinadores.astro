@@ -2,9 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import SponsorsRack from '../../components/patrocinadores/SponsorsRack.astro';
+import fondoTortuga from '../../assets/images/headers/fondo-tortuga.webp';
+import tortuga from '../../assets/images/headers/tortuga.webp';
+import tortuguita1 from '../../assets/images/headers/tortuguita-1.webp';
+import tortuguita2 from '../../assets/images/headers/tortuguita-2.webp';
 ---
 
 <BaseLayout titleKey="page.title.patrocinadores" descriptionKey="meta.desc.patrocinadores">
-  <PageHeader titleKey="nav.patrocinadores" index="08" tagKey="pageheader.tag.patrocinadores" placeholder={false} />
+  <PageHeader titleKey="nav.patrocinadores" index="08" tagKey="pageheader.tag.patrocinadores" placeholder={false} artBgSrc={fondoTortuga} artBirdSrc={tortuga} artCompanions={[tortuguita1, tortuguita2]} artEntrance="right" artMotion="drift" artStillBg artCoverRight />
   <SponsorsRack />
 </BaseLayout>

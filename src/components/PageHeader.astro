@@ -20,14 +20,24 @@ export interface Props {
       el ángulo inferior derecho) que flota desfasado y llega un instante
       después que el principal, para dar profundidad a la composición. */
   artBird2Src?: ImageMetadata;
+  /** Dos animales recortados sobre lienzos del mismo tamaño, animados por separado. */
+  artCompanions?: readonly [ImageMetadata, ImageMetadata];
   /** Dirección de la entrada escénica del animal: 'top' cae desde arriba
       (por defecto), 'right' llega deslizándose desde el lado derecho. */
   artEntrance?: 'top' | 'right';
+  /** Mantener el fondo visible e inmóvil; el efecto se aplica solo al animal. */
+  artStillBg?: boolean;
+  /** Vaivén vertical suave o desplazamiento horizontal lento del animal. */
+  artMotion?: 'hover' | 'drift';
+  /** Para la garza: capa independiente, alineada al fondo y anclada abajo. */
+  artPlacement?: 'aligned';
+  /** Hace que el fondo cubra el borde derecho incluso en paneles anchos. */
+  artCoverRight?: boolean;
 }
 
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
-const { titleKey, index, id, tagKey, descKey, placeholder = true, artBgSrc, artBirdSrc, artBird2Src, artEntrance = 'top' } = Astro.props;
+const { titleKey, index, id, tagKey, descKey, placeholder = true, artBgSrc, artBirdSrc, artBird2Src, artCompanions, artEntrance = 'top', artStillBg = false, artMotion, artPlacement, artCoverRight = false } = Astro.props;
 const tagLabel = tagKey ? t(tagKey) : t('common.section');
 const hasArt = Boolean(artBgSrc && artBirdSrc);
 ---
@@ -35,7 +45,7 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
 <section class="relative overflow-hidden border-b-2 border-compdes-yellow bg-compdes-blue-900 text-compdes-cream">
   {
     hasArt && (
-      <div class="pageheader-art" data-entrance={artEntrance} aria-hidden="true">
+      <div class="pageheader-art" data-entrance={artEntrance} data-motion={artMotion} data-still-bg={artStillBg ? 'true' : undefined} data-placement={artPlacement} data-cover-right={artCoverRight ? 'true' : undefined} aria-hidden="true">
         <Image
           src={artBgSrc}
           alt=""
@@ -48,6 +58,22 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
           decoding="async"
           draggable="false"
         />
+        {artStillBg && <div class="pageheader-art__fade" />}
+        {artCompanions?.map((companion, i) => (
+          <Image
+            src={companion}
+            alt=""
+            class="pageheader-art__companion"
+            data-companion={i + 1}
+            format="webp"
+            quality={72}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 1400px) 640px, (min-width: 768px) 46vw, 100vw"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+          />
+        ))}
         <Image
           src={artBirdSrc}
           alt=""
@@ -82,13 +108,13 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     <p class="mb-4 text-[11px] uppercase tracking-[0.3em] text-compdes-yellow">
       [ mod.{index} ] // <span data-i18n={tagKey}>{tagLabel}</span>
     </p>
-    <h1 id={id} class="font-mono text-4xl font-bold leading-tight md:text-5xl">
+    <h1 id={id} class:list={['font-mono text-4xl font-bold leading-tight md:text-5xl', artStillBg && 'md:max-w-[52%]']}>
       <span class="text-compdes-yellow">&gt;_</span><span data-i18n={titleKey}>{t(titleKey)}</span>
     </h1>
     <div class="mt-6 h-1 w-24 bg-compdes-yellow"></div>
     {
       descKey && (
-        <p class="mt-6 max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-[1.05rem]" data-i18n={descKey}>
+        <p class:list={['mt-6 max-w-xl text-sm leading-relaxed text-compdes-cream/80 md:text-[1.05rem]', artStillBg && 'md:max-w-[52%]']} data-i18n={descKey}>
           {t(descKey)}
         </p>
       )
@@ -211,6 +237,35 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     mask-composite: intersect;
   }
 
+  .pageheader-art[data-cover-right='true'] .pageheader-art__bg {
+    width: 127%; /* -9% a la izquierda y +18% a la derecha del panel */
+  }
+
+  /* Fundido fijo adicional: evita que el recorte del panel deje un borde
+     visible. Va detrás de los animales, que conservan sus colores y movimiento. */
+  .pageheader-art__fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right,
+      var(--color-compdes-blue-900) 0%,
+      rgb(0 6 23 / 0.94) 18%,
+      rgb(0 6 23 / 0.62) 38%,
+      rgb(0 6 23 / 0.2) 60%,
+      transparent 80%);
+  }
+
+  .pageheader-art__companion {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: none;
+  }
+
+  .pageheader-art__companion[data-companion='1'] { left: 12%; }
+  .pageheader-art__companion[data-companion='2'] { left: 5%; }
+
   .pageheader-art__bird {
     /* La rana es un lienzo HORIZONTAL con transparencia lateral (1672×941;
        el animal ocupa x[613..1318] y TOCA los bordes superior e inferior):
@@ -221,6 +276,31 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     width: auto;
     max-width: none;
     height: 100%;
+  }
+
+  .pageheader-art[data-placement='aligned'] .pageheader-art__bg,
+  .pageheader-art[data-placement='aligned'] .pageheader-art__bird {
+    inset: -9% -18% -9% -9%;
+    width: 127%;
+    height: 118%;
+  }
+
+  .pageheader-art[data-placement='aligned'] .pageheader-art__bird {
+    /* Ligeramente más pequeña; el borde inferior del recorte queda anclado
+       al pie de la cabecera mientras el vaivén sigue siendo horizontal. */
+    top: auto;
+    bottom: 0;
+    left: -2%;
+    width: 120%;
+    height: 110%;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+  @media (min-width: 1024px) {
+    .pageheader-art[data-placement='aligned'] {
+      width: min(55vw, 760px);
+    }
   }
 
   /* Segunda criatura: mismo lienzo a altura completa que el principal, en el
@@ -243,6 +323,7 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
   const bg = document.querySelector('.pageheader-art__bg');
   const bird = document.querySelector('.pageheader-art__bird');
   const bird2 = document.querySelector('.pageheader-art__bird2');
+  const companions = document.querySelectorAll<HTMLElement>('.pageheader-art__companion');
 
   if (art && bg && bird) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -264,8 +345,11 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     const ENTER_OFFSET = entranceAxis === 'x' ? 540 : 460;
     // Flotación idle HORIZONTAL: el recorte alfa toca arriba y abajo del
     // lienzo (cero holgura vertical), pero sobran >150px a cada lado.
-    const IDLE_AMP = 8; // px
-    const IDLE_PERIOD = 3.2; // s
+    const isHover = art.dataset.motion === 'hover';
+    const isDrift = art.dataset.motion === 'drift';
+    const stillBg = art.dataset.stillBg === 'true';
+    const IDLE_AMP = isHover ? 7 : isDrift ? 9 : 8; // px
+    const IDLE_PERIOD = isHover ? 4.6 : isDrift ? 5.2 : 3.2; // s
     // Parámetros de la segunda criatura (si existe): más pequeña, arranca
     // un poco más lejos para llegar un instante después, y su flotación es
     // más rápida (batir corto) y DESFASADA para no moverse al unísono.
@@ -279,17 +363,28 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     let offset2 = 0;
     let vel2 = 0;
     let idle2Phase = 1.7;
+    let companionTime = 0;
     let rafId = null;
     let lastT = 0;
     // Con motion reducido no hay puesta en escena ni flotación: estático.
     let entered = reduceMotion;
 
     function render() {
-      const idleX = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
+      const idle = entered && !reduceMotion ? Math.sin(idlePhase) * IDLE_AMP : 0;
       const travel = reduceMotion ? 0 : offset;
-      const x = entranceAxis === 'x' ? travel + idleX : idleX;
-      const y = entranceAxis === 'y' ? travel : 0;
+      const x = (entranceAxis === 'x' ? travel : 0) + (isHover ? 0 : idle);
+      const y = (entranceAxis === 'y' ? travel : 0) + (isHover ? idle : 0);
       bird.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+
+      // Cada tortuguita nada con su propio período, amplitud y desfase;
+      // el fondo y la capa de fundido permanecen completamente quietos.
+      companions.forEach((companion, i) => {
+        const period = i === 0 ? 4.2 : 6.1;
+        const phase = i === 0 ? 0.7 : 2.1;
+        const x = entered && !reduceMotion ? Math.sin(companionTime * 2 * Math.PI / period + phase) * (i === 0 ? 10 : 14) : 0;
+        const y = entered && !reduceMotion ? Math.cos(companionTime * 2 * Math.PI / period + phase) * (i === 0 ? 5 : 8) : 0;
+        companion.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      });
 
       if (bird2) {
         const idle2X = entered && !reduceMotion ? Math.sin(idle2Phase) * IDLE_AMP2 : 0;
@@ -326,6 +421,7 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
       }
 
       idlePhase += (dt * 2 * Math.PI) / IDLE_PERIOD;
+      companionTime += dt;
       render();
       rafId = requestAnimationFrame(frame);
     }
@@ -337,7 +433,7 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
     let fadeRaf = null;
 
     function startBgFade() {
-      if (reduceMotion || fadeRaf !== null) return;
+      if (reduceMotion || stillBg || fadeRaf !== null) return;
       const t0 = performance.now();
       function step(t) {
         const k = Math.min((t - t0) / BG_FADE_MS, 1);
@@ -371,7 +467,7 @@ const hasArt = Boolean(artBgSrc && artBirdSrc);
       offset = entranceAxis === 'x' ? ENTER_OFFSET : -ENTER_OFFSET;
       if (bird2) offset2 = entranceAxis === 'x' ? ENTER_OFFSET2 : -ENTER_OFFSET2;
       render();
-      bg.style.opacity = '0';
+      if (!stillBg) bg.style.opacity = '0';
 
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver(

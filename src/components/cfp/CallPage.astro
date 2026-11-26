@@ -2,6 +2,8 @@
 import PageHeader from '../PageHeader.astro';
 import LangText from '../ui/LangText.astro';
 import { cfp, cfpLinks } from '../../data/cfp';
+import fondoGarza from '../../assets/images/headers/fondo-garza.webp';
+import garza from '../../assets/images/headers/garza.webp';
 
 const modalities = [cfp.technical, cfp.posters];
 const posterSpecs = [
@@ -14,7 +16,7 @@ const posterSpecs = [
 ];
 ---
 
-<PageHeader titleKey="nav.cfp" tagKey="pageheader.tag.cfp" descKey="pageheader.desc.cfp" index="03" placeholder={false} />
+<PageHeader titleKey="nav.cfp" tagKey="pageheader.tag.cfp" descKey="pageheader.desc.cfp" index="03" placeholder={false} artBgSrc={fondoGarza} artBirdSrc={garza} artEntrance="right" artMotion="drift" artPlacement="aligned" artStillBg />
 
 <div class="bg-compdes-blue-800 text-compdes-cream">
   <div class="mx-auto max-w-6xl px-6 py-12 md:py-20">
