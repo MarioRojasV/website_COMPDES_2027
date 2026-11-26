@@ -143,6 +143,7 @@ export const ui = {
     "nav.patrocinadores": "Patrocinadores",
 
     // Footer
+    "footer.navigation": "Navegación",
     "footer.tagline": "Congreso académico y tecnológico — Sede San Carlos.",
     "footer.copyright": "© 2027 COMPDES — Todos los derechos reservados",
 
@@ -420,6 +421,7 @@ export const ui = {
     "nav.patrocinadores": "Sponsors",
 
     // Footer
+    "footer.navigation": "Navigation",
     "footer.tagline": "Academic and technology conference — San Carlos Campus.",
     "footer.copyright": "© 2027 COMPDES — All rights reserved",
 

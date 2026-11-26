@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
 import { useTranslations } from '../../i18n/ui';
 import principal from '../../assets/images/hero/principal.webp';
 import volcano from '../../assets/images/hero/volcano-layer.webp';
@@ -9,17 +9,20 @@ import deer from '../../assets/images/hero/deer-layer.webp';
 const lang = (Astro.currentLocale as 'es' | 'en') ?? 'es';
 const t = useTranslations(lang);
 
-/* Anchos compartidos por las cuatro capas. El hero ocupa todo el viewport,
-   así que `sizes="100vw"` deja que el navegador elija la resolución real. */
-const heroWidths = [640, 960, 1280, 1600, 1920, 2560];
+/* Las cuatro capas deben elegir la MISMA escala para seguir alineadas.
+   En móvil object-fit:cover escala la escena 16:9 según la ALTURA del hero,
+   no según el ancho del viewport. El piso de 560px equivale a ~996px de
+   ancho de imagen; 100vw por sí solo serviría una imagen borrosa en móvil. */
+const heroWidths = [640, 960, 1280, 1600, 1920, 2560, 3200];
+const heroSizes = 'max(100vw, 177.78svh, 996px)';
 ---
 
 <section class="hero" aria-label={t('hero.title')}>
   <div class="hero-art" aria-hidden="true">
-    <img class="hero-bg" src={`${import.meta.env.BASE_URL}/fondos/sky.webp`} alt="" />
-    <img id="hero-logo" class="hero-logo" src={`${import.meta.env.BASE_URL}/fondos/volcano.webp`} alt="" />
-    <img class="hero-ctec" src={`${import.meta.env.BASE_URL}/fondos/ctec.webp`} alt="" />
-    <img class="hero-deer" src={`${import.meta.env.BASE_URL}/fondos/deer.webp`} alt="" />
+    <Image src={principal} class="hero-bg" alt="" widths={heroWidths} sizes={heroSizes} quality={72} loading="eager" fetchpriority="high" decoding="async" />
+    <Image src={volcano} id="hero-logo" class="hero-logo" alt="" width={3200} widths={heroWidths} sizes={heroSizes} quality={72} loading="eager" decoding="async" />
+    <Image src={ctec} class="hero-ctec" alt="" width={3200} widths={heroWidths} sizes={heroSizes} quality={72} loading="eager" decoding="async" />
+    <Image src={deer} class="hero-deer" alt="" width={3200} widths={heroWidths} sizes={heroSizes} quality={72} loading="eager" decoding="async" />
   </div>
 
   <!-- Velo inferior de integración: funde la base de la viñeta con el azul

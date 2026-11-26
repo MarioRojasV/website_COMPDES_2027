@@ -8,9 +8,10 @@ export interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
+const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.cfp' | 'nav.areas' | 'nav.cronograma' | 'nav.hospedaje' | 'nav.turismo' | 'nav.organizacion' | 'nav.patrocinadores' }[] = [
   { href: '/', key: 'nav.home' },
   { href: '/inscripcion-participacion', key: 'nav.inscripcion' },
+  { href: '/llamado-contribuciones', key: 'nav.cfp' },
   { href: '/areas-interes', key: 'nav.areas' },
   { href: '/cronograma', key: 'nav.cronograma' },
   { href: '/hospedaje', key: 'nav.hospedaje' },
@@ -34,11 +35,11 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.areas' |
       </div>
 
       <div>
-        <p class="text-[11px] uppercase tracking-[0.25em] text-compdes-yellow">[ navegación ]</p>
+        <p class="text-[11px] uppercase tracking-[0.25em] text-compdes-yellow">[ <span data-i18n="footer.navigation">{t('footer.navigation')}</span> ]</p>
         <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-compdes-cream/80">
           {links.map((link) => (
             <li>
-              <a href={localizedUrl(link.href, lang)} class="transition-colors hover:text-compdes-yellow">
+              <a href={localizedUrl(link.href, lang)} data-localized-path={link.href} data-i18n={link.key} class="transition-colors hover:text-compdes-yellow">
                 {t(link.key)}
               </a>
             </li>

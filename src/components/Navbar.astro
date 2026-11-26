@@ -48,7 +48,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.cfp' | '
     <div
       class="flex items-center justify-between px-6 py-1 text-[11px] uppercase tracking-[0.25em] text-compdes-cream/70 lg:px-10"
     >
-      <span>compdes_2027 // sistema en lÃ­nea</span>
+      <span>compdes_2027 // Sistema en línea</span>
       <span class="hidden items-center gap-2 sm:flex">
         <i class="status-led"></i>
         sync&nbsp;ok
@@ -57,8 +57,8 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.cfp' | '
   </div>
 
   <div class="px-6 lg:px-10">
-    <!-- flex-wrap: con el menÃº abierto (< xl), la ul w-full salta a su propia
-        lÃ­nea debajo de la marca en vez de exprimirse junto a logo y botones. -->
+    <!-- flex-wrap: con el menú abierto (< xl), la ul w-full salta a su propia
+        línea debajo de la marca en vez de exprimirse junto a logo y botones. -->
     <div class="flex flex-wrap items-center justify-between gap-3 py-4 xl:justify-start xl:gap-6">
       <a
         href={localizedUrl('/', lang)}
@@ -66,7 +66,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.cfp' | '
       >
         <Image src={logo} alt="" height={72} loading="eager" class="h-8 w-auto xl:h-9" />
         {/* El texto vive en un solo span: como items flex separados, el gap-2
-            del enlace metÃ­a un hueco entre "COMPDES_" y "2027". */}
+            del enlace metía un hueco entre "COMPDES_" y "2027". */}
         <span>
           COMPDES_<span class="text-compdes-yellow">2027</span>
         </span>
@@ -80,9 +80,11 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.cfp' | '
           aria-label={t('common.openMenu')}
           aria-expanded="false"
           aria-controls="menu"
-          class="rounded border border-compdes-cream/40 px-3 py-1.5 text-lg text-compdes-yellow"
+          class="flex items-center justify-center rounded border border-compdes-cream/40 px-3 py-2 text-compdes-yellow"
         >
-          [â‰¡]
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M3 5h14M3 10h14M3 15h14" />
+          </svg>
         </button>
       </div>
 
@@ -177,7 +179,7 @@ const links: { href: string; key: 'nav.home' | 'nav.inscripcion' | 'nav.cfp' | '
   });
 
   // Transparent (home) navbar: it is always `fixed` (see the CSS above), so the
-  // only thing this toggles is the background â€” transparent over the hero,
+  // only thing this toggles is the background — transparent over the hero,
   // solid once the hero has fully scrolled out of view, which keeps the links
   // readable over the hero image while it's on screen.
   if (nav?.classList.contains('site-nav--transparent')) {
